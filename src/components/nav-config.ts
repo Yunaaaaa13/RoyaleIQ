@@ -22,6 +22,11 @@ export interface NavItem {
    * points at. They stay out of the active state so only one item lights up.
    */
   highlight?: boolean
+  /**
+   * 'recent-player' resolves to the most recently opened profile at click time
+   * (falling back to `href`) instead of navigating to the bare route.
+   */
+  behavior?: 'recent-player'
 }
 
 export interface NavGroup {
@@ -48,9 +53,15 @@ export const NAV_GROUPS: NavGroup[] = [
   {
     label: 'Tools',
     items: [
-      { href: '/cards#catalog', label: 'Card Search', icon: Search, highlight: false },
+      { href: '/search', label: 'Card Search', icon: Search },
       { href: '/deck-lab#workspace', label: 'Deck Builder', icon: Hammer, highlight: false },
-      { href: '/player#profile', label: 'My Profile', icon: UserRoundCheck, highlight: false },
+      {
+        href: '/player#profile',
+        label: 'My Profile',
+        icon: UserRoundCheck,
+        highlight: false,
+        behavior: 'recent-player',
+      },
       { href: '/data', label: 'Data Pipeline', icon: Database },
     ],
   },

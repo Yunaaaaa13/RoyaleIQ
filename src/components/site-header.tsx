@@ -7,6 +7,7 @@ import { Crown, Search, Swords } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { NAV_GROUPS, isNavActive, navLabelFor } from '@/components/nav-config'
+import { NavItemLink } from '@/components/nav-item-link'
 import { ALL_CARDS, findCard } from '@/lib/cards'
 import { useRecentPlayers, type RecentPlayer } from '@/lib/recent-players'
 import { normalizeTag } from '@/lib/tags'
@@ -28,7 +29,9 @@ function resolveQuery(raw: string) {
   const matches = ALL_CARDS.filter((card) => card.name.toLowerCase().includes(needle))
   if (matches.length === 1) return `/cards/${matches[0].key}`
 
-  return `/cards?q=${encodeURIComponent(text)}`
+  // Anything partial belongs on the universal search page, which also covers
+  // meta decks and players — not just cards.
+  return `/search?q=${encodeURIComponent(text)}`
 }
 
 export function SiteHeader() {
@@ -150,9 +153,9 @@ export function SiteHeader() {
             {group.items.map((item) => {
               const active = item.highlight !== false && isNavActive(pathname, item.href)
               return (
-                <Link
+                <NavItemLink
                   key={item.href}
-                  href={item.href}
+                  item={item}
                   className={`flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors ${
                     active
                       ? 'bg-primary/15 text-foreground'
@@ -163,7 +166,7 @@ export function SiteHeader() {
                     className={`size-3.5 ${active ? 'text-primary' : 'text-muted-foreground'}`}
                   />
                   {item.label}
-                </Link>
+                </NavItemLink>
               )
             })}
           </Fragment>

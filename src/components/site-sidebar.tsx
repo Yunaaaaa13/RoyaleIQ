@@ -1,9 +1,11 @@
 'use client'
 
+import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Crown, Sparkles } from 'lucide-react'
+import { ChevronDown, Crown, Sparkles } from 'lucide-react'
 import { NAV_GROUPS, isNavActive } from '@/components/nav-config'
+import { NavItemLink } from '@/components/nav-item-link'
 import { cn } from '@/lib/utils'
 
 /**
@@ -12,6 +14,7 @@ import { cn } from '@/lib/utils'
  */
 export function SiteSidebar() {
   const pathname = usePathname()
+  const [collapsed, setCollapsed] = useState<Record<string, boolean>>({})
 
   return (
     <aside className="fixed inset-y-0 left-0 z-40 hidden w-60 flex-col border-r border-sidebar-border bg-sidebar lg:flex">
@@ -33,46 +36,68 @@ export function SiteSidebar() {
       </Link>
 
       <nav className="scroll-thin flex-1 space-y-5 overflow-y-auto px-3 py-4">
-        {NAV_GROUPS.map((group) => (
-          <div key={group.label}>
-            <p className="section-title px-2.5 pb-1.5 text-[10px]">{group.label}</p>
-            <ul className="space-y-0.5">
-              {group.items.map((item) => {
-                const active = item.highlight !== false && isNavActive(pathname, item.href)
-                return (
-                  <li key={item.href}>
-                    <Link
-                      href={item.href}
-                      className={cn(
-                        'group relative flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-[13px] font-medium transition-colors',
-                        active
-                          ? 'bg-primary/15 text-foreground'
-                          : 'text-sidebar-foreground/70 hover:bg-white/[0.06] hover:text-foreground',
-                      )}
-                    >
-                      <span
-                        aria-hidden
-                        className={cn(
-                          'absolute -left-3 top-1/2 h-4 w-0.5 -translate-y-1/2 rounded-r-full bg-primary transition-all',
-                          active ? 'opacity-100' : 'opacity-0 group-hover:opacity-40',
-                        )}
-                      />
-                      <item.icon
-                        className={cn(
-                          'size-4 shrink-0 transition-colors',
-                          active
-                            ? 'text-primary'
-                            : 'text-muted-foreground group-hover:text-foreground',
-                        )}
-                      />
-                      <span className="truncate">{item.label}</span>
-                    </Link>
-                  </li>
-                )
-              })}
-            </ul>
-          </div>
-        ))}
+        {NAV_GROUPS.map((group) => {
+          const open = !collapsed[group.label]
+          return (
+            <div key={group.label}>
+              <button
+                type="button"
+                aria-expanded={open}
+                onClick={() =>
+                  setCollapsed((state) => ({ ...state, [group.label]: open }))
+                }
+                className="section-title flex w-full items-center gap-1.5 px-2.5 pb-1.5 text-left transition-colors hover:text-foreground"
+              >
+                <span className="flex-1 truncate">{group.label}</span>
+                <ChevronDown
+                  aria-hidden
+                  className={cn(
+                    'size-3 shrink-0 transition-transform duration-200',
+                    open ? 'rotate-0 opacity-60' : '-rotate-90 opacity-40',
+                  )}
+                />
+              </button>
+              {open && (
+                <ul className="space-y-0.5">
+                  {group.items.map((item) => {
+                    const active =
+                      item.highlight !== false && isNavActive(pathname, item.href)
+                    return (
+                      <li key={item.href}>
+                        <NavItemLink
+                          item={item}
+                          className={cn(
+                            'group relative flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-[13px] font-medium transition-colors',
+                            active
+                              ? 'bg-primary/15 text-foreground'
+                              : 'text-sidebar-foreground/70 hover:bg-white/[0.06] hover:text-foreground',
+                          )}
+                        >
+                          <span
+                            aria-hidden
+                            className={cn(
+                              'absolute -left-3 top-1/2 h-4 w-0.5 -translate-y-1/2 rounded-r-full bg-primary transition-all',
+                              active ? 'opacity-100' : 'opacity-0 group-hover:opacity-40',
+                            )}
+                          />
+                          <item.icon
+                            className={cn(
+                              'size-4 shrink-0 transition-colors',
+                              active
+                                ? 'text-primary'
+                                : 'text-muted-foreground group-hover:text-foreground',
+                            )}
+                          />
+                          <span className="truncate">{item.label}</span>
+                        </NavItemLink>
+                      </li>
+                    )
+                  })}
+                </ul>
+              )}
+            </div>
+          )
+        })}
       </nav>
 
       <div className="border-t border-sidebar-border p-3">

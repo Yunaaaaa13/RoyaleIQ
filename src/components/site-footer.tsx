@@ -13,6 +13,9 @@ export function SiteFooter() {
           </span>
         </div>
         <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
+          <Link href="/search" className="hover:text-foreground">
+            Search
+          </Link>
           <Link href="/deck-lab" className="hover:text-foreground">
             Deck Lab
           </Link>

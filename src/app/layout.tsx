@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { SiteHeader } from "@/components/site-header";
 import { SiteSidebar } from "@/components/site-sidebar";
 import { SiteFooter } from "@/components/site-footer";
+import { HashScroll } from "@/components/hash-scroll";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -41,6 +42,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             <SiteFooter />
           </div>
           <Toaster richColors position="bottom-right" />
+          <HashScroll />
         </TooltipProvider>
       </body>
     </html>

@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { analyzeDeck } from '@/lib/analysis'
 import { getCard } from '@/lib/cards'
+import { subscribeUrlChange } from '@/lib/url-change'
 
 const SAMPLE = [
   'x-bow',
@@ -41,7 +42,37 @@ export function DeckWorkspace() {
   const [tag, setTag] = useState(() => searchParams.get('tag') ?? '')
   const [opponentDeck, setOpponentDeck] = useState<string[]>([])
   const [copied, setCopied] = useState(false)
+  const [tab, setTab] = useState('diagnosis')
+  const [coachRequested, setCoachRequested] = useState(false)
   const pickerRef = useRef<HTMLDivElement>(null)
+  const deckSize = useRef(deck.length)
+
+  useEffect(() => {
+    deckSize.current = deck.length
+  })
+
+  // `#coach` deep-links own the tab: the fragment is the only thing saying
+  // which panel the visitor came for. With too few cards the pool scrolls into
+  // view instead, and the prompt below takes over until the deck is ready.
+  useEffect(() => {
+    function sync() {
+      if (window.location.hash !== '#coach') return
+      setCoachRequested(true)
+      if (deckSize.current >= 4) return
+      const pool = document.getElementById('workspace')
+      if (pool) {
+        pool.style.scrollMarginTop = '6.5rem'
+        pool.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }
+    }
+    sync()
+    return subscribeUrlChange(sync)
+  }, [])
+
+  // A `#coach` request wins until the visitor picks another tab themselves, so
+  // the switch is derived (not applied in an effect): once the deck reaches 4
+  // cards the coach tab opens on that very render.
+  const activeTab = coachRequested && deck.length >= 4 ? 'coach' : tab
 
   useEffect(() => {
     const params = new URLSearchParams()
@@ -179,7 +210,14 @@ export function DeckWorkspace() {
       </section>
 
       {analysis ? (
-        <Tabs defaultValue="diagnosis" className="space-y-4">
+        <Tabs
+          value={activeTab}
+          onValueChange={(next) => {
+            setTab(next)
+            setCoachRequested(false)
+          }}
+          className="space-y-4"
+        >
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="diagnosis">Diagnosis</TabsTrigger>
             <TabsTrigger value="matchups">Matchups</TabsTrigger>
@@ -204,15 +242,19 @@ export function DeckWorkspace() {
       ) : (
         <section className="panel flex flex-col items-center gap-3 p-10 text-center">
           <span className="text-3xl">🏰</span>
-          <h2 className="text-lg font-semibold">Start with your cards</h2>
+          <h2 className="text-lg font-semibold">
+            {coachRequested ? 'The AI coach needs a deck first' : 'Start with your cards'}
+          </h2>
           <p className="max-w-md text-sm text-muted-foreground">
-            Pick at least 4 cards from the pool above. RoyaleIQ will score offense,
-            defence, air defence, cycle and spell utility, then show exactly which cards
-            are holding the deck back.
+            {coachRequested
+              ? 'Pick at least 4 cards from the pool below — the AI coach opens automatically with a full diagnosis as soon as the deck is ready.'
+              : 'Pick at least 4 cards from the pool above. RoyaleIQ will score offense, defence, air defence, cycle and spell utility, then show exactly which cards are holding the deck back.'}
           </p>
           <Button onClick={() => setDeck(SAMPLE)} className="gap-2">
             <LayoutTemplate className="size-4" />
-            Try the X-Bow cycle sample
+            {coachRequested
+              ? 'Load the X-Bow cycle sample'
+              : 'Try the X-Bow cycle sample'}
           </Button>
         </section>
       )}
