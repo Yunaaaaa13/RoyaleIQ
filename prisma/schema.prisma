@@ -1,0 +1,251 @@
+// RoyaleIQ persistence layer.
+// Docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ------------------------------------------------------------------ player ---
+
+model Player {
+  id            String   @id @default(cuid())
+  tag           String   @unique
+  name          String
+  expLevel      Int?
+  trophies      Int      @default(0)
+  bestTrophies  Int      @default(0)
+  arena         String?
+  wins          Int      @default(0)
+  losses        Int      @default(0)
+  battleCount   Int      @default(0)
+  favouriteCard String?
+  gold          Int?
+  legendTrophies Int?
+  // Denormalised clan info: avoids an FK ordering problem when a player
+  // references a clan we have never tracked. See `Clan` for tracked clans.
+  clanTag       String?
+  clanName      String?
+  tracked       Boolean  @default(false)
+  raw           Json?
+  /// Set on every successful API pull. Distinct from `updatedAt`, which only
+  /// moves when stored content changes — this is what the TTL is measured from.
+  lastFetchedAt DateTime @default(now())
+  firstSeenAt   DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  battles       Battle[]
+  snapshots     PlayerSnapshot[]
+  chestCycles   ChestCycle[]
+  coachSessions CoachSession[]
+
+  @@index([clanTag])
+  @@index([updatedAt])
+}
+
+/// Point-in-time capture of a profile. Drives trophy / win-rate trend charts.
+model PlayerSnapshot {
+  id           String   @id @default(cuid())
+  playerTag    String
+  capturedAt   DateTime @default(now())
+  trophies     Int
+  bestTrophies Int
+  wins         Int
+  losses       Int
+  battleCount  Int
+  winRate      Float?
+  arena        String?
+  deck         String[]
+  player       Player   @relation(fields: [playerTag], references: [tag], onDelete: Cascade)
+
+  @@index([playerTag, capturedAt])
+}
+
+// -------------------------------------------------------------------- clan ---
+
+model Clan {
+  tag              String   @id
+  name             String
+  badgeId          Int?
+  type             String?
+  description      String?
+  trophies         Int?
+  requiredTrophies Int?
+  warTrophies      Int?
+  memberCount      Int?
+  location         String?
+  raw              Json?
+  updatedAt        DateTime @updatedAt
+
+  snapshots ClanSnapshot[]
+}
+
+model ClanSnapshot {
+  id         String   @id @default(cuid())
+  clanTag    String
+  capturedAt DateTime @default(now())
+  trophies   Int
+  members    Int?
+  clan       Clan     @relation(fields: [clanTag], references: [tag], onDelete: Cascade)
+
+  @@index([clanTag, capturedAt])
+}
+
+// ------------------------------------------------------------------ battle ---
+
+model Battle {
+  id                 String        @id @default(cuid())
+  /// `battleTime|playerTag|opponentTag` — used as the idempotency key.
+  battleKey          String        @unique
+  battleTime         DateTime
+  playerTag          String
+  type               String
+  gameMode           String?
+  arena              String?
+  result             BattleResult
+  playerCrowns       Int           @default(0)
+  opponentCrowns     Int           @default(0)
+  opponentTag        String?
+  opponentName       String?
+  playerTrophies     Int?
+  /// When this row was pulled from the Clash Royale API.
+  fetchedAt          DateTime      @default(now())
+  raw                Json?
+  player             Player        @relation(fields: [playerTag], references: [tag], onDelete: Cascade)
+
+  decks BattleDeck[]
+
+  @@index([playerTag, battleTime])
+  @@index([battleTime])
+}
+
+model BattleDeck {
+  id         String    @id @default(cuid())
+  battleId   String
+  side       DeckSide
+  /// Card keys, sorted — matches the signature used by the analytics engine.
+  cards      String[]
+  avgElixir  Float     @default(0)
+  archetype  String?
+  battle     Battle    @relation(fields: [battleId], references: [id], onDelete: Cascade)
+
+  @@index([battleId])
+}
+
+enum BattleResult {
+  win
+  loss
+  draw
+}
+
+enum DeckSide {
+  team
+  opponent
+}
+
+// -------------------------------------------------------------------- card ---
+
+model Card {
+  key       String   @id
+  name      String
+  id        Int?
+  elixir    Int?
+  rarity    String
+  type      String?
+  arena     Int?
+  updatedAt DateTime @updatedAt
+
+  snapshots CardSnapshot[]
+}
+
+/// Keeps every past version of a card's metadata so schema changes are auditable.
+model CardSnapshot {
+  id         String   @id @default(cuid())
+  cardKey    String
+  capturedAt DateTime @default(now())
+  change     String   @default("updated")
+  payload    Json
+  card       Card     @relation(fields: [cardKey], references: [key], onDelete: Cascade)
+
+  @@index([cardKey, capturedAt])
+}
+
+// ---------------------------------------------------------------- leaderboard ---
+
+model LeaderboardEntry {
+  id         String   @id @default(cuid())
+  location   String   @default("global")
+  rank       Int
+  tag        String
+  name       String
+  trophies   Int
+  clanName   String?
+  arena      String?
+  capturedAt DateTime @default(now())
+
+  @@index([location, capturedAt])
+  @@index([tag, capturedAt])
+}
+
+// ------------------------------------------------------------------- chest ---
+
+model ChestCycle {
+  id         String   @id @default(cuid())
+  playerTag  String
+  /// `upcoming` (upchest) or `season`.
+  source     String   @default("upcoming")
+  chests     String[]
+  capturedAt DateTime @default(now())
+  player     Player   @relation(fields: [playerTag], references: [tag], onDelete: Cascade)
+
+  @@index([playerTag, capturedAt])
+}
+
+// -------------------------------------------------------------------- meta ---
+
+/// Aggregated meta (cards, decks, archetypes, trending) for one sample window.
+/// Kept as JSON because the payload shape comes from `aggregateMeta()` and the
+/// rows are read, never queried field-by-field.
+model MetaSnapshot {
+  id         String   @id @default(cuid())
+  capturedAt DateTime @default(now())
+  period     String
+  source     String
+  battles    Int
+  players    Int
+  payload    Json
+
+  @@index([capturedAt, period])
+}
+
+// ------------------------------------------------------------------- coach ---
+
+model CoachSession {
+  id         String   @id @default(cuid())
+  playerTag  String?
+  deck       String[]
+  question   String?
+  provider   String
+  model      String?
+  answer     Json
+  createdAt  DateTime @default(now())
+  player     Player?  @relation(fields: [playerTag], references: [tag], onDelete: Cascade)
+
+  @@index([playerTag, createdAt])
+}
+
+// --------------------------------------------------------------- api cache ---
+
+/// Persistent response cache so a page reload does not burn Clash Royale rate limit.
+model ApiCache {
+  key       String   @id
+  value     Json
+  expiresAt DateTime
+  updatedAt DateTime @updatedAt
+
+  @@index([expiresAt])
+}

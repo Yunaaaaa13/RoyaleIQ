@@ -1,0 +1,11 @@
+# Kept out of the deploy upload: the build re-installs its own dependencies,
+# and local secrets/state must never leave this machine.
+node_modules
+.next
+.vercel
+.env
+.env.local
+*.log
+coverage
+out
+build
