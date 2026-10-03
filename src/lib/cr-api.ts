@@ -1,4 +1,5 @@
 ﻿import 'server-only'
+import { CLASH_API_BASE } from './clash-api-base'
 import { aggregateMeta, deckKeys, type MetaSnapshot, type NormalizedBattle } from './battle'
 import { getPrisma, isDbConfigured } from './db'
 import { describeNetworkError, fetchWithRetry } from './http'
@@ -7,7 +8,14 @@ import type { Prisma } from '@/generated/prisma/client'
 
 export { normalizeTag }
 
-const API_BASE = process.env.CLASH_ROYALE_API_BASE ?? 'https://api.clashroyale.com/v1'
+const API_BASE = CLASH_API_BASE
+const API_HOST = (() => {
+  try {
+    return new URL(API_BASE).host
+  } catch {
+    return 'the Clash Royale API'
+  }
+})()
 
 /**
  * Vercel's IP allowlist cap is five addresses and the platform leaves from six,
@@ -121,7 +129,9 @@ export function readPublicIp(): Promise<string | null> {
 }
 
 async function apiErrorMessage(response: Response): Promise<string> {
-  if (response.status === 404) return 'Player or resource not found.'
+  // The host is part of the message because "not found" and "talking to the
+  // wrong upstream" look identical to the caller otherwise.
+  if (response.status === 404) return `Player or resource not found (via ${API_HOST}).`
   if (response.status === 403) {
     const ip = await publicIp()
     const scope = TOKENS.length > 1 ? "either key's" : "the key's"

@@ -1,3 +1,4 @@
+import { CLASH_API_BASE } from '@/lib/clash-api-base'
 import { crApiRuntime, hasApiToken, publicIpError, readPublicIp } from '@/lib/cr-api'
 import { isDbConfigured, getPrisma } from '@/lib/db'
 import { jsonResponse } from '@/lib/json'
@@ -19,7 +20,7 @@ export async function GET(request: Request) {
   const api: StatusResponse['clashRoyaleApi'] = {
     status: hasApiToken ? 'ok' : 'off',
     tokenConfigured: hasApiToken,
-    baseUrl: process.env.CLASH_ROYALE_API_BASE ?? 'https://api.clashroyale.com/v1',
+    baseUrl: CLASH_API_BASE,
     egressIp: null,
     egressIpError: null,
     rateLimit: { limit: 0, windowSeconds: 60, used: 0 },
