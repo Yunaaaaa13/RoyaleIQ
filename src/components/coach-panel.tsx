@@ -193,10 +193,11 @@ export function CoachPanel({
             {result.grounding?.metaBattles ? (
               <Badge variant="outline">Meta from {result.grounding.metaBattles} battles</Badge>
             ) : null}
-            {result.grounding?.record ? (
-              <span className="min-w-0 flex-1">
-                {result.grounding.note}
-              </span>
+            {/* The server's note is only worth a line when there is no record:
+                with one, the badge above already says so, and the note is the
+                call to action that gets the user to add their tag. */}
+            {!result.grounding?.record && result.grounding?.note ? (
+              <span className="min-w-0 flex-1">{result.grounding.note}</span>
             ) : null}
           </div>
 

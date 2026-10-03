@@ -2,12 +2,12 @@
 
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Crown, Search, Swords } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { ALL_CARDS, findCard } from '@/lib/cards'
-import { readRecent, type RecentPlayer } from '@/lib/recent-players'
+import { useRecentPlayers, type RecentPlayer } from '@/lib/recent-players'
 import { normalizeTag } from '@/lib/tags'
 
 const NAV = [
@@ -17,7 +17,6 @@ const NAV = [
   { href: '/matchups', label: 'Matchups' },
   { href: '/meta', label: 'Meta' },
   { href: '/player', label: 'Player' },
-  { href: '/players', label: 'Players' },
   { href: '/data', label: 'Data' },
 ]
 
@@ -45,12 +44,8 @@ export function SiteHeader() {
   const pathname = usePathname()
   const router = useRouter()
   const [tag, setTag] = useState('')
-  const [recents, setRecents] = useState<RecentPlayer[]>([])
+  const recents = useRecentPlayers()
   const [historyOpen, setHistoryOpen] = useState(false)
-
-  useEffect(() => {
-    setRecents(readRecent())
-  }, [pathname])
 
   const needle = tag.trim()
   const matches = recents.filter((item) => {

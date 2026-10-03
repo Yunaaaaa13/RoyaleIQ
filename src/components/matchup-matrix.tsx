@@ -21,6 +21,9 @@ type Status = 'idle' | 'loading' | 'ready' | 'error'
 type Edge = MatchupEdge
 
 const MODE_LABEL: Record<string, string> = {
+  // `normalizeBattle` defaults `type` to exactly this, so the filter would
+  // otherwise offer a raw lowercase `ladder` beside the titled options.
+  ladder: 'Ladder',
   pathOfLegend: 'Path of Legends',
   trail: 'Trail',
   PvP: 'PvP',

@@ -25,9 +25,8 @@ import { archetypeLabel, detectArchetype } from '@/lib/archetypes'
 import {
   clearRecent,
   pushRecent,
-  readRecent,
   removeRecent,
-  type RecentPlayer,
+  useRecentPlayers,
 } from '@/lib/recent-players'
 import { isLikelyTag, normalizeTag } from '@/lib/tags'
 
@@ -105,7 +104,7 @@ export function PlayerPanel() {
   const [nonce, setNonce] = useState(0)
   const inflight = useRef({ tag: '', nonce: -1 })
 
-  const [history, setHistory] = useState<RecentPlayer[]>([])
+  const history = useRecentPlayers()
   const [tracked, setTracked] = useState(false)
   const [trackBusy, setTrackBusy] = useState(false)
   const [trackNotice, setTrackNotice] = useState<string | null>(null)
@@ -173,20 +172,19 @@ export function PlayerPanel() {
   const profile = payload?.profile
 
   useEffect(() => {
-    setHistory(readRecent())
-  }, [])
-
-  useEffect(() => {
     if (!profile || !stats) return
-    setHistory(
-      pushRecent({ tag: profile.tag, name: profile.name, trophies: profile.trophies }),
-    )
+    pushRecent({ tag: profile.tag, name: profile.name, trophies: profile.trophies })
   }, [profile, stats])
 
-  useEffect(() => {
+  // The track toggle and its notice belong to one payload: when a different
+  // profile lands they are reset here rather than in an effect, so the button
+  // never shows the previous player's state for a frame.
+  const [trackedFor, setTrackedFor] = useState<unknown>(payload)
+  if (trackedFor !== payload) {
+    setTrackedFor(payload)
     setTracked(Boolean(payload?.tracked))
     setTrackNotice(null)
-  }, [payload])
+  }
 
   const trend = useMemo(
     () =>
@@ -332,7 +330,7 @@ export function PlayerPanel() {
               <button
                 type="button"
                 aria-label={`Remove ${item.name} from recent searches`}
-                onClick={() => setHistory(removeRecent(item.tag))}
+                onClick={() => removeRecent(item.tag)}
                 className="grid size-5 place-items-center rounded-full text-muted-foreground transition hover:bg-white/10 hover:text-foreground"
               >
                 ×
@@ -341,7 +339,7 @@ export function PlayerPanel() {
           ))}
           <button
             type="button"
-            onClick={() => setHistory(clearRecent())}
+            onClick={() => clearRecent()}
             className="text-[11px] text-muted-foreground underline-offset-2 transition hover:text-foreground hover:underline"
           >
             Clear all

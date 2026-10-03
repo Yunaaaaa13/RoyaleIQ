@@ -413,6 +413,13 @@ export function normalizeBattleLog(raw: RawBattle[]): NormalizedBattle[] {
 
 const META_TTL_MS = 10 * 60_000
 const META_POOL_SIZE = Number(process.env.META_PLAYER_POOL ?? 10)
+/**
+ * A fresh pull under this many battles is not a window worth publishing: the
+ * ranking endpoints are down, or the pool fell back to a handful of known
+ * players. The accumulated corpus is still real API battles, so it stands in
+ * rather than leaving yesterday's snapshot on screen indefinitely.
+ */
+const MIN_FRESH_BATTLES = 100
 let metaInFlight: Promise<MetaSnapshot> | null = null
 
 export async function fetchLiveMeta(options: { force?: boolean } = {}): Promise<MetaSnapshot> {
@@ -439,19 +446,35 @@ export async function fetchLiveMeta(options: { force?: boolean } = {}): Promise<
 }
 
 /**
- * Build the sample of players whose battle logs feed the meta snapshot.
+ * The next slice of players to pull.
  *
- * The global player leaderboard is the natural source, but Supercell
- * currently serves an empty `rankings/players` payload while
- * `rankings/clans` still works - so fall back to the rosters of the top clans.
- */
-/**
- * The next slice of players to pull. The leaderboard and the top clan rosters
- * hold far more players than one build's request budget allows, so successive
- * builds walk a window through them instead of re-reading the same logs -
- * that is what lets the training corpus keep growing across meta cycles.
+ * The global player leaderboard is the natural source, but it is not reliable
+ * here: `rankings/players` has come back empty, and the static-IP proxy can
+ * 404 the ranking paths outright while still serving battle logs. The top clan
+ * rosters are the second source, and both hold far more players than one
+ * build's request budget allows - so successive builds walk a window through
+ * them instead of re-reading the same logs, which is what lets the training
+ * corpus keep growing across meta cycles.
+ *
+ * When neither source answers, this throws: the caller decides whether an
+ * unbuilt pool is fatal or the accumulated corpus can stand in for it.
  */
 let poolCursor = 0
+
+/** The last pool that resolved, so a ranking outage reuses it instead of stalling. */
+const POOL_KEY = 'meta:pool'
+const POOL_TTL_MS = 7 * 24 * 60 * 60_000
+
+function isRankingEntry(value: unknown): value is RankingEntry {
+  if (!value || typeof value !== 'object') return false
+  const entry = value as Partial<RankingEntry>
+  return typeof entry.tag === 'string' && entry.tag.length > 0 && typeof entry.name === 'string'
+}
+
+async function readStoredPool(): Promise<RankingEntry[]> {
+  const stored = await readDbCache<unknown>(POOL_KEY)
+  return Array.isArray(stored) ? stored.filter(isRankingEntry) : []
+}
 
 function rollingWindow<T>(items: T[], start: number, limit: number): T[] {
   if (!items.length) return []
@@ -473,7 +496,14 @@ async function resolveMetaPool(limit: number): Promise<RankingEntry[]> {
   }
 
   if (!source.length) {
-    const clans = await fetchClanRankings()
+    let clans: ClanRankingEntry[] = []
+    try {
+      clans = await fetchClanRankings()
+    } catch {
+      // Both ranking endpoints are unreachable - the caller decides what to do
+      // with a pool it could not assemble. This call is the second source, not
+      // the contract, so a 404 here must not escape as the build's error.
+    }
     // Always read all three rosters: the rotation needs a source list larger
     // than one window, and the roster calls are cheap and cached.
     for (const clan of clans.slice(0, 3)) {
@@ -496,9 +526,16 @@ async function resolveMetaPool(limit: number): Promise<RankingEntry[]> {
     }
   }
 
+  // Every path above only ever fills `source` from a live call, so an empty
+  // list here means both ranking endpoints are unreachable right now.
+  const live = source.length > 0
+  if (!source.length) source = await readStoredPool()
+
   if (!source.length) {
     throw new CrApiError('Could not build a player sample from the Clash Royale API.', 502)
   }
+
+  if (live) await writeDbCache(POOL_KEY, source, new Date(Date.now() + POOL_TTL_MS))
 
   const window = rollingWindow(source, poolCursor, limit)
   poolCursor = (poolCursor + limit) % source.length
@@ -569,18 +606,52 @@ async function extendCorpus(battles: NormalizedBattle[]): Promise<void> {
   }
 }
 
+/**
+ * How many players the previous build drew from.
+ *
+ * Only the corpus standing in for a pool that could not be built needs this:
+ * the sample size belongs to the pool, and the accumulated battles no longer
+ * record which players fed them. Counting their opponents instead would report
+ * nearly every battle as a different player.
+ */
+async function lastPoolSize(): Promise<number> {
+  if (!isDbConfigured()) return 0
+  try {
+    const row = await getPrisma().metaSnapshot.findFirst({
+      orderBy: { capturedAt: 'desc' },
+      select: { source: true, players: true },
+    })
+    return row && row.source === 'live' ? row.players : 0
+  } catch {
+    return 0
+  }
+}
+
 async function buildLiveMeta(): Promise<MetaSnapshot> {
-  const pool = await resolveMetaPool(META_POOL_SIZE)
-  const battles: NormalizedBattle[] = []
+  // Neither ranking endpoint answering means the sample could not be built,
+  // not that the build failed - an empty pool falls through to the corpus below.
+  const pool = await resolveMetaPool(META_POOL_SIZE).catch(() => [] as RankingEntry[])
+  const pulled: NormalizedBattle[] = []
   let failures = 0
 
   for (const entry of pool) {
     try {
       const log = await fetchBattleLog(entry.tag)
-      battles.push(...normalizeBattleLog(log))
+      pulled.push(...normalizeBattleLog(log))
     } catch {
       failures += 1
       if (failures >= 3) break
+    }
+  }
+
+  let battles = pulled
+  let players = Math.max(0, pool.length - failures)
+
+  if (battles.length < MIN_FRESH_BATTLES) {
+    const stored = await readCorpus()
+    if (stored.length > battles.length) {
+      battles = stored
+      players = (await lastPoolSize()) || players
     }
   }
 
@@ -588,17 +659,14 @@ async function buildLiveMeta(): Promise<MetaSnapshot> {
     throw new CrApiError('No recent battles available from the Clash Royale API.', 502)
   }
 
-  const snapshot = aggregateMeta(battles, {
-    source: 'live',
-    players: pool.length - failures,
-  })
+  const snapshot = aggregateMeta(battles, { source: 'live', players })
   cache.set('meta:snapshot', { value: snapshot, expires: Date.now() + META_TTL_MS })
-  // The same pull is the training corpus for the win-prediction model, so it
-  // is cached beside the snapshot rather than fetched a second time.
-  cache.set('meta:battles', { value: battles, expires: Date.now() + META_TTL_MS })
+  // The training set is only what was actually pulled: the corpus standing in
+  // for a failed sample is already folded in by fetchTrainingBattles itself.
+  cache.set('meta:battles', { value: pulled, expires: Date.now() + META_TTL_MS })
   // ...and folded into the rolling corpus so the next cycle starts from every
   // battle seen so far, not just this window's players.
-  await extendCorpus(battles)
+  await extendCorpus(pulled)
   return snapshot
 }
 

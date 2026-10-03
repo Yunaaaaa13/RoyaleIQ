@@ -357,8 +357,10 @@ export async function persistMetaSnapshot(snapshot: MetaSnapshot): Promise<void>
         payload: json(snapshot),
       },
     })
-  } catch {
-    // analytics storage is best-effort
+  } catch (error) {
+    // analytics storage is best-effort - but a build that never lands keeps
+    // every reader on the same old row, so the reason must not vanish.
+    console.error('[persist-meta] could not store the live snapshot', error)
   }
 }
 

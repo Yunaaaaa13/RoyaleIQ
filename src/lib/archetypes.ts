@@ -1,5 +1,23 @@
-﻿export interface Archetype {
-  key: string
+﻿/**
+ * Every key an archetype table may name. Typing the two matchup lists with it
+ * is what makes a typo like `'cycle'` a compile error instead of a silently
+ * dead ±3 adjustment that never matches a real target key.
+ */
+export type ArchetypeKey =
+  | 'siege'
+  | 'log-bait'
+  | 'beatdown'
+  | 'lavaloon'
+  | 'bridge-spam'
+  | 'graveyard'
+  | 'royal-giant'
+  | 'hog-cycle'
+  | 'goblin-drill'
+  | 'control'
+  | 'hybrid'
+
+export interface Archetype {
+  key: ArchetypeKey
   label: string
   blurb: string
   /** Any one of these cards must be in the deck for the archetype to apply. */
@@ -8,8 +26,8 @@
   signature: Record<string, number>
   /** Minimum weighted score required to claim the archetype. */
   threshold: number
-  strongAgainst: string[]
-  weakAgainst: string[]
+  strongAgainst: ArchetypeKey[]
+  weakAgainst: ArchetypeKey[]
 }
 
 export const ARCHETYPES: Archetype[] = [
@@ -53,7 +71,11 @@ export const ARCHETYPES: Archetype[] = [
     },
     threshold: 9,
     strongAgainst: ['beatdown', 'bridge-spam', 'control'],
-    weakAgainst: ['log-bait-counter', 'cycle', 'graveyard'],
+    // Was `['log-bait-counter', 'cycle', 'graveyard']` - neither of the first
+    // two is an archetype key, so neither ever matched a target and the
+    // adjustment never fired. Both now name the decks the base matrix already
+    // has Log Bait losing to.
+    weakAgainst: ['siege', 'hog-cycle', 'graveyard'],
   },
   {
     key: 'beatdown',
@@ -81,7 +103,7 @@ export const ARCHETYPES: Archetype[] = [
       bowler: 1.5,
     },
     threshold: 7,
-    strongAgainst: ['siege', 'log-bait', 'cycle'],
+    strongAgainst: ['siege', 'log-bait', 'hog-cycle'],
     weakAgainst: ['control', 'graveyard', 'lavaloon'],
   },
   {
@@ -107,7 +129,7 @@ export const ARCHETYPES: Archetype[] = [
       'barbarians': 1,
     },
     threshold: 9,
-    strongAgainst: ['siege', 'cycle', 'control'],
+    strongAgainst: ['siege', 'hog-cycle', 'control'],
     weakAgainst: ['beatdown', 'log-bait'],
   },
   {
@@ -136,7 +158,7 @@ export const ARCHETYPES: Archetype[] = [
       'golden-knight': 1.5,
     },
     threshold: 7,
-    strongAgainst: ['siege', 'cycle', 'lavaloon'],
+    strongAgainst: ['siege', 'hog-cycle', 'lavaloon'],
     weakAgainst: ['log-bait', 'beatdown'],
   },
   {
@@ -162,7 +184,10 @@ export const ARCHETYPES: Archetype[] = [
     },
     threshold: 8,
     strongAgainst: ['beatdown', 'log-bait', 'siege'],
-    weakAgainst: ['cycle', 'bridge-spam'],
+    // `cycle` here named no archetype, and the base matrix has Graveyard
+    // favoured into Hog Cycle (56) - so unlike the other five the intended
+    // adjustment cannot be restored without contradicting the matrix.
+    weakAgainst: ['bridge-spam'],
   },
   {
     key: 'royal-giant',
@@ -188,7 +213,7 @@ export const ARCHETYPES: Archetype[] = [
     },
     threshold: 7,
     strongAgainst: ['siege', 'control', 'graveyard'],
-    weakAgainst: ['beatdown', 'cycle'],
+    weakAgainst: ['beatdown', 'hog-cycle'],
   },
   {
     key: 'hog-cycle',
@@ -276,7 +301,7 @@ export const ARCHETYPES: Archetype[] = [
     },
     threshold: 9,
     strongAgainst: ['beatdown', 'lavaloon'],
-    weakAgainst: ['log-bait', 'bridge-spam', 'cycle'],
+    weakAgainst: ['log-bait', 'bridge-spam', 'hog-cycle'],
   },
 ]
 
@@ -502,7 +527,7 @@ function deckEdgeAdjustment(deck: string[], target: Archetype): number {
     if (present.has('pekka') || present.has('mini-pekka')) edge += 1.5
     if (present.has('goblin-barrel')) edge += 1
   }
-  if (target.key === 'cycle') {
+  if (target.key === 'hog-cycle') {
     if (present.has('the-log') || present.has('zap')) edge += 0.5
     if (present.has('princess') || present.has('firecracker')) edge += 0.5
   }

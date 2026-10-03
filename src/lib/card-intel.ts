@@ -315,7 +315,7 @@ function buildInsight(input: {
   return {
     headline: overview
       ? `${card.name} is in ${overview.usage}% of the sampled battles`
-      : `${card.name} sits outside this sample's card-level window`,
+      : `${card.name} has not appeared in this sample`,
     items,
   }
 }
@@ -436,15 +436,15 @@ export function buildCardIntel(
   // ten-battle list would be presented as an archetype verdict.
   const archetypeRank = archetypePerformance(qualifying)
 
-  // A card outside `snapshot.cards` has no usage or win rate here - that is a
-  // reporting window, not an absence of battles. Say so instead of letting the
-  // empty tiles imply the card never appeared.
+  // A card outside `snapshot.cards` never appeared in a sampled battle - the
+  // snapshot records every card it saw, so this is an absence of battles, not
+  // a reporting window. Say so instead of letting the empty tiles imply the
+  // card has no stats at all.
   const scopeNotice = overview
     ? undefined
-    : `Usage and win rate are not reported for ${card.name}: this sample carries ` +
-      `card-level records for its ${snapshot.cards.length} most-used cards and ` +
-      `${card.name} is not among them. The deck, synergy and trend figures below are ` +
-      `still measured from the ${snapshot.battles} sampled battles.`
+    : `${card.name} did not appear in any of the ${snapshot.battles} sampled battles, ` +
+      `so this sample carries no usage or win-rate record for it. The deck, synergy and ` +
+      `trend figures below are still measured from those ${snapshot.battles} battles.`
 
   return {
     key: card.key,

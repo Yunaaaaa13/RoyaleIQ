@@ -27,9 +27,15 @@ export function CardSynergy({ snapshot }: { snapshot: MetaSnapshot }) {
       .slice(0, 8)
 
     const eligible = list.filter(isResult)
+    // Split on the sign, not on rank: sorting the same eligible list from both
+    // ends renders the identical pairs under both headings whenever the sample
+    // holds five or fewer of them. `isResult` already rejects a zero delta, so
+    // every pair lands in exactly one column.
+    const ahead = eligible.filter((pair) => pair.delta > 0)
+    const behind = eligible.filter((pair) => pair.delta < 0)
     const measured = {
-      best: [...eligible].sort((a, b) => b.delta - a.delta).slice(0, 5),
-      worst: [...eligible].sort((a, b) => a.delta - b.delta).slice(0, 5),
+      best: ahead.sort((a, b) => b.delta - a.delta).slice(0, 5),
+      worst: behind.sort((a, b) => a.delta - b.delta).slice(0, 5),
     }
 
     return { packages, measured }

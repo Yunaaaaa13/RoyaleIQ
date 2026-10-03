@@ -326,7 +326,11 @@ export function aggregateMeta(
     source: options.source,
     battles: battles.length,
     players: options.players,
-    cards: cards.slice(0, 40),
+    // Every card the sample actually saw, not just the top of the table: the
+    // catalogue page looks each card's record up here, so a cap would render a
+    // card that did appear as "not in this sample". The catalogue is ~130
+    // entries, so the array cannot grow past that.
+    cards,
     decks: labelledDecks.slice(0, 30),
     archetypes,
     trending,

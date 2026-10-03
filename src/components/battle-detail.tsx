@@ -118,7 +118,7 @@ type PredictionState = { key: string; data: PredictionData | null }
 function ModelCard({ model }: { model: PredictionModelData }) {
   return (
     <p className="mt-4 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-[11px] leading-relaxed text-muted-foreground">
-      Model card â€” trained on {model.decidedBattles} decided battles ({model.wins}Wâ€“
+      Model card — trained on {model.decidedBattles} decided battles ({model.wins}W–
       {model.losses}L), {model.folds}-fold cross-validated accuracy {model.accuracy}% against a{' '}
       {model.baselineAccuracy}% win-rate baseline, AUC {model.auc.toFixed(3)}, log loss{' '}
       {model.logLoss} vs {model.baselineLogLoss} baseline, {model.trainAccuracy}% on the rows it
@@ -205,7 +205,7 @@ function PredictionPanel({ deck, opponentDeck }: { deck: string[]; opponentDeck:
             />
           </div>
           <p className="mt-1.5 text-[11px] text-muted-foreground">
-            White marker: {prediction.baseline}% baseline â€” what the model says before it sees this
+            White marker: {prediction.baseline}% baseline — what the model says before it sees this
             matchup. Difference is driven by the cards below.
           </p>
 
@@ -241,7 +241,7 @@ function PredictionPanel({ deck, opponentDeck }: { deck: string[]; opponentDeck:
               ))}
             {prediction.contributions.every((entry) => Math.abs(entry.points) < 0.5) && (
               <li className="text-xs text-muted-foreground">
-                Nothing in this matchup moved the probability by half a point â€” the decks are close
+                Nothing in this matchup moved the probability by half a point — the decks are close
                 to the model baseline.
               </li>
             )}
@@ -333,7 +333,7 @@ function Metric({ label, value, suffix }: { label: string; value: number | null;
       <dd className="font-semibold tabular-nums">
         {value === null || Number.isNaN(value) ? (
           <span className="font-normal text-muted-foreground" title="Not reported by the Clash Royale API">
-            â€”
+            —
           </span>
         ) : (
           <>
@@ -348,7 +348,7 @@ function Metric({ label, value, suffix }: { label: string; value: number | null;
 
 /** Works before the diagnosis lands, so the versus screen is never blank. */
 const archetypeFor = (deck: string[]): string =>
-  deck.length ? archetypeLabel(detectArchetype(deck).archetype.key) : 'â€”'
+  deck.length ? archetypeLabel(detectArchetype(deck).archetype.key) : '—'
 
 function ScoreBar({ label, score }: { label: string; score: number | null }) {
   if (score === null) {
@@ -434,7 +434,7 @@ export function BattleDetail({ battle, status, onBack }: BattleDetailProps) {
   const unavailableNote =
     status === 'error'
       ? 'Diagnosis could not be loaded for this player.'
-      : 'This battle has no stored diagnosis â€” it was saved without a raw payload, so there is nothing to score.'
+      : 'This battle has no stored diagnosis — it was saved without a raw payload, so there is nothing to score.'
   const when = battle
     ? new Date(battle.time).toLocaleString(undefined, {
         day: 'numeric',
@@ -472,9 +472,9 @@ export function BattleDetail({ battle, status, onBack }: BattleDetailProps) {
             {diagnosis
               ? `${diagnosis.context.ourArchetype} vs ${diagnosis.context.theirArchetype}`
               : pending
-                ? 'Loading diagnosisâ€¦'
+                ? 'Loading diagnosis…'
                 : 'Diagnosis unavailable'}
-            {' Â· '}
+            {' · '}
             {when}
           </p>
         </div>
@@ -515,7 +515,7 @@ export function BattleDetail({ battle, status, onBack }: BattleDetailProps) {
                       : 'bg-white/10 text-muted-foreground'
                 }`}
               >
-                {battle.crowns.us}â€“{battle.crowns.them}
+                {battle.crowns.us}–{battle.crowns.them}
               </span>
               {diagnosis && (
                 <div className="text-right">
@@ -543,7 +543,7 @@ export function BattleDetail({ battle, status, onBack }: BattleDetailProps) {
                 Crowns
               </dt>
               <dd className="text-sm font-semibold tabular-nums">
-                {battle.crowns.us}â€“{battle.crowns.them}
+                {battle.crowns.us}–{battle.crowns.them}
               </dd>
             </div>
             <div className="rounded-lg border border-white/10 bg-white/5 px-3 py-2">
@@ -551,7 +551,7 @@ export function BattleDetail({ battle, status, onBack }: BattleDetailProps) {
                 Arena
               </dt>
               <dd className="truncate text-sm font-semibold">
-                {battle.arena ? modeLabel(battle.arena) : 'â€”'}
+                {battle.arena ? modeLabel(battle.arena) : '—'}
               </dd>
             </div>
             <div className="rounded-lg border border-white/10 bg-white/5 px-3 py-2">
@@ -563,7 +563,7 @@ export function BattleDetail({ battle, status, onBack }: BattleDetailProps) {
                   ? modeLabel(diagnosis.context.gameMode)
                   : battle.type
                     ? modeLabel(battle.type)
-                    : 'â€”'}
+                    : '—'}
               </dd>
             </div>
           </dl>
@@ -571,7 +571,7 @@ export function BattleDetail({ battle, status, onBack }: BattleDetailProps) {
           <p className="mt-3 text-[11px] leading-relaxed text-muted-foreground">
             The Clash Royale battle log reports neither trophy change nor match duration,
             so neither is shown. Every number in this drawer is a field the API returned
-            for this battle â€” no move-by-move timeline is invented. The scores below
+            for this battle — no move-by-move timeline is invented. The scores below
             describe how the two decks were built, not how the match was played.
           </p>
         </section>
@@ -624,7 +624,7 @@ export function BattleDetail({ battle, status, onBack }: BattleDetailProps) {
                 <span className="font-bold text-foreground">{diagnosis.overall}</span> you
                 <span className="px-2">vs</span>
                 <span className="font-bold text-foreground">
-                  {diagnosis.opponentOverall ?? 'â€”'}
+                  {diagnosis.opponentOverall ?? '—'}
                 </span>
                 opponent
               </p>
@@ -657,7 +657,7 @@ export function BattleDetail({ battle, status, onBack }: BattleDetailProps) {
                       <span className="text-sm font-medium">{axis.label}</span>
                       <span className="text-xs tabular-nums text-muted-foreground">
                         <span className="font-bold text-foreground">{axis.score}</span> vs{' '}
-                        {theirs ? theirs.score : 'â€”'}
+                        {theirs ? theirs.score : '—'}
                       </span>
                     </div>
                     <div className="space-y-1">
@@ -673,7 +673,7 @@ export function BattleDetail({ battle, status, onBack }: BattleDetailProps) {
 
           {diagnosis && diagnosis.context.unavailable.length > 0 && (
             <p className="mt-4 text-[11px] text-muted-foreground">
-              Not scored for this battle: {diagnosis.context.unavailable.join(', ')} â€” the
+              Not scored for this battle: {diagnosis.context.unavailable.join(', ')} — the
               raw API payload for it never sent those fields, so there is nothing to measure.
             </p>
           )}

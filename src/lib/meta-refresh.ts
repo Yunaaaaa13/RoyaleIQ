@@ -36,8 +36,9 @@ export function refreshMetaInBackground(): void {
       // trying to replace.
       const snapshot = await fetchLiveMeta({ force: true })
       if (snapshot.source === 'live') await persistMetaSnapshot(snapshot)
-    } catch {
+    } catch (error) {
       // Best effort - the next request past the TTL starts it again.
+      console.error('[meta-refresh] background rebuild failed', error)
     } finally {
       current.running = null
     }

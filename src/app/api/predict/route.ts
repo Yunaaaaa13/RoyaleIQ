@@ -19,8 +19,12 @@ function parseDeck(value: string | null): string[] {
  * `deck` and `vs` are comma-joined card keys, the same serialisation the
  * shareable Deck Lab links already use.
  *
- * A prediction that could not be made is a 200 with `status: 'too-small'`, not
- * an error: "not enough data yet" is a legitimate answer the UI has to render.
+ * A prediction that could not be made is a 200 carrying `status`, not an HTTP
+ * error: "not enough data yet" is a legitimate answer the UI has to render, and
+ * a 400 sent the client down its network-failure path ("the prediction service
+ * did not respond") instead of showing the reason. `parseDeck` drops unknown
+ * keys, so this is reachable from a link that names cards the catalogue does
+ * not know.
  */
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
@@ -32,9 +36,11 @@ export async function GET(request: Request) {
       request,
       {
         status: 'unavailable',
-        reason: 'Both `deck` and `vs` need at least four known card keys.',
+        reason:
+          `Both decks need at least four cards this catalogue knows: ` +
+          `${deck.length} of yours and ${opponent.length} of the opponent's ` +
+          'survived the lookup.',
       } satisfies Prediction,
-      { status: 400 },
     )
   }
 
