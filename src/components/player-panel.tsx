@@ -48,7 +48,7 @@ const VERDICT_TONE: Record<string, string> = {
 
 function ArchetypeRow({ record }: { record: ArchetypeRecord }) {
   return (
-    <li className="flex items-center gap-3 rounded-lg border border-white/10 bg-white/5 px-3 py-2">
+    <li className="flex items-center gap-3 rounded-lg border border-border bg-white/[0.03] px-3 py-2">
       <span className="flex-1 truncate text-sm font-medium">{record.label}</span>
       <span className="text-xs text-muted-foreground">{record.battles} games</span>
       <span
@@ -277,7 +277,7 @@ export function PlayerPanel() {
   }
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-5" id="profile">
       <form onSubmit={submit} className="panel flex flex-wrap items-center gap-2 p-4">
         <div className="relative min-w-[14rem] flex-1">
           <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
@@ -312,7 +312,7 @@ export function PlayerPanel() {
           {history.map((item) => (
             <span
               key={item.tag}
-              className="flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 py-1 pl-3 pr-1.5 text-xs transition-colors hover:border-white/20"
+              className="flex items-center gap-1.5 rounded-full border border-border bg-white/[0.03] py-1 pl-3 pr-1.5 text-xs transition-colors hover:border-white/20"
             >
               <button
                 type="button"
@@ -356,7 +356,7 @@ export function PlayerPanel() {
 
       {!payload && !error && !loading && (
         <section className="panel grid place-items-center gap-3 px-6 py-14 text-center">
-          <span className="grid size-12 place-items-center rounded-2xl bg-white/5 text-yellow-300">
+          <span className="grid size-12 place-items-center rounded-2xl bg-white/[0.03] text-yellow-300">
             <Search className="size-5" />
           </span>
           <h2 className="text-lg font-semibold">Search a player tag to begin</h2>
@@ -468,7 +468,7 @@ export function PlayerPanel() {
 
           <div className="grid gap-4 lg:grid-cols-3">
             <section className="panel p-5 lg:col-span-2">
-              <h3 className="mb-4 text-sm font-semibold uppercase tracking-wide">
+              <h3 className="mb-4 panel-title">
                 Win rate trend
               </h3>
               <div className="h-64">
@@ -537,7 +537,7 @@ export function PlayerPanel() {
             </section>
 
             <section className="panel p-5">
-              <h3 className="mb-4 text-sm font-semibold uppercase tracking-wide">
+              <h3 className="mb-4 panel-title">
                 Most used cards
               </h3>
               <BarList items={usageItems} />
@@ -555,7 +555,7 @@ export function PlayerPanel() {
 
           <div className="grid gap-4 lg:grid-cols-3">
             <section className="panel p-5">
-              <h3 className="mb-4 text-sm font-semibold uppercase tracking-wide">
+              <h3 className="mb-4 panel-title">
                 Your archetypes
               </h3>
               <ul className="space-y-2">
@@ -566,7 +566,7 @@ export function PlayerPanel() {
             </section>
 
             <section className="panel p-5">
-              <h3 className="mb-4 text-sm font-semibold uppercase tracking-wide">
+              <h3 className="mb-4 panel-title">
                 Matchup analysis
               </h3>
               <p className="mb-3 text-xs text-muted-foreground">
@@ -587,7 +587,7 @@ export function PlayerPanel() {
             </section>
 
             <section className="panel p-5">
-              <h3 className="mb-4 text-sm font-semibold uppercase tracking-wide">
+              <h3 className="mb-4 panel-title">
                 Recent battles
               </h3>
               <p className="mb-3 text-xs text-muted-foreground">
@@ -600,7 +600,7 @@ export function PlayerPanel() {
                   <li key={battle.id}>
                     <Link
                       href={`/battle?tag=${encodeURIComponent(urlTag)}&t=${encodeURIComponent(battle.time)}`}
-                      className="block w-full rounded-xl border border-white/10 bg-white/5 px-3 py-3 text-left text-sm transition-colors hover:border-white/20 hover:bg-white/10"
+                      className="block w-full rounded-xl border border-border bg-white/[0.03] px-3 py-3 text-left text-sm transition-colors hover:border-white/20 hover:bg-white/10"
                     >
                         <span className="flex items-center gap-3">
                           <span

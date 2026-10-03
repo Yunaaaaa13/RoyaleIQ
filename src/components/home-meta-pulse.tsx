@@ -26,9 +26,9 @@ export function HomeMetaPulse() {
 
   return (
     <section className="panel overflow-hidden">
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 px-5 py-4">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-5 py-4">
         <div>
-          <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide">
+          <h2 className="flex items-center gap-2 panel-title">
             <Flame className="size-4 text-orange-400" />
             Meta today
           </h2>
@@ -40,7 +40,7 @@ export function HomeMetaPulse() {
         </div>
         <Link
           href="/meta"
-          className="flex items-center gap-1 text-sm font-medium text-yellow-300 hover:text-yellow-200"
+          className="flex items-center gap-1 text-sm font-medium text-primary transition-colors hover:text-primary/80"
         >
           Full dashboard
           <ArrowRight className="size-4" />
@@ -49,13 +49,13 @@ export function HomeMetaPulse() {
 
       <div className="grid gap-5 p-5 lg:grid-cols-2">
         <div className="space-y-3">
-          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+          <p className="section-title">
             Top decks
           </p>
           {snapshot?.decks.slice(0, 4).map((deck) => (
             <div
               key={deck.id}
-              className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 p-3"
+              className="flex items-center gap-3 rounded-xl border border-border bg-white/[0.03] p-3"
             >
               <div className="flex -space-x-2">
                 {deck.cards.slice(0, 4).map((key) => (
@@ -85,21 +85,21 @@ export function HomeMetaPulse() {
           ))}
           {!snapshot && (
             <>
-              <div className="h-16 animate-pulse rounded-xl bg-white/5" />
-              <div className="h-16 animate-pulse rounded-xl bg-white/5" />
+              <div className="h-16 animate-pulse rounded-xl bg-white/[0.03]" />
+              <div className="h-16 animate-pulse rounded-xl bg-white/[0.03]" />
             </>
           )}
         </div>
 
         <div className="space-y-3">
-          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+          <p className="section-title">
             Trending cards
           </p>
           <div className="grid grid-cols-2 gap-2">
             {snapshot?.trending.slice(0, 4).map((entry) => (
               <div
                 key={entry.key}
-                className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 p-3"
+                className="flex items-center gap-2 rounded-xl border border-border bg-white/[0.03] p-3"
               >
                 <CardTile cardKey={entry.key} size="xs" showElixir={false} />
                 <div className="min-w-0">
@@ -122,14 +122,14 @@ export function HomeMetaPulse() {
             ))}
             {!snapshot && (
               <>
-                <div className="h-16 animate-pulse rounded-xl bg-white/5" />
-                <div className="h-16 animate-pulse rounded-xl bg-white/5" />
+                <div className="h-16 animate-pulse rounded-xl bg-white/[0.03]" />
+                <div className="h-16 animate-pulse rounded-xl bg-white/[0.03]" />
               </>
             )}
           </div>
 
           {snapshot && (
-            <div className="rounded-xl border border-white/10 bg-white/5 p-3">
+            <div className="rounded-xl border border-border bg-white/[0.03] p-3">
               <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
                 Most played card
               </p>
@@ -144,7 +144,7 @@ export function HomeMetaPulse() {
                     rate
                   </p>
                 </div>
-                <span className="ml-auto text-violet-300">
+                <span className="ml-auto text-primary/70">
                   <RefreshCw className="size-4" />
                 </span>
               </div>

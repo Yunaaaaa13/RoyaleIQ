@@ -40,7 +40,7 @@ function Skeleton() {
 
 function AiScore({ deck }: { deck: RecommendedDeck }) {
   return (
-    <div className="rounded-lg border border-white/10 bg-white/5 p-2.5">
+    <div className="rounded-lg border border-border bg-white/[0.03] p-2.5">
       <div className="flex items-baseline justify-between gap-2">
         <span className="text-[11px] uppercase tracking-wide text-muted-foreground">AI Score</span>
         <span className="text-sm font-bold tabular-nums text-yellow-300">
@@ -185,9 +185,9 @@ export function CardDetail({ cardKey }: { cardKey: string }) {
               />
             </div>
 
-            <div className="rounded-xl border border-white/10 bg-white/5 p-4">
+            <div className="rounded-xl border border-border bg-white/[0.03] p-4">
               <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-                <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                <h3 className="section-title">
                   Usage trend
                 </h3>
                 <div className="flex items-center gap-3 text-[11px]">
@@ -298,7 +298,7 @@ export function CardDetail({ cardKey }: { cardKey: string }) {
 
       <section className="panel p-5">
         <div className="mb-1 flex flex-wrap items-baseline justify-between gap-2">
-          <h3 className="text-sm font-semibold uppercase tracking-wide">Recommended decks</h3>
+          <h3 className="panel-title">Recommended decks</h3>
           <p className="text-xs text-muted-foreground">
             {decks.decks.length} build{decks.decks.length === 1 ? '' : 's'} carrying{' '}
             {intel.card.name} · {decks.minBattles}+ battles each
@@ -316,7 +316,7 @@ export function CardDetail({ cardKey }: { cardKey: string }) {
         ) : (
           <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
             {decks.decks.map((deck) => (
-              <article key={deck.id} className="rounded-xl border border-white/10 bg-white/5 p-4">
+              <article key={deck.id} className="rounded-xl border border-border bg-white/[0.03] p-4">
                 <div className="mb-3 flex items-start justify-between gap-3">
                   <div className="min-w-0">
                     <p className="text-[11px] text-muted-foreground">#{deck.rank}</p>
@@ -360,7 +360,7 @@ export function CardDetail({ cardKey }: { cardKey: string }) {
       <div className="grid gap-4 lg:grid-cols-2">
         <section className="panel p-5">
           <div className="mb-1 flex items-baseline justify-between gap-2">
-            <h3 className="text-sm font-semibold uppercase tracking-wide">Synergy analysis</h3>
+            <h3 className="panel-title">Synergy analysis</h3>
             <span className="text-xs text-muted-foreground">{synergy.pairs.length} pairs</span>
           </div>
           <p className="mb-4 text-xs leading-relaxed text-muted-foreground">
@@ -378,7 +378,7 @@ export function CardDetail({ cardKey }: { cardKey: string }) {
                   { label: 'Best support', entry: synergy.bestSupport },
                   { label: 'Best win condition', entry: synergy.bestWinCondition },
                 ].map(({ label, entry }) => (
-                  <div key={label} className="rounded-xl border border-white/10 bg-white/5 p-3">
+                  <div key={label} className="rounded-xl border border-border bg-white/[0.03] p-3">
                     <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
                       {label}
                     </p>
@@ -407,7 +407,7 @@ export function CardDetail({ cardKey }: { cardKey: string }) {
               <div className="overflow-x-auto">
                 <table className="w-full text-xs">
                   <thead>
-                    <tr className="border-b border-white/10 text-left text-muted-foreground">
+                    <tr className="border-b border-border text-left text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                       <th className="py-2 pr-3 font-medium">Partner</th>
                       <th className="py-2 pr-3 text-right font-medium">Lift</th>
                       <th className="hidden py-2 pr-3 text-right font-medium sm:table-cell">
@@ -419,7 +419,7 @@ export function CardDetail({ cardKey }: { cardKey: string }) {
                   </thead>
                   <tbody>
                     {synergy.pairs.map((pair) => (
-                      <tr key={pair.key} className="border-b border-white/5 last:border-0">
+                      <tr key={pair.key} className="border-b border-border/60 last:border-0">
                         <td className="py-2 pr-3">
                           <Link
                             href={`/cards/${pair.key}`}
@@ -456,7 +456,7 @@ export function CardDetail({ cardKey }: { cardKey: string }) {
         <section className="panel p-5">
           <div className="mb-1 flex items-center gap-2">
             <Target className="size-4 text-cyan-300" />
-            <h3 className="text-sm font-semibold uppercase tracking-wide">Counter analysis</h3>
+            <h3 className="panel-title">Counter analysis</h3>
           </div>
           <p className="mb-4 text-xs leading-relaxed text-muted-foreground">
             What this card beats and loses to, measured rather than guessed.
@@ -484,7 +484,7 @@ export function CardDetail({ cardKey }: { cardKey: string }) {
                         counters[side].map((row) => (
                           <li
                             key={row.key}
-                            className="flex items-center justify-between gap-3 rounded-lg border border-white/10 bg-white/5 px-3 py-2"
+                            className="flex items-center justify-between gap-3 rounded-lg border border-border bg-white/[0.03] px-3 py-2"
                           >
                             <span className="min-w-0 truncate text-xs">{row.label}</span>
                             <span className="shrink-0 text-right">

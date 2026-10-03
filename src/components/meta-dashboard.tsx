@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
@@ -37,12 +37,12 @@ import {
 import type { MetaSnapshot } from '@/lib/battle'
 
 const PIE_COLORS = [
-  '#facc15',
+  '#3b82f6',
   '#22d3ee',
   '#a78bfa',
-  '#fb7185',
+  '#facc15',
   '#34d399',
-  '#f97316',
+  '#fb7185',
   '#60a5fa',
   '#e879f9',
 ]
@@ -200,16 +200,18 @@ export function MetaDashboard() {
 
       <div className="grid gap-4 lg:grid-cols-5">
         <section className="panel p-5 lg:col-span-3">
-          <h3 className="mb-4 text-sm font-semibold uppercase tracking-wide">
-            Top cards by usage
-          </h3>
+          <div className="panel-head">
+            <h3 className="panel-title">Top cards by usage</h3>
+            <span className="text-[11px] text-muted-foreground">share of the sample</span>
+          </div>
           <BarList items={usageLeaders} />
         </section>
 
         <section className="panel p-5 lg:col-span-2">
-          <h3 className="mb-4 text-sm font-semibold uppercase tracking-wide">
-            Archetype share
-          </h3>
+          <div className="panel-head">
+            <h3 className="panel-title">Archetype share</h3>
+            <span className="text-[11px] text-muted-foreground">by battles</span>
+          </div>
           <div className="h-56">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
@@ -243,11 +245,10 @@ export function MetaDashboard() {
       </div>
 
       <section className="panel p-5">
-        <div className="mb-4 flex flex-wrap items-center gap-2">
-          <h3 className="mr-auto text-sm font-semibold uppercase tracking-wide">
-            Card analytics
-          </h3>
-          <div className="relative grow sm:grow-0">
+        <div className="panel-head">
+          <h3 className="panel-title">Card analytics</h3>
+          <div className="flex flex-1 flex-wrap items-center justify-end gap-2">
+            <div className="relative grow sm:grow-0">
             <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               value={query}
@@ -280,29 +281,30 @@ export function MetaDashboard() {
               <SelectItem value="name">Name</SelectItem>
             </SelectContent>
           </Select>
+          </div>
         </div>
 
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-white/10 text-left text-xs uppercase tracking-wide text-muted-foreground">
-                <th className="py-2 pr-3">Card</th>
-                <th className="hidden py-2 pr-3 text-right sm:table-cell">Elixir</th>
-                <th className="hidden py-2 pr-3 text-right sm:table-cell">Battles</th>
-                <th className="py-2 pr-3 text-right">Usage</th>
-                <th className="py-2 text-right">Win rate</th>
+              <tr className="border-b border-border/80 text-left text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
+                <th className="py-2.5 pr-3 font-semibold">Card</th>
+                <th className="hidden py-2.5 pr-3 text-right font-semibold sm:table-cell">Elixir</th>
+                <th className="hidden py-2.5 pr-3 text-right font-semibold sm:table-cell">Battles</th>
+                <th className="py-2.5 pr-3 text-right font-semibold">Usage</th>
+                <th className="py-2.5 text-right font-semibold">Win rate</th>
               </tr>
             </thead>
             <tbody>
               {cards.map((card) => (
                 <tr
                   key={card.key}
-                  className="border-b border-white/5 transition hover:bg-white/5"
+                  className="border-b border-border/50 transition hover:bg-white/[0.04]"
                 >
                   <td className="py-2 pr-3">
                     <Link
                       href={`/cards/${card.key}`}
-                      className="flex items-center gap-2 transition hover:text-yellow-200"
+                      className="flex items-center gap-2 transition hover:text-primary"
                     >
                       <CardTile cardKey={card.key} size="xs" showElixir={false} />
                       <span className="font-medium">{card.name}</span>
@@ -345,20 +347,24 @@ export function MetaDashboard() {
           push the page wider than a 320px viewport. */}
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         <section className="panel p-5">
-          <h3 className="mb-1 flex items-center gap-2 text-sm font-semibold uppercase tracking-wide">
-            <RefreshCw className="size-4 text-violet-300" />
-            Trending cards
-          </h3>
-          <p className="mb-4 text-xs text-muted-foreground">
-            Usage in the second half of the sample versus the first half.
-          </p>
+          <div className="panel-head">
+            <div>
+              <h3 className="panel-title flex items-center gap-2">
+                <RefreshCw className="size-4 text-primary" />
+                Trending cards
+              </h3>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Usage in the second half of the sample versus the first half.
+              </p>
+            </div>
+          </div>
           <div className="space-y-3">
             {(snapshot.trending ?? []).map((entry) => (
               <div key={entry.key} className="flex items-center gap-3">
                 <CardTile cardKey={entry.key} size="xs" showElixir={false} />
                 <Link
                   href={`/cards/${entry.key}`}
-                  className="flex-1 truncate text-sm transition hover:text-yellow-200"
+                  className="flex-1 truncate text-sm transition hover:text-primary"
                 >
                   {entry.label}
                 </Link>
@@ -392,12 +398,14 @@ export function MetaDashboard() {
         </section>
 
         <section className="panel p-5">
-          <h3 className="mb-1 text-sm font-semibold uppercase tracking-wide">
-            Highest win rate cards
-          </h3>
-          <p className="mb-4 text-xs text-muted-foreground">
-            Cards that show up in a meaningful share of games first.
-          </p>
+          <div className="panel-head">
+            <div>
+              <h3 className="panel-title">Highest win rate cards</h3>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Cards that show up in a meaningful share of games first.
+              </p>
+            </div>
+          </div>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart
@@ -446,18 +454,20 @@ export function MetaDashboard() {
       <CardSynergy snapshot={snapshot} />
 
       <section className="panel p-5">
-        <h3 className="mb-1 text-sm font-semibold uppercase tracking-wide">
-          Top performing decks
-        </h3>
-        <p className="mb-4 text-xs text-muted-foreground">
-          Decks grouped by exact 8-card signature across the sample. Variant builds are folded
-          into families above; this is the per-signature breakdown underneath.
-        </p>
+        <div className="panel-head">
+          <div>
+            <h3 className="panel-title">Top performing decks</h3>
+            <p className="mt-1 max-w-3xl text-xs text-muted-foreground">
+              Decks grouped by exact 8-card signature across the sample. Variant builds are folded
+              into families above; this is the per-signature breakdown underneath.
+            </p>
+          </div>
+        </div>
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
           {snapshot.decks.slice(0, 9).map((deck) => (
             <article
               key={deck.id}
-              className="rounded-xl border border-white/10 bg-white/5 p-4"
+              className="rounded-xl border border-border/70 bg-white/[0.03] p-4 transition-colors hover:border-primary/35 hover:bg-white/[0.05]"
             >
               <div className="mb-3 flex items-start justify-between gap-2">
                 <div>
@@ -499,9 +509,14 @@ export function MetaDashboard() {
       </section>
 
       <section className="panel p-5">
-        <h3 className="mb-4 text-sm font-semibold uppercase tracking-wide">
-          Archetype performance
-        </h3>
+        <div className="panel-head">
+          <div>
+            <h3 className="panel-title">Archetype performance</h3>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Win rate and ladder share for every archetype in the sample.
+            </p>
+          </div>
+        </div>
         <div className="overflow-x-auto">
           <div className="h-56 min-w-[560px]">
             <ResponsiveContainer width="100%" height="100%">
@@ -554,7 +569,7 @@ export function MetaDashboard() {
           {snapshot.archetypes.map((entry, index) => (
             <span
               key={entry.key}
-              className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs"
+              className="flex items-center gap-2 rounded-full border border-border bg-white/[0.03] px-3 py-1 text-xs"
             >
               <span
                 className="size-2 rounded-full"

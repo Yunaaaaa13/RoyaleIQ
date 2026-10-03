@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
@@ -85,7 +85,7 @@ export function DeckWorkspace() {
       <section className="panel p-4 sm:p-5">
         <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h2 className="text-sm font-semibold uppercase tracking-wide">Your deck</h2>
+            <h2 className="panel-title">Your deck</h2>
             <p className="text-xs text-muted-foreground">
               {deck.length}/8 cards selected
             </p>
@@ -132,7 +132,7 @@ export function DeckWorkspace() {
             <div
               key={`${key ?? 'empty'}-${index}`}
               className={`group relative grid aspect-[3/4] place-items-center rounded-xl border border-dashed ${
-                key ? 'border-solid border-white/15 bg-white/5' : 'border-white/15'
+                key ? 'border-solid border-white/15 bg-white/[0.03]' : 'border-white/15'
               }`}
             >
               {key ? (
@@ -158,19 +158,19 @@ export function DeckWorkspace() {
           <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             <StatTile label="Average elixir" value={analysis.avgElixir} accent="cyan" />
             <StatTile label="Archetype" value={analysis.archetypeLabel} sub={`${Math.round(analysis.archetypeConfidence * 100)}% confidence`} />
-            <div className="rounded-xl border border-white/10 bg-white/5 p-3">
+            <div className="rounded-xl border border-border bg-white/[0.03] p-3">
               <ScoreBar label="Overall" value={analysis.scores.overall} tone="gold" />
             </div>
-            <div className="rounded-xl border border-white/10 bg-white/5 p-3">
+            <div className="rounded-xl border border-border bg-white/[0.03] p-3">
               <ScoreBar label="Air defense" value={analysis.scores.airDefense} tone="cyan" />
             </div>
           </div>
         )}
       </section>
 
-      <section ref={pickerRef} className="panel p-4 sm:p-5">
+      <section ref={pickerRef} id="workspace" className="panel p-4 sm:p-5">
         <div className="mb-3 flex items-center justify-between">
-          <h2 className="text-sm font-semibold uppercase tracking-wide">Card pool</h2>
+          <h2 className="panel-title">Card pool</h2>
           <span className="text-xs text-muted-foreground">
             Click a card to add or remove it
           </span>

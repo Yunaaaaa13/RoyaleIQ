@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import {
   Bar,
@@ -88,7 +88,7 @@ export function DiagnosisPanel({ analysis }: { analysis: DeckAnalysis }) {
 
       <div className="grid gap-4 lg:grid-cols-2">
         <section className="panel p-5">
-          <h3 className="mb-3 flex items-center gap-2 text-sm font-semibold uppercase tracking-wide">
+          <h3 className="mb-3 flex items-center gap-2 panel-title">
             Deck diagnosis
             <Badge variant="secondary" className="text-[10px]">
               {analysis.findings.length} findings
@@ -98,7 +98,7 @@ export function DiagnosisPanel({ analysis }: { analysis: DeckAnalysis }) {
             {analysis.findings.map((finding) => (
               <li
                 key={finding.code}
-                className="flex gap-3 rounded-lg border border-white/10 bg-white/5 p-3"
+                className="flex gap-3 rounded-lg border border-border bg-white/[0.03] p-3"
               >
                 <SeverityIcon severity={finding.severity} />
                 <div>
@@ -118,7 +118,7 @@ export function DiagnosisPanel({ analysis }: { analysis: DeckAnalysis }) {
         </section>
 
         <section className="panel p-5">
-          <h3 className="mb-3 flex items-center gap-2 text-sm font-semibold uppercase tracking-wide">
+          <h3 className="mb-3 flex items-center gap-2 panel-title">
             Elixir curve
             <span className="ml-auto text-xs font-normal text-muted-foreground">
               avg {analysis.avgElixir}
@@ -172,7 +172,7 @@ export function DiagnosisPanel({ analysis }: { analysis: DeckAnalysis }) {
               ['Air answers', analysis.composition.airDefense],
               ['Splash', analysis.composition.splash],
             ].map(([label, list]) => (
-              <div key={label as string} className="rounded-lg bg-white/5 p-2">
+              <div key={label as string} className="rounded-lg bg-white/[0.03] p-2">
                 <p className="text-[10px] uppercase tracking-wide text-muted-foreground">
                   {label as string}
                 </p>
@@ -188,7 +188,7 @@ export function DiagnosisPanel({ analysis }: { analysis: DeckAnalysis }) {
       </div>
 
       <section className="panel p-5">
-        <h3 className="mb-1 flex items-center gap-2 text-sm font-semibold uppercase tracking-wide">
+        <h3 className="mb-1 flex items-center gap-2 panel-title">
           <Sparkles className="size-4 text-yellow-300" />
           Recommended changes
         </h3>
@@ -205,7 +205,7 @@ export function DiagnosisPanel({ analysis }: { analysis: DeckAnalysis }) {
             {analysis.swaps.map((swap) => (
               <article
                 key={`${swap.from}-${swap.to}`}
-                className="rounded-xl border border-white/10 bg-white/5 p-4"
+                className="rounded-xl border border-border bg-white/[0.03] p-4"
               >
                 <div className="flex items-center justify-center gap-3">
                   <CardTile cardKey={swap.from} size="sm" showName />
@@ -251,7 +251,7 @@ export function MatchupPanel({ analysis }: { analysis: DeckAnalysis }) {
       </div>
 
       <section className="panel p-5">
-        <h3 className="mb-4 flex items-center gap-2 text-sm font-semibold uppercase tracking-wide">
+        <h3 className="mb-4 flex items-center gap-2 panel-title">
           <Swords className="size-4 text-cyan-300" />
           Projected win rate by archetype
         </h3>

@@ -24,14 +24,10 @@ function StatusFallback() {
 export default function DataPage() {
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
-      <header className="mb-6 flex flex-col gap-2">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-cyan-300/80">
-          Data Pipeline
-        </p>
-        <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
-          Where does every number come from?
-        </h1>
-        <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
+      <header className="mb-6 flex flex-col gap-2 border-b border-border/70 pb-5">
+        <p className="eyebrow">Data Pipeline</p>
+        <h1 className="page-title">Where does every number come from?</h1>
+        <p className="page-lede">
           Nothing in RoyaleIQ is invented. This page shows the live path from the
           Clash Royale API through PostgreSQL to the charts - including which caches
           are warm, how fresh each player is, and how much raw payload is kept for

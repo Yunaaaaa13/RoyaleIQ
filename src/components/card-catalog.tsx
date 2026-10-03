@@ -138,7 +138,7 @@ export function CardCatalog() {
   )
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" id="catalog">
       <section className="panel p-4">
         <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
           <div className="relative min-w-0 flex-1">
@@ -235,7 +235,7 @@ export function CardCatalog() {
                 key={card.key}
                 href={`/cards/${card.key}`}
                 className={cn(
-                  'group rounded-xl border border-white/10 bg-white/5 p-3 transition',
+                  'group rounded-xl border border-border bg-white/[0.03] p-3 transition',
                   'hover:border-yellow-300/40 hover:bg-white/10 focus-visible:outline-none',
                   'focus-visible:ring-2 focus-visible:ring-yellow-300/60',
                 )}

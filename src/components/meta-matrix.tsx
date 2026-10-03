@@ -98,7 +98,7 @@ function MatrixTooltip({ payload }: Partial<TooltipContentProps<number, string>>
   const point = entry?.payload
   if (!point) return null
   return (
-    <div className="rounded-lg border border-white/10 bg-[#141a2e] px-3 py-2 text-xs shadow-lg">
+    <div className="rounded-lg border border-border bg-[#141a2e] px-3 py-2 text-xs shadow-lg">
       <p className="font-semibold">{point.name}</p>
       <p className="text-muted-foreground">
         {point.usage}% usage · {point.battles} battle{point.battles === 1 ? '' : 's'}
@@ -216,7 +216,7 @@ export function MetaMatrix({ snapshot }: { snapshot: MetaSnapshot }) {
   if (!points.length) {
     return (
       <section className="panel p-5">
-        <h3 className="mb-2 text-sm font-semibold uppercase tracking-wide">
+        <h3 className="mb-2 panel-title">
           Meta vs performance
         </h3>
         <p className="text-sm text-muted-foreground">
@@ -230,7 +230,7 @@ export function MetaMatrix({ snapshot }: { snapshot: MetaSnapshot }) {
     <>
       <section className="panel p-5">
         <div className="mb-1 flex flex-wrap items-baseline justify-between gap-3">
-          <h3 className="text-sm font-semibold uppercase tracking-wide">
+          <h3 className="panel-title">
             Meta vs performance
           </h3>
           <p className="text-xs text-muted-foreground">
@@ -359,7 +359,7 @@ export function MetaMatrix({ snapshot }: { snapshot: MetaSnapshot }) {
           {(Object.keys(QUADRANTS) as QuadrantKey[]).map((key) => (
             <div
               key={key}
-              className="rounded-lg border border-white/10 bg-white/5 px-3 py-2"
+              className="rounded-lg border border-border bg-white/[0.03] px-3 py-2"
             >
               <p className="flex items-center gap-2 text-sm font-semibold">
                 <span
@@ -381,7 +381,7 @@ export function MetaMatrix({ snapshot }: { snapshot: MetaSnapshot }) {
 
       <section className="panel p-5">
         <div className="mb-1 flex flex-wrap items-baseline justify-between gap-3">
-          <h3 className="text-sm font-semibold uppercase tracking-wide">
+          <h3 className="panel-title">
             Off-meta detector
           </h3>
           <p className="text-xs text-muted-foreground">
@@ -421,7 +421,7 @@ export function MetaMatrix({ snapshot }: { snapshot: MetaSnapshot }) {
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-white/10 text-left text-xs uppercase tracking-wide text-muted-foreground">
+              <tr className="border-b border-border text-left text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                 <th className="py-2 pr-3">Card</th>
                 <th className="hidden py-2 pr-3 text-right sm:table-cell">Usage</th>
                 <th className="py-2 pr-3 text-right">Observed</th>
@@ -446,7 +446,7 @@ export function MetaMatrix({ snapshot }: { snapshot: MetaSnapshot }) {
                 return (
                   <tr
                     key={point.key}
-                    className="border-b border-white/5 transition hover:bg-white/5"
+                    className="border-b border-border/60 transition hover:bg-white/[0.03]"
                   >
                     <td className="py-2 pr-3">
                       <div className="flex items-center gap-2">

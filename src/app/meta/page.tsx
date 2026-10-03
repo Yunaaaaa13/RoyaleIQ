@@ -23,15 +23,11 @@ function MetaFallback() {
 export default function MetaPage() {
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
-      <header className="mb-6 flex flex-col gap-2">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-cyan-300/80">
-          Meta Analytics
-        </p>
-        <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
-          What is actually being played?
-        </h1>
-        <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
-          Card usage, win rate, archetype share and momentum — aggregated from ladder
+      <header className="mb-6 flex flex-col gap-2 border-b border-border/70 pb-5">
+        <p className="eyebrow">Meta Analytics</p>
+        <h1 className="page-title">What is actually being played?</h1>
+        <p className="page-lede">
+          Card usage, win rate, archetype share and momentum &mdash; aggregated from ladder
           battle logs instead of guessed from tier lists.
         </p>
       </header>

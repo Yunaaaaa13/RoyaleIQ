@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
+import { cn } from '@/lib/utils'
 import type { CoachResponse } from '@/lib/coach'
 import type { DeckAnalysis, MatchupResult } from '@/lib/analysis'
 
@@ -75,12 +76,17 @@ export function CoachPanel({
 
   return (
     <div className="space-y-4">
-      <section className="panel p-5">
-        <div className="mb-3 flex items-center justify-between gap-3">
-          <h3 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide">
-            <Bot className="size-4 text-violet-300" />
-            AI Deck Coach
-          </h3>
+      <section className="panel p-5" id="coach">
+        <div className="panel-head">
+          <div className="flex items-center gap-2.5">
+            <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-primary/15 text-primary">
+              <Bot className="size-4" />
+            </span>
+            <div>
+              <p className="eyebrow">AI insight</p>
+              <h3 className="panel-title">Deck coach</h3>
+            </div>
+          </div>
           <Badge variant="secondary" className="text-[10px]">
             {result?.provider === 'llm'
               ? 'LLM reasoning'
@@ -90,7 +96,7 @@ export function CoachPanel({
           </Badge>
         </div>
 
-        <div className="mb-3 flex flex-wrap items-center gap-2 rounded-lg border border-white/10 bg-black/20 px-3 py-2">
+        <div className="mb-3 flex flex-wrap items-center gap-2 rounded-lg border border-border/70 bg-black/20 px-3 py-2">
           <UserRound className="size-3.5 shrink-0 text-muted-foreground" />
           <Input
             value={tag}
@@ -140,7 +146,7 @@ export function CoachPanel({
         </div>
 
         {showPicker && (
-          <div className="mt-4 rounded-xl border border-white/10 bg-black/20 p-3">
+          <div className="mt-4 rounded-xl border border-border/70 bg-black/20 p-3">
             <div className="mb-2 flex items-center justify-between">
               <p className="text-xs font-medium text-muted-foreground">
                 Opponent deck (optional, for matchup advice)
@@ -179,7 +185,7 @@ export function CoachPanel({
 
       {result && (
         <>
-          <div className="flex flex-wrap items-center gap-2 text-[11px] text-muted-foreground">
+          <div className="panel flex flex-wrap items-center gap-2 px-4 py-3 text-[11px] text-muted-foreground">
             <Badge
               variant="outline"
               className={
@@ -213,22 +219,34 @@ export function CoachPanel({
           )}
 
           <section className="panel p-5">
-            <div className="mb-3 flex items-center gap-2">
-              <MessageSquareQuote className="size-4 text-yellow-300" />
-              <h3 className="text-sm font-semibold uppercase tracking-wide">Verdict</h3>
+            <div className="panel-head">
+              <div className="flex items-center gap-2">
+                <MessageSquareQuote className="size-4 text-primary" />
+                <h3 className="panel-title">Verdict</h3>
+              </div>
+              <span className="text-[11px] text-muted-foreground">
+                {result.provider === 'llm' ? 'LLM reasoning' : 'Rule engine'}
+              </span>
             </div>
-            <p className="text-sm leading-relaxed text-balance">{result.coach.summary}</p>
+            <div className="rounded-r-xl border-l-2 border-primary bg-primary/[0.06] py-3 pl-4 pr-3">
+              <p className="text-sm leading-relaxed text-balance">{result.coach.summary}</p>
+            </div>
 
             <div className="mt-5 grid gap-4 lg:grid-cols-2">
               <div>
-                <h4 className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                  Diagnosis
-                </h4>
+                <h4 className="section-title mb-2">Diagnosis</h4>
                 <ul className="space-y-2">
                   {result.coach.diagnosis.map((entry) => (
                     <li
                       key={entry.title}
-                      className="flex gap-2.5 rounded-lg border border-white/10 bg-white/5 p-3"
+                      className={cn(
+                        'flex gap-2.5 rounded-lg border border-border/70 border-l-2 bg-white/[0.03] p-3',
+                        entry.severity === 'good'
+                          ? 'border-l-emerald-400'
+                          : entry.severity === 'critical'
+                            ? 'border-l-rose-400'
+                            : 'border-l-amber-400',
+                      )}
                     >
                       <SeverityIcon severity={entry.severity} />
                       <div>
@@ -245,18 +263,20 @@ export function CoachPanel({
               <div className="space-y-4">
                 {result.coach.changes.length > 0 && (
                   <div>
-                    <h4 className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                      Suggested change
-                    </h4>
+                    <h4 className="section-title mb-2">Suggested change</h4>
                     <ul className="space-y-2">
                       {result.coach.changes.map((change) => (
                         <li
                           key={`${change.from}-${change.to}`}
-                          className="flex items-center gap-3 rounded-lg border border-white/10 bg-white/5 p-3"
+                          className="flex items-center gap-3 rounded-lg border border-border/70 bg-white/[0.03] p-3"
                         >
-                          <span className="text-sm font-semibold">{change.from}</span>
-                          <span className="text-yellow-300">→</span>
-                          <span className="text-sm font-semibold">{change.to}</span>
+                          <span className="rounded-md bg-white/[0.03] px-2 py-1 text-sm font-semibold">
+                            {change.from}
+                          </span>
+                          <span className="text-primary">→</span>
+                          <span className="rounded-md bg-primary/15 px-2 py-1 text-sm font-semibold text-primary">
+                            {change.to}
+                          </span>
                         </li>
                       ))}
                     </ul>
@@ -264,13 +284,11 @@ export function CoachPanel({
                 )}
 
                 <div>
-                  <h4 className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                    In-match tips
-                  </h4>
-                  <ul className="space-y-1.5 text-sm text-muted-foreground">
+                  <h4 className="section-title mb-2">In-match tips</h4>
+                  <ul className="space-y-2 text-sm text-muted-foreground">
                     {result.coach.tips.map((tip) => (
-                      <li key={tip} className="flex gap-2">
-                        <span className="text-yellow-300">•</span>
+                      <li key={tip} className="flex gap-2.5">
+                        <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-primary" />
                         {tip}
                       </li>
                     ))}
@@ -282,9 +300,14 @@ export function CoachPanel({
 
           {result.headToHead && (
             <section className="panel p-5">
-              <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide">
-                Head to head vs opponent deck
-              </h3>
+              <div className="panel-head">
+                <div>
+                  <h3 className="panel-title">Head to head vs opponent deck</h3>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    Projected from both eight-card lists, not from played games.
+                  </p>
+                </div>
+              </div>
               <div className="mb-4 flex flex-wrap gap-1.5">
                 {opponentDeck.map((key) => (
                   <CardTile key={key} cardKey={key} size="xs" />
@@ -296,14 +319,16 @@ export function CoachPanel({
                   ['Your defense', result.headToHead.defense],
                   ['Cycle edge', result.headToHead.cycle],
                 ].map(([label, value]) => (
-                  <div key={label as string} className="rounded-xl bg-white/5 p-3">
-                    <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                  <div key={label as string} className="kpi">
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                       {label as string}
                     </p>
-                    <p className="text-xl font-bold tabular-nums">{value as number}%</p>
+                    <p className="mt-1.5 text-2xl font-bold tracking-tight tabular-nums">
+                      {value as number}%
+                    </p>
                     <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-white/10">
                       <div
-                        className="h-full rounded-full bg-cyan-400"
+                        className="h-full rounded-full bg-primary transition-all duration-700"
                         style={{ width: `${value as number}%` }}
                       />
                     </div>
@@ -312,13 +337,11 @@ export function CoachPanel({
               </div>
               <div className="mt-4 grid gap-4 md:grid-cols-2">
                 <div>
-                  <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                    Main threats
-                  </p>
+                  <p className="section-title mb-1.5">Main threats</p>
                   <ul className="flex flex-wrap gap-1.5">
                     {result.headToHead.threats.map((threat) => (
                       <li key={threat}>
-                        <Badge variant="outline" className="text-rose-300">
+                        <Badge variant="outline" className="border-rose-400/40 text-rose-300">
                           {threat}
                         </Badge>
                       </li>
@@ -326,9 +349,7 @@ export function CoachPanel({
                   </ul>
                 </div>
                 <div>
-                  <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                    Game plan
-                  </p>
+                  <p className="section-title mb-1.5">Game plan</p>
                   <ol className="list-decimal space-y-1 pl-5 text-sm text-muted-foreground">
                     {result.headToHead.strategy.map((step) => (
                       <li key={step}>{step}</li>

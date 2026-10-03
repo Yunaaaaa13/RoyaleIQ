@@ -48,7 +48,7 @@ function cellStyle(winRate: number, games: number) {
 function EdgeRow({ edge, tone }: { edge: Edge; tone: 'best' | 'worst' }) {
   const delta = edge.projected === null ? null : Math.round(edge.winRate - edge.projected)
   return (
-    <li className="flex items-center gap-3 border-b border-white/5 py-2 last:border-0">
+    <li className="flex items-center gap-3 border-b border-border/60 py-2 last:border-0">
       <span
         className={`w-12 shrink-0 text-right font-mono text-sm font-semibold ${
           tone === 'best' ? 'text-emerald-300' : 'text-rose-300'
@@ -228,7 +228,7 @@ export function MatchupMatrix() {
         // matrix table's max-content widens the panels past the container below xl.
         <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1fr)_20rem]">
           <section className="panel overflow-hidden p-0">
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 border-b border-white/10 px-4 py-3">
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 border-b border-border px-4 py-3">
               <p className="text-sm font-semibold">
                 {scope === 'player'
                   ? 'Your deck archetype into the one you faced'
@@ -262,7 +262,7 @@ export function MatchupMatrix() {
                 </thead>
                 <tbody>
                   {data.rows.map((from) => (
-                    <tr key={from} className="border-t border-white/5">
+                    <tr key={from} className="border-t border-border/60">
                       <th className="sticky left-0 z-10 w-40 bg-card px-3 py-2 text-left align-middle text-xs font-medium">
                         <span className="block">{labelFor(from)}</span>
                         <span className="block font-mono text-[9px] font-normal text-muted-foreground">
@@ -311,7 +311,7 @@ export function MatchupMatrix() {
               </table>
             </div>
 
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 border-t border-white/10 px-4 py-3 text-[10px] text-muted-foreground">
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 border-t border-border px-4 py-3 text-[10px] text-muted-foreground">
               <span className="flex items-center gap-1.5">
                 <span className="inline-block size-2.5 rounded-sm bg-emerald-500/70" />{' '}
                 {scope === 'player' ? 'you came out ahead' : 'row archetype came out ahead'}

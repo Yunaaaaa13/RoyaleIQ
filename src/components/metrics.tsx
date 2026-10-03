@@ -27,15 +27,13 @@ export function ScoreBar({
   return (
     <div className="space-y-1.5">
       <div className="flex items-baseline justify-between gap-2">
-        <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-          {label}
-        </span>
+        <span className="section-title">{label}</span>
         <span className="text-sm font-bold tabular-nums">
           {value}
           <span className="text-muted-foreground">/{max}</span>
         </span>
       </div>
-      <div className="h-2 overflow-hidden rounded-full bg-white/10">
+      <div className="h-1.5 overflow-hidden rounded-full bg-white/10">
         <div
           className={cn('h-full rounded-full transition-all duration-700', TONE[tone])}
           style={{ width: `${pct}%` }}
@@ -58,17 +56,21 @@ export function StatTile({
   accent?: 'gold' | 'rose' | 'green' | 'cyan'
 }) {
   const accentClass = {
-    gold: 'text-yellow-300',
+    gold: 'text-gold',
     rose: 'text-rose-300',
     green: 'text-emerald-300',
     cyan: 'text-cyan-300',
   }[accent ?? 'gold']
 
   return (
-    <div className="rounded-xl border border-white/10 bg-white/5 p-3">
-      <p className="text-[11px] uppercase tracking-wide text-muted-foreground">{label}</p>
-      <p className={cn('text-xl font-bold tabular-nums', accentClass)}>{value}</p>
-      {sub && <p className="text-[11px] text-muted-foreground">{sub}</p>}
+    <div className="kpi">
+      <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+        {label}
+      </p>
+      <p className={cn('mt-1.5 text-2xl font-bold tracking-tight tabular-nums', accentClass)}>
+        {value}
+      </p>
+      {sub && <p className="mt-0.5 text-[11px] leading-snug text-muted-foreground">{sub}</p>}
     </div>
   )
 }
@@ -91,13 +93,13 @@ export function BarList({
     <div className="space-y-2">
       {items.map((item) => (
         <div key={item.label} className="space-y-1">
-          <div className="flex items-center justify-between text-xs">
-            <span className="truncate pr-2 text-muted-foreground">{item.label}</span>
-            <span className="font-semibold tabular-nums">{item.display}</span>
+          <div className="flex items-center justify-between gap-2 text-xs">
+            <span className="truncate text-muted-foreground">{item.label}</span>
+            <span className="shrink-0 font-semibold tabular-nums">{item.display}</span>
           </div>
           <div className="h-1.5 overflow-hidden rounded-full bg-white/10">
             <div
-              className={cn('h-full rounded-full', item.tone ?? 'bg-violet-400')}
+              className={cn('h-full rounded-full transition-all duration-700', item.tone ?? 'bg-primary')}
               style={{ width: `${(item.value / max) * 100}%` }}
             />
           </div>

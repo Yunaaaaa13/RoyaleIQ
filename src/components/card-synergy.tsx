@@ -49,7 +49,7 @@ export function CardSynergy({ snapshot }: { snapshot: MetaSnapshot }) {
 
   return (
     <section className="panel p-5">
-      <h3 className="mb-1 flex items-center gap-2 text-sm font-semibold uppercase tracking-wide">
+      <h3 className="mb-1 flex items-center gap-2 panel-title">
         <GitMerge className="size-4 text-amber-300" />
         Card synergy
       </h3>
@@ -77,7 +77,7 @@ export function CardSynergy({ snapshot }: { snapshot: MetaSnapshot }) {
               {packages.map((pair) => (
                 <li
                   key={`${pair.a}-${pair.b}`}
-                  className="flex items-center justify-between gap-3 rounded-lg border border-white/10 bg-white/5 px-3 py-2"
+                  className="flex items-center justify-between gap-3 rounded-lg border border-border bg-white/[0.03] px-3 py-2"
                 >
                   <span className="flex min-w-0 items-center gap-2">
                     <CardTile cardKey={pair.a} size="xs" showElixir={false} />
@@ -131,7 +131,7 @@ export function CardSynergy({ snapshot }: { snapshot: MetaSnapshot }) {
                         {group.rows.map((pair) => (
                           <li
                             key={`${pair.a}-${pair.b}`}
-                            className="rounded-lg border border-white/10 bg-white/5 px-3 py-2"
+                            className="rounded-lg border border-border bg-white/[0.03] px-3 py-2"
                           >
                             <div className="flex items-center justify-between gap-3">
                               <span className="flex min-w-0 items-center gap-2">
@@ -170,7 +170,7 @@ export function CardSynergy({ snapshot }: { snapshot: MetaSnapshot }) {
       </div>
 
       {hasResults && (
-        <p className="mt-4 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-[11px] leading-relaxed text-muted-foreground">
+        <p className="mt-4 rounded-lg border border-border bg-white/[0.03] px-3 py-2 text-[11px] leading-relaxed text-muted-foreground">
           These are battles, not a controlled test: the deck around the pair, the archetype and
           who played it are all still inside the number. Read a gap as a lead worth checking,
           not a verdict on the cards.

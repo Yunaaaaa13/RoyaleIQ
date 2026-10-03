@@ -86,13 +86,13 @@ const FLOW = [
 export default function HomePage() {
   return (
     <div className="mx-auto max-w-7xl px-4 pb-4 pt-12 sm:px-6 sm:pt-16">
-      <section className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-b from-white/[0.07] to-transparent px-6 py-14 sm:px-10 sm:py-20">
+      <section className="relative overflow-hidden rounded-3xl border border-border/80 bg-gradient-to-b from-white/[0.06] to-transparent px-6 py-14 sm:px-10 sm:py-20">
         <div className="grid-noise pointer-events-none absolute inset-0 opacity-40" />
-        <div className="pointer-events-none absolute -right-24 -top-24 size-72 rounded-full bg-yellow-400/15 blur-3xl" />
-        <div className="pointer-events-none absolute -bottom-28 -left-16 size-72 rounded-full bg-violet-600/20 blur-3xl" />
+        <div className="pointer-events-none absolute -right-24 -top-24 size-72 rounded-full bg-blue-500/15 blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-28 -left-16 size-72 rounded-full bg-violet-600/15 blur-3xl" />
 
         <div className="relative mx-auto max-w-3xl text-center">
-          <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-yellow-300/30 bg-yellow-300/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-yellow-200">
+          <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-primary">
             Clash Royale Intelligence Platform
           </p>
           <h1 className="text-balance text-4xl font-black tracking-tight sm:text-6xl">
@@ -129,14 +129,9 @@ export default function HomePage() {
               [String(ARCHETYPES.length), 'archetype profiles'],
               ['3', 'ways to get coached'],
             ].map(([value, label]) => (
-              <div
-                key={label}
-                className="rounded-xl border border-white/10 bg-black/25 px-3 py-4"
-              >
-                <dt className="text-2xl font-black tabular-nums text-yellow-300">
-                  {value}
-                </dt>
-                <dd className="text-[11px] uppercase tracking-wide text-muted-foreground">
+              <div key={label} className="kpi px-3 py-4">
+                <dt className="text-2xl font-black tabular-nums text-foreground">{value}</dt>
+                <dd className="mt-0.5 text-[11px] uppercase tracking-wide text-muted-foreground">
                   {label}
                 </dd>
               </div>
@@ -151,9 +146,7 @@ export default function HomePage() {
 
       <section className="mt-16">
         <div className="mb-6 flex flex-col gap-2">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-violet-300/80">
-            Modules
-          </p>
+          <p className="eyebrow">Modules</p>
           <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
             Four tools, one platform
           </h2>
@@ -163,10 +156,10 @@ export default function HomePage() {
             <Link
               key={feature.title}
               href={feature.href}
-              className="panel group flex flex-col gap-3 p-6 transition hover:-translate-y-1 hover:border-white/25"
+              className="panel group flex flex-col gap-3 p-6 transition hover:-translate-y-1 hover:border-primary/40"
             >
               <span
-                className={`grid size-11 place-items-center rounded-xl bg-white/5 ${feature.accent}`}
+                className={`grid size-11 place-items-center rounded-xl border border-border bg-white/[0.03] ${feature.accent}`}
               >
                 <feature.icon className="size-5" />
               </span>
@@ -178,13 +171,13 @@ export default function HomePage() {
                 {feature.points.map((point) => (
                   <li
                     key={point}
-                    className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[11px] text-muted-foreground"
+                    className="rounded-full border border-border bg-white/[0.03] px-2.5 py-1 text-[11px] text-muted-foreground"
                   >
                     {point}
                   </li>
                 ))}
               </ul>
-              <span className="mt-2 flex items-center gap-1 text-sm font-medium text-yellow-300 opacity-0 transition group-hover:opacity-100">
+              <span className="mt-2 flex items-center gap-1 text-sm font-medium text-primary opacity-0 transition group-hover:opacity-100">
                 Open <ArrowRight className="size-4" />
               </span>
             </Link>
@@ -194,9 +187,7 @@ export default function HomePage() {
 
       <section className="mt-16">
         <div className="mb-6 flex flex-col gap-2">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-cyan-300/80">
-            Data flow
-          </p>
+          <p className="eyebrow">Data flow</p>
           <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
             From player tag to verdict
           </h2>
@@ -205,7 +196,7 @@ export default function HomePage() {
           {FLOW.map((item) => (
             <li key={item.step} className="panel relative p-5">
               <div className="mb-3 flex items-center justify-between">
-                <span className="grid size-8 place-items-center rounded-full bg-yellow-300 text-sm font-black text-black">
+                <span className="grid size-8 place-items-center rounded-full bg-primary text-sm font-black text-primary-foreground">
                   {item.step}
                 </span>
                 <item.icon className="size-4 text-muted-foreground" />

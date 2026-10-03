@@ -28,7 +28,7 @@ export function DeckFamilies({ snapshot }: { snapshot: MetaSnapshot }) {
 
   return (
     <section className="panel p-5">
-      <h3 className="mb-1 flex items-center gap-2 text-sm font-semibold uppercase tracking-wide">
+      <h3 className="mb-1 flex items-center gap-2 panel-title">
         <Network className="size-4 text-cyan-300" />
         Deck families
       </h3>
@@ -71,7 +71,7 @@ export function DeckFamilies({ snapshot }: { snapshot: MetaSnapshot }) {
             {families.map((family) => (
               <article
                 key={family.id}
-                className="rounded-xl border border-white/10 bg-white/5 p-4"
+                className="rounded-xl border border-border bg-white/[0.03] p-4"
               >
                 <div className="mb-3 flex items-start justify-between gap-2">
                   <div className="min-w-0">
@@ -118,7 +118,7 @@ export function DeckFamilies({ snapshot }: { snapshot: MetaSnapshot }) {
                 </p>
 
                 {family.variants.length > 1 && (
-                  <ul className="mt-3 space-y-1.5 border-t border-white/10 pt-3">
+                  <ul className="mt-3 space-y-1.5 border-t border-border pt-3">
                     {family.variants.slice(1).map((variant, index) => (
                       <li
                         key={variant.id}

@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useMemo, useState } from 'react'
 import { Search } from 'lucide-react'
@@ -97,7 +97,7 @@ export function CardPicker({ selected, onToggle, max, disabledTitle }: CardPicke
               className={`rounded-full border px-2.5 py-1 text-xs font-medium transition ${
                 filter === entry.key
                   ? 'border-yellow-300/60 bg-yellow-300/15 text-yellow-200'
-                  : 'border-white/10 bg-white/5 text-muted-foreground hover:text-foreground'
+                  : 'border-border bg-white/[0.03] text-muted-foreground hover:text-foreground'
               }`}
             >
               {entry.label}
@@ -112,7 +112,7 @@ export function CardPicker({ selected, onToggle, max, disabledTitle }: CardPicke
         </p>
       )}
 
-      <div className="grid max-h-[26rem] grid-cols-4 gap-2 overflow-y-auto rounded-xl border border-white/10 bg-black/20 p-3 sm:grid-cols-6 md:grid-cols-8">
+      <div className="grid max-h-[26rem] grid-cols-4 gap-2 overflow-y-auto rounded-xl border border-border bg-black/20 p-3 sm:grid-cols-6 md:grid-cols-8">
         {cards.map((card) => {
           const active = selected.includes(card.key)
           const blocked = full && !active
@@ -124,7 +124,7 @@ export function CardPicker({ selected, onToggle, max, disabledTitle }: CardPicke
               onClick={() => onToggle(card.key)}
               title={`${card.name} · ${card.elixir} elixir`}
               className={`flex flex-col items-center gap-1 rounded-lg p-1 transition ${
-                active ? 'bg-yellow-300/15 ring-1 ring-yellow-300/50' : 'hover:bg-white/5'
+                active ? 'bg-yellow-300/15 ring-1 ring-yellow-300/50' : 'hover:bg-white/[0.03]'
               } ${blocked ? 'opacity-30' : ''}`}
             >
               <CardTile cardKey={card.key} size="sm" showElixir={false} selected={active} />

@@ -50,7 +50,7 @@ function PairingTable({
     <div className="overflow-x-auto">
       <table className="w-full text-sm">
         <thead>
-          <tr className="border-b border-white/10 text-left text-[11px] uppercase tracking-wide text-muted-foreground">
+          <tr className="border-b border-border text-left text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
             <th className="py-2 pr-3 font-semibold">{withCards ? 'Opposing card' : 'Opponent archetype'}</th>
             <th className="px-2 py-2 text-right font-semibold">Games</th>
             <th className="px-2 py-2 text-right font-semibold">W-L-D</th>
@@ -63,7 +63,7 @@ function PairingTable({
             if (!cell) return null
             const show = cell.games >= gates.cellGames
             return (
-              <tr key={key} className="border-b border-white/5 last:border-0">
+              <tr key={key} className="border-b border-border/60 last:border-0">
                 <td className="py-2 pr-3">
                   <span className="flex items-center gap-2">
                     {withCards && <CardTile cardKey={key} size="xs" showElixir={false} />}
@@ -126,7 +126,7 @@ function EdgeList({
           {edges.map((edge) => (
             <li
               key={edge.to}
-              className="flex items-center justify-between gap-3 rounded-lg border border-white/10 bg-white/5 px-3 py-2"
+              className="flex items-center justify-between gap-3 rounded-lg border border-border bg-white/[0.03] px-3 py-2"
             >
               <span className="min-w-0 truncate text-xs">{edge.toLabel}</span>
               <span className="shrink-0 text-right">
@@ -233,7 +233,7 @@ export function CardMatchups({ cardKey, cardName }: { cardKey: string; cardName:
       )}
 
       <section className="panel p-5">
-        <h3 className="mb-1 text-sm font-semibold uppercase tracking-wide">Sample</h3>
+        <h3 className="mb-1 panel-title">Sample</h3>
         <div className="mb-3 flex flex-wrap items-center gap-1.5">
           <Badge variant="outline">{sample.battlesWithCard} games with {cardName}</Badge>
           <Badge variant="outline">{sample.corpusGames} games in the corpus</Badge>
@@ -248,7 +248,7 @@ export function CardMatchups({ cardKey, cardName }: { cardKey: string; cardName:
       <section className="panel p-5">
         <div className="mb-4 flex items-start justify-between gap-4">
           <div className="min-w-0">
-            <h3 className="mb-1 flex items-center gap-2 text-sm font-semibold uppercase tracking-wide">
+            <h3 className="mb-1 flex items-center gap-2 panel-title">
               <Target className="size-4 text-cyan-300" />
               By opposing archetype
             </h3>
@@ -295,7 +295,7 @@ export function CardMatchups({ cardKey, cardName }: { cardKey: string; cardName:
       <section className="panel p-5">
         <div className="mb-4 flex items-start justify-between gap-4">
           <div className="min-w-0">
-            <h3 className="mb-1 flex items-center gap-2 text-sm font-semibold uppercase tracking-wide">
+            <h3 className="mb-1 flex items-center gap-2 panel-title">
               <Swords className="size-4 text-amber-300" />
               Head to head
             </h3>
@@ -331,7 +331,7 @@ export function CardMatchups({ cardKey, cardName }: { cardKey: string; cardName:
         </div>
       </section>
 
-      <p className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-[11px] leading-relaxed text-muted-foreground">
+      <p className="rounded-lg border border-border bg-white/[0.03] px-3 py-2 text-[11px] leading-relaxed text-muted-foreground">
         These are battles, not a controlled test: the deck around {cardName}, the archetype it sat
         in and who played it are all still inside the number. Read a gap as a lead worth checking,
         not a verdict on the card.

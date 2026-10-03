@@ -64,7 +64,7 @@ function Stage({
   detail: string
 }) {
   return (
-    <div className="flex min-w-0 items-start gap-3 rounded-lg border border-white/10 bg-black/20 px-3 py-2.5">
+    <div className="flex min-w-0 items-start gap-3 rounded-lg border border-border bg-black/20 px-3 py-2.5">
       <Icon className="mt-0.5 size-4 shrink-0 text-yellow-300/80" />
       <div className="min-w-0">
         <p className="truncate text-xs font-semibold">{label}</p>
@@ -219,7 +219,7 @@ export function PipelineStatus() {
 
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]">
         <section className="panel overflow-hidden">
-          <div className="border-b border-white/10 px-4 py-3">
+          <div className="border-b border-border px-4 py-3">
             <h2 className="text-sm font-semibold">Sync ledger</h2>
             <p className="text-xs text-muted-foreground">
               A player is refreshed after {data.sync.playerTtlMinutes} minutes; a meta
@@ -230,7 +230,7 @@ export function PipelineStatus() {
             <div className="overflow-x-auto">
               <table className="w-full border-collapse text-xs">
                 <thead>
-                  <tr className="text-left text-[10px] uppercase tracking-wider text-muted-foreground">
+                  <tr className="border-b border-border text-left text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                     <th className="px-4 py-2 font-semibold">Player</th>
                     <th className="px-3 py-2 font-semibold">Battles (raw)</th>
                     <th className="px-3 py-2 font-semibold">Last pull</th>
@@ -239,7 +239,7 @@ export function PipelineStatus() {
                 </thead>
                 <tbody>
                   {data.sync.players.map((player) => (
-                    <tr key={player.tag} className="border-t border-white/5">
+                    <tr key={player.tag} className="border-t border-border/60">
                       <td className="px-4 py-2">
                         <span className="block font-medium">{player.name}</span>
                         <span className="block font-mono text-[10px] text-muted-foreground">
@@ -266,7 +266,7 @@ export function PipelineStatus() {
           ) : (
             <p className="px-4 py-6 text-xs text-muted-foreground">No players stored yet.</p>
           )}
-          <div className="border-t border-white/10 px-4 py-3 text-xs text-muted-foreground">
+          <div className="border-t border-border px-4 py-3 text-xs text-muted-foreground">
             {data.sync.meta
               ? `Meta aggregate built ${age(data.sync.meta.ageSeconds)} ago from ${data.sync.meta.battles} battles · ${
                   data.sync.meta.fresh ? 'inside TTL' : 'past TTL, rebuilt on next read'
@@ -286,7 +286,7 @@ export function PipelineStatus() {
                     <span>{name}</span>
                     <span className="font-mono text-muted-foreground">{value}</span>
                   </div>
-                  <div className="mt-1 h-1 overflow-hidden rounded-full bg-white/5">
+                  <div className="mt-1 h-1 overflow-hidden rounded-full bg-white/[0.03]">
                     <div
                       className="h-full rounded-full bg-gradient-to-r from-yellow-400/70 to-amber-500/70"
                       style={{ width: `${Math.max(3, (value / maxCount) * 100)}%` }}
@@ -301,7 +301,7 @@ export function PipelineStatus() {
             </p>
           )}
 
-          <div className="mt-4 space-y-2 border-t border-white/10 pt-3 text-xs">
+          <div className="mt-4 space-y-2 border-t border-border pt-3 text-xs">
             <div className="flex justify-between gap-3">
               <span className="text-muted-foreground">In-memory response cache</span>
               <span className="font-mono">{data.clashRoyaleApi.cache.memoryEntries} entries</span>

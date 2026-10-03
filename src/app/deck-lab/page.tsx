@@ -20,14 +20,10 @@ function WorkspaceFallback() {
 export default function DeckLabPage() {
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
-      <header className="mb-6 flex flex-col gap-2">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-yellow-300/80">
-          Deck Lab
-        </p>
-        <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
-          What is actually wrong with this deck?
-        </h1>
-        <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
+      <header className="mb-6 flex flex-col gap-2 border-b border-border/70 pb-5">
+        <p className="eyebrow">Deck Lab</p>
+        <h1 className="page-title">What is actually wrong with this deck?</h1>
+        <p className="page-lede">
           RoyaleIQ does not stop at average elixir. It reads every card role, scores
           the five dimensions that decide games, flags structural weaknesses and only
           then proposes a swap — with the reasoning attached.

@@ -117,7 +117,7 @@ type PredictionState = { key: string; data: PredictionData | null }
 
 function ModelCard({ model }: { model: PredictionModelData }) {
   return (
-    <p className="mt-4 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-[11px] leading-relaxed text-muted-foreground">
+    <p className="mt-4 rounded-lg border border-border bg-white/[0.03] px-3 py-2 text-[11px] leading-relaxed text-muted-foreground">
       Model card — trained on {model.decidedBattles} decided battles ({model.wins}W–
       {model.losses}L), {model.folds}-fold cross-validated accuracy {model.accuracy}% against a{' '}
       {model.baselineAccuracy}% win-rate baseline, AUC {model.auc.toFixed(3)}, log loss{' '}
@@ -161,7 +161,7 @@ function PredictionPanel({ deck, opponentDeck }: { deck: string[]; opponentDeck:
   return (
     <section className="panel p-5">
       <div className="mb-1 flex flex-wrap items-baseline justify-between gap-3">
-        <h3 className="text-sm font-semibold uppercase tracking-wide">Pre-match prediction</h3>
+        <h3 className="panel-title">Pre-match prediction</h3>
         <p className="text-[10px] uppercase tracking-wide text-cyan-300/70">
           Gradient-boosted trees + exact SHAP
         </p>
@@ -182,8 +182,8 @@ function PredictionPanel({ deck, opponentDeck }: { deck: string[]; opponentDeck:
         </p>
       ) : !prediction ? (
         <div className="space-y-3" aria-busy="true">
-          <div className="h-10 animate-pulse rounded-lg bg-white/5" />
-          <div className="h-16 animate-pulse rounded-lg bg-white/5" />
+          <div className="h-10 animate-pulse rounded-lg bg-white/[0.03]" />
+          <div className="h-16 animate-pulse rounded-lg bg-white/[0.03]" />
         </div>
       ) : prediction.status === 'ok' ? (
         <>
@@ -209,7 +209,7 @@ function PredictionPanel({ deck, opponentDeck }: { deck: string[]; opponentDeck:
             matchup. Difference is driven by the cards below.
           </p>
 
-          <h4 className="mb-2 mt-5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+          <h4 className="mb-2 mt-5 section-title">
             What moved it
           </h4>
           <ul className="space-y-1.5">
@@ -219,7 +219,7 @@ function PredictionPanel({ deck, opponentDeck }: { deck: string[]; opponentDeck:
               .map((entry) => (
                 <li
                   key={entry.feature.key}
-                  className="rounded-lg border border-white/10 bg-white/5 px-3 py-2"
+                  className="rounded-lg border border-border bg-white/[0.03] px-3 py-2"
                 >
                   <div className="flex items-baseline justify-between gap-3">
                     <span className="text-xs font-medium">{entry.feature.label}</span>
@@ -391,7 +391,7 @@ function SidePanel({
   metrics: SideMetricsData | undefined
 }) {
   return (
-    <div className="rounded-xl border border-white/10 bg-white/5 p-4">
+    <div className="rounded-xl border border-border bg-white/[0.03] p-4">
       <div className="mb-3 flex items-start justify-between gap-2">
         <div className="min-w-0">
           <p className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
@@ -404,7 +404,7 @@ function SidePanel({
         </Badge>
       </div>
       <DeckStrip cards={deck} size="xs" />
-      <dl className="mt-3 grid grid-cols-2 gap-x-4 gap-y-1.5 border-t border-white/10 pt-3 text-xs">
+      <dl className="mt-3 grid grid-cols-2 gap-x-4 gap-y-1.5 border-t border-border pt-3 text-xs">
         <Metric label="Avg elixir" value={metrics?.avgElixir ?? averageElixir(deck)} />
         <Metric label="Elixir leaked" value={metrics?.elixirLeaked ?? null} />
         <Metric label="Levels below max" value={metrics?.levelDeficit ?? null} />
@@ -451,7 +451,7 @@ export function BattleDetail({ battle, status, onBack }: BattleDetailProps) {
       {/* Sticky below the site header (h-16, z-50) so the opponent and the back
           control stay reachable while the analysis scrolls - on a page the
           header no longer scrolls away with a close button pinned to it. */}
-      <header className="sticky top-16 z-10 flex items-start gap-3 border-b border-white/10 bg-background/95 px-4 py-4 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+      <header className="sticky top-16 z-10 flex items-start gap-3 border-b border-border bg-background/95 px-4 py-4 backdrop-blur supports-[backdrop-filter]:bg-background/80">
         <Button
           variant="ghost"
           size="sm"
@@ -532,13 +532,13 @@ export function BattleDetail({ battle, status, onBack }: BattleDetailProps) {
           </div>
 
           <dl className="grid grid-cols-2 gap-2 @xl:grid-cols-4">
-            <div className="rounded-lg border border-white/10 bg-white/5 px-3 py-2">
+            <div className="rounded-lg border border-border bg-white/[0.03] px-3 py-2">
               <dt className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
                 Result
               </dt>
               <dd className="text-sm font-semibold uppercase">{battle.result}</dd>
             </div>
-            <div className="rounded-lg border border-white/10 bg-white/5 px-3 py-2">
+            <div className="rounded-lg border border-border bg-white/[0.03] px-3 py-2">
               <dt className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
                 Crowns
               </dt>
@@ -546,7 +546,7 @@ export function BattleDetail({ battle, status, onBack }: BattleDetailProps) {
                 {battle.crowns.us}–{battle.crowns.them}
               </dd>
             </div>
-            <div className="rounded-lg border border-white/10 bg-white/5 px-3 py-2">
+            <div className="rounded-lg border border-border bg-white/[0.03] px-3 py-2">
               <dt className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
                 Arena
               </dt>
@@ -554,7 +554,7 @@ export function BattleDetail({ battle, status, onBack }: BattleDetailProps) {
                 {battle.arena ? modeLabel(battle.arena) : '—'}
               </dd>
             </div>
-            <div className="rounded-lg border border-white/10 bg-white/5 px-3 py-2">
+            <div className="rounded-lg border border-border bg-white/[0.03] px-3 py-2">
               <dt className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
                 Mode
               </dt>
@@ -578,7 +578,7 @@ export function BattleDetail({ battle, status, onBack }: BattleDetailProps) {
 
         {/* B - deck vs deck ------------------------------------------- */}
         <section className="panel p-5">
-          <h3 className="mb-1 text-sm font-semibold uppercase tracking-wide">
+          <h3 className="mb-1 panel-title">
             Deck vs deck
           </h3>
           <p className="mb-4 text-xs text-muted-foreground">
@@ -597,7 +597,7 @@ export function BattleDetail({ battle, status, onBack }: BattleDetailProps) {
               metrics={diagnosis?.sides?.you}
             />
             <div className="hidden items-center justify-center @3xl:flex">
-              <span className="grid size-9 place-items-center rounded-full border border-white/10 bg-white/5 text-muted-foreground">
+              <span className="grid size-9 place-items-center rounded-full border border-border bg-white/[0.03] text-muted-foreground">
                 <Swords className="size-4" />
               </span>
             </div>
@@ -616,7 +616,7 @@ export function BattleDetail({ battle, status, onBack }: BattleDetailProps) {
         {/* C - matchup analysis --------------------------------------- */}
         <section className="panel p-5">
           <div className="mb-1 flex flex-wrap items-baseline justify-between gap-3">
-            <h3 className="text-sm font-semibold uppercase tracking-wide">
+            <h3 className="panel-title">
               Matchup analysis
             </h3>
             {diagnosis && (
@@ -639,7 +639,7 @@ export function BattleDetail({ battle, status, onBack }: BattleDetailProps) {
             pending ? (
               <div className="space-y-3" aria-busy="true">
                 {[0, 1, 2, 3].map((index) => (
-                  <div key={index} className="h-10 animate-pulse rounded-lg bg-white/5" />
+                  <div key={index} className="h-10 animate-pulse rounded-lg bg-white/[0.03]" />
                 ))}
               </div>
             ) : (
@@ -681,7 +681,7 @@ export function BattleDetail({ battle, status, onBack }: BattleDetailProps) {
 
         {/* D - diagnosis ---------------------------------------------- */}
         <section className="panel p-5">
-          <h3 className="mb-4 text-sm font-semibold uppercase tracking-wide">
+          <h3 className="mb-4 panel-title">
             RoyaleIQ diagnosis
           </h3>
 
@@ -689,7 +689,7 @@ export function BattleDetail({ battle, status, onBack }: BattleDetailProps) {
             pending ? (
               <div className="space-y-3" aria-busy="true">
                 {[0, 1, 2].map((index) => (
-                  <div key={index} className="h-14 animate-pulse rounded-lg bg-white/5" />
+                  <div key={index} className="h-14 animate-pulse rounded-lg bg-white/[0.03]" />
                 ))}
               </div>
             ) : (
@@ -701,7 +701,7 @@ export function BattleDetail({ battle, status, onBack }: BattleDetailProps) {
                 {diagnosis.findings.map((finding) => (
                   <li
                     key={finding.rank}
-                    className="rounded-lg border border-white/10 bg-white/5 p-3"
+                    className="rounded-lg border border-border bg-white/[0.03] p-3"
                   >
                     <div className="flex items-start gap-3">
                       <span className="mt-0.5 w-6 shrink-0 text-xs font-bold tabular-nums text-muted-foreground">
@@ -722,7 +722,7 @@ export function BattleDetail({ battle, status, onBack }: BattleDetailProps) {
                 ))}
               </ol>
 
-              <h4 className="mb-2 mt-6 text-sm font-semibold uppercase tracking-wide">
+              <h4 className="mb-2 mt-6 panel-title">
                 Evidence
               </h4>
               <p className="mb-3 text-xs text-muted-foreground">
@@ -733,10 +733,10 @@ export function BattleDetail({ battle, status, onBack }: BattleDetailProps) {
                 {diagnosis.evidence.map((item) => (
                   <li
                     key={item.label + item.value}
-                    className="rounded-lg border border-white/10 bg-white/5 px-3 py-2"
+                    className="rounded-lg border border-border bg-white/[0.03] px-3 py-2"
                   >
                     <div className="flex flex-wrap items-baseline justify-between gap-2">
-                      <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                      <span className="section-title">
                         {item.label}
                       </span>
                       <code className="text-[10px] text-emerald-300/70">{item.source}</code>
