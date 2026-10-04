@@ -5,7 +5,6 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { ChevronDown, Crown, Sparkles } from 'lucide-react'
 import { NAV_GROUPS, isNavActive } from '@/components/nav-config'
-import { NavItemLink } from '@/components/nav-item-link'
 import { cn } from '@/lib/utils'
 
 /**
@@ -60,12 +59,11 @@ export function SiteSidebar() {
               {open && (
                 <ul className="space-y-0.5">
                   {group.items.map((item) => {
-                    const active =
-                      item.highlight !== false && isNavActive(pathname, item.href)
+                    const active = isNavActive(pathname, item.href)
                     return (
                       <li key={item.href}>
-                        <NavItemLink
-                          item={item}
+                        <Link
+                          href={item.href}
                           className={cn(
                             'group relative flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-[13px] font-medium transition-colors',
                             active
@@ -89,7 +87,7 @@ export function SiteSidebar() {
                             )}
                           />
                           <span className="truncate">{item.label}</span>
-                        </NavItemLink>
+                        </Link>
                       </li>
                     )
                   })}
@@ -102,7 +100,7 @@ export function SiteSidebar() {
 
       <div className="border-t border-sidebar-border p-3">
         <Link
-          href="/deck-lab#coach"
+          href="/ai-coach"
           className="group flex items-center gap-2.5 rounded-xl border border-primary/25 bg-primary/10 px-3 py-2.5 text-[13px] font-medium transition-colors hover:border-primary/45 hover:bg-primary/15"
         >
           <Sparkles className="size-4 shrink-0 text-primary transition-transform group-hover:scale-110" />

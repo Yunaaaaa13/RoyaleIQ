@@ -13,7 +13,7 @@ import {
 /**
  * Card matchups, measured rather than modelled.
  *
- * The archetype matrix on `/matchups` reads the `Battle` table, which only
+ * The archetype matrix on `/matchup` reads the `Battle` table, which only
  * holds the players the Player page has synced - a couple of hundred rows. The
  * rolling meta corpus behind `/api/meta` holds four thousand, each with both
  * decks intact, so that is the sample these numbers come from.
@@ -307,7 +307,7 @@ export interface CounterIntel {
 export function buildCounters(result: CardMatchupsResult | null): CounterIntel {
   const data = result && result.available ? result : null
   const base = {
-    link: data ? `/cards/${data.card.key}/matchups` : '/matchups',
+    link: data ? `/cards/${data.card.key}/matchups` : '/matchup',
     linkLabel: data ? 'Open card matchups' : 'Archetype matchup matrix',
     minCellGames: MIN_CELL_GAMES,
     battlesWithCard: data?.sample.battlesWithCard ?? 0,

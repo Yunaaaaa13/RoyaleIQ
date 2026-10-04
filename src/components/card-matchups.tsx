@@ -258,7 +258,7 @@ export function CardMatchups({ cardKey, cardName }: { cardKey: string; cardName:
             </p>
           </div>
           <Link
-            href="/matchups"
+            href="/matchup"
             className="hidden shrink-0 items-center gap-1 text-xs font-medium text-muted-foreground transition hover:text-foreground sm:inline-flex"
           >
             Archetype matrix

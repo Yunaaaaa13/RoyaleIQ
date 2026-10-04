@@ -19,7 +19,7 @@ export function SiteFooter() {
           <Link href="/deck-lab" className="hover:text-foreground">
             Deck Lab
           </Link>
-          <Link href="/matchups" className="hover:text-foreground">
+          <Link href="/matchup" className="hover:text-foreground">
             Matchups
           </Link>
           <Link href="/meta" className="hover:text-foreground">
@@ -28,7 +28,7 @@ export function SiteFooter() {
           <Link href="/player" className="hover:text-foreground">
             Player
           </Link>
-          <Link href="/data" className="hover:text-foreground">
+          <Link href="/data-pipeline" className="hover:text-foreground">
             Data Pipeline
           </Link>
         </div>

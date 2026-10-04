@@ -81,14 +81,24 @@ interface LoadedProfile {
   error: string | null
 }
 
-export function PlayerPanel() {
+export function PlayerPanel({
+  defaultTag,
+  hideSearch = false,
+}: {
+  /** Seed when the URL carries no `?tag=` — used by My Profile. */
+  defaultTag?: string
+  /** Hide the tag form and recent chips: this route shows one fixed player. */
+  hideSearch?: boolean
+} = {}) {
   const searchParams = useSearchParams()
   const router = useRouter()
   const pathname = usePathname()
   // The URL is the single source of truth for *which* player is on screen: the
   // header search box pushes a new `?tag=` onto this same route, which must
-  // remount the data without a full page navigation.
-  const urlTag = normalizeTag(searchParams.get('tag')?.trim() ?? '')
+  // remount the data without a full page navigation. `defaultTag` seeds that
+  // state when the route itself owns the player (My Profile).
+  const paramTag = normalizeTag(searchParams.get('tag')?.trim() ?? '')
+  const urlTag = paramTag || normalizeTag(defaultTag ?? '')
   const hashAttempted = useRef(false)
 
   const [tagInput, setTagInput] = useState(urlTag)
@@ -278,33 +288,35 @@ export function PlayerPanel() {
 
   return (
     <div className="space-y-5" id="profile">
-      <form onSubmit={submit} className="panel flex flex-wrap items-center gap-2 p-4">
-        <div className="relative min-w-[14rem] flex-1">
-          <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            value={tagInput}
-            onChange={(event) => setTagInput(event.target.value)}
-            placeholder="#PLAYERTAG"
-            className="h-10 pl-9 font-mono uppercase"
-            aria-label="Player tag"
-          />
-        </div>
-        <Button type="submit" className="h-10 gap-2" disabled={loading}>
-          {loading ? <Loader2 className="size-4 animate-spin" /> : <Trophy className="size-4" />}
-          Load profile
-        </Button>
-        <Button
-          type="button"
-          variant="outline"
-          className="h-10"
-          onClick={clearSearch}
-          disabled={!payload && !error && !tagInput}
-        >
-          Clear
-        </Button>
-      </form>
+      {!hideSearch && (
+        <form onSubmit={submit} className="panel flex flex-wrap items-center gap-2 p-4">
+          <div className="relative min-w-[14rem] flex-1">
+            <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              value={tagInput}
+              onChange={(event) => setTagInput(event.target.value)}
+              placeholder="#PLAYERTAG"
+              className="h-10 pl-9 font-mono uppercase"
+              aria-label="Player tag"
+            />
+          </div>
+          <Button type="submit" className="h-10 gap-2" disabled={loading}>
+            {loading ? <Loader2 className="size-4 animate-spin" /> : <Trophy className="size-4" />}
+            Load profile
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            className="h-10"
+            onClick={clearSearch}
+            disabled={!payload && !error && !tagInput}
+          >
+            Clear
+          </Button>
+        </form>
+      )}
 
-      {history.length > 0 && (
+      {!hideSearch && history.length > 0 && (
         <div className="flex flex-wrap items-center gap-2">
           <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
             Recent
@@ -429,7 +441,7 @@ export function PlayerPanel() {
                   )}
                   {recent[0]?.battle.deck.length === 8 && (
                     <Link
-                      href={`/deck-lab?deck=${encodeURIComponent(recent[0].battle.deck.join(','))}&tag=${encodeURIComponent(profile.tag)}`}
+                      href={`/ai-coach?deck=${encodeURIComponent(recent[0].battle.deck.join(','))}&tag=${encodeURIComponent(profile.tag)}`}
                       className="inline-flex items-center gap-1.5 rounded-full border border-violet-400/40 px-2.5 py-1 font-medium text-violet-300 transition hover:bg-violet-400/10"
                     >
                       <Bot className="size-3" />

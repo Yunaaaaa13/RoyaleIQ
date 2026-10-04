@@ -7,7 +7,6 @@ import { Crown, Search, Swords } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { NAV_GROUPS, isNavActive, navLabelFor } from '@/components/nav-config'
-import { NavItemLink } from '@/components/nav-item-link'
 import { ALL_CARDS, findCard } from '@/lib/cards'
 import { useRecentPlayers, type RecentPlayer } from '@/lib/recent-players'
 import { normalizeTag } from '@/lib/tags'
@@ -151,11 +150,11 @@ export function SiteHeader() {
               <span aria-hidden className="mx-1 h-4 w-px shrink-0 bg-border" />
             )}
             {group.items.map((item) => {
-              const active = item.highlight !== false && isNavActive(pathname, item.href)
+              const active = isNavActive(pathname, item.href)
               return (
-                <NavItemLink
+                <Link
                   key={item.href}
-                  item={item}
+                  href={item.href}
                   className={`flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors ${
                     active
                       ? 'bg-primary/15 text-foreground'
@@ -166,7 +165,7 @@ export function SiteHeader() {
                     className={`size-3.5 ${active ? 'text-primary' : 'text-muted-foreground'}`}
                   />
                   {item.label}
-                </NavItemLink>
+                </Link>
               )
             })}
           </Fragment>

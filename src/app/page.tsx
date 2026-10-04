@@ -33,7 +33,7 @@ const FEATURES = [
     points: ['Card analytics', 'Archetype share', 'Trending cards'],
   },
   {
-    href: '/deck-lab',
+    href: '/ai-coach',
     icon: Bot,
     title: 'AI Deck Coach',
     accent: 'text-violet-300',

@@ -17,16 +17,6 @@ export interface NavItem {
   href: string
   label: string
   icon: LucideIcon
-  /**
-   * Shortcuts deep-link into a section of a page that the MAIN group already
-   * points at. They stay out of the active state so only one item lights up.
-   */
-  highlight?: boolean
-  /**
-   * 'recent-player' resolves to the most recently opened profile at click time
-   * (falling back to `href`) instead of navigating to the bare route.
-   */
-  behavior?: 'recent-player'
 }
 
 export interface NavGroup {
@@ -34,6 +24,11 @@ export interface NavGroup {
   items: NavItem[]
 }
 
+/**
+ * One primary route per item — no two menu entries share a destination.
+ * Analytics routes live under Main, intelligence under Intelligence, and the
+ * find/build/view utilities under Tools.
+ */
 export const NAV_GROUPS: NavGroup[] = [
   {
     label: 'Main',
@@ -43,26 +38,20 @@ export const NAV_GROUPS: NavGroup[] = [
       { href: '/deck-lab', label: 'Deck Analytics', icon: FlaskConical },
       { href: '/meta', label: 'Meta Overview', icon: TrendingUp },
       { href: '/player', label: 'Player Analysis', icon: UserRound },
-      { href: '/matchups', label: 'Matchup Analysis', icon: Scale },
+      { href: '/matchup', label: 'Matchup Analysis', icon: Scale },
     ],
   },
   {
     label: 'Intelligence',
-    items: [{ href: '/deck-lab#coach', label: 'AI Recommendation', icon: Bot, highlight: false }],
+    items: [{ href: '/ai-coach', label: 'AI Recommendation', icon: Bot }],
   },
   {
     label: 'Tools',
     items: [
-      { href: '/search', label: 'Card Search', icon: Search },
-      { href: '/deck-lab#workspace', label: 'Deck Builder', icon: Hammer, highlight: false },
-      {
-        href: '/player#profile',
-        label: 'My Profile',
-        icon: UserRoundCheck,
-        highlight: false,
-        behavior: 'recent-player',
-      },
-      { href: '/data', label: 'Data Pipeline', icon: Database },
+      { href: '/search', label: 'Global Search', icon: Search },
+      { href: '/deck-builder', label: 'Deck Builder', icon: Hammer },
+      { href: '/profile', label: 'My Profile', icon: UserRoundCheck },
+      { href: '/data-pipeline', label: 'Data Pipeline', icon: Database },
     ],
   },
 ]
@@ -71,14 +60,14 @@ export const NAV_FLAT = NAV_GROUPS.flatMap((group) => group.items)
 
 /** Section label for the top bar, derived from the current path. */
 export function navLabelFor(pathname: string): string {
-  const match = NAV_FLAT.filter((item) => item.highlight !== false)
-    .filter((item) =>
-      item.href === '/' ? pathname === '/' : pathname === item.href || pathname.startsWith(`${item.href}/`),
-    )
+  const match = NAV_FLAT.filter((item) =>
+    item.href === '/' ? pathname === '/' : pathname === item.href || pathname.startsWith(`${item.href}/`),
+  )
     .sort((a, b) => b.href.length - a.href.length)[0]
   return match?.label ?? 'RoyaleIQ'
 }
 
+/** The active sidebar item follows the pathname; `/cards/knight` still reads as Card Analytics. */
 export function isNavActive(pathname: string, href: string): boolean {
   const path = href.split('#')[0]
   if (path === '/') return pathname === '/'
