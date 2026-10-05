@@ -10,7 +10,7 @@ Unofficial. Not affiliated with Supercell.
 
 | Feature | Route | What it does |
 | --- | --- | --- |
-| **Deck Lab** | `/deck-lab` | Pick any 8 cards and get five scores (offense, defence, air defence, cycle, spell utility), structural findings, scored card swaps, archetype detection and a per-archetype matchup projection. Analysis runs client-side, so feedback is instant. |
+| **Deck Recommendation** | `/deck-lab` | Pick any 4+ cards and RoyaleIQ ranks a curated library of 100+ meta decks plus the sampled meta against your selection, then gives five scores (offense, defence, air defence, cycle, spell utility), structural findings, scored card swaps, archetype detection and a per-archetype matchup projection. Analysis runs client-side, so feedback is instant. |
 | **AI Deck Coach** | `/deck-lab` → Coach tab | `POST /api/coach`. Uses an OpenAI-compatible LLM when configured, otherwise a deterministic rule engine with the same response shape. Grounded in two real datasets - the player's stored record and the latest meta aggregate - with explicit rules never to invent a statistic. |
 | **Matchup Matrix** | `/matchups` | Archetype × archetype win rates folded from stored battles. Global scope mirrors every game so the grid is symmetric; player scope stays strictly your own record. Each cell shows its sample size and, on hover, the gap against the model projection. |
 | **Meta** | `/meta` | Card usage and win rate, archetype share, trending cards, top performing decks and win-rate leaders. |

@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button'
 /**
  * AI Recommendation: the coach's own home. The deck is chosen right here —
  * the same editing surface as the builder — so intelligence never depends on
- * first visiting Deck Analytics.
+ * first visiting Deck Recommendation.
  */
 export function AiCoachWorkspace() {
   const { deck, setDeck, tag, setTag } = useDeckParams()
@@ -45,7 +45,7 @@ export function AiCoachWorkspace() {
             <Button asChild variant="outline" className="gap-2">
               <Link href={`/deck-lab?deck=${deckParam}`}>
                 <FlaskConical className="size-4" />
-                Open in Deck Analytics
+                Open in Deck Recommendation
               </Link>
             </Button>
           </div>

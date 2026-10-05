@@ -13,7 +13,7 @@ import { relativeAge } from '@/lib/utils'
 
 /**
  * Deck Builder: the create/edit side of the deck domain. Selection is the
- * whole job here — handing the deck to Deck Analytics only happens when the
+ * whole job here — handing the deck to Deck Recommendation only happens when the
  * user presses "Analyze this deck".
  */
 export function DeckBuilderWorkspace() {

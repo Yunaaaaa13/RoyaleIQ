@@ -17,9 +17,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useMetaSnapshot } from '@/lib/use-meta'
 
 /**
- * Deck Analytics: the analysis side of the deck domain. Editing lives in the
- * Deck Builder, the coach in /ai-coach — this route reads a deck from the URL
- * and scores it, projects its matchups, and ranks the meta decks that fit it.
+ * Deck Recommendation: ranks meta decks that fit your selection and, on the
+ * same route, reads a deck from the URL to score it and project its matchups.
+ * Editing lives in the Deck Builder, the coach in /ai-coach.
  */
 export function DeckWorkspace() {
   const { deck, setDeck, tag } = useDeckParams()
@@ -124,7 +124,7 @@ export function DeckWorkspace() {
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="diagnosis">Diagnosis</TabsTrigger>
           <TabsTrigger value="matchups">Matchups</TabsTrigger>
-          <TabsTrigger value="meta">Meta Decks</TabsTrigger>
+          <TabsTrigger value="meta">Recommendations</TabsTrigger>
         </TabsList>
         <TabsContent value="diagnosis">
           <DiagnosisPanel analysis={analysis} meta={snapshot} />

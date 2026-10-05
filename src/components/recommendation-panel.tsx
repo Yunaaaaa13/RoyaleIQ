@@ -16,6 +16,17 @@ import {
   recommendDecks,
   type Recommendation,
 } from '@/lib/recommend'
+import { META_DECK_COUNT } from '@/lib/meta-decks'
+
+/** Source badge per candidate type — observed, curated library, or completed. */
+const SOURCE_BADGE: Record<
+  Recommendation['source'],
+  { label: string; className: string }
+> = {
+  meta: { label: 'In sample', className: 'bg-emerald-500/10 text-emerald-600' },
+  library: { label: 'Meta library', className: 'bg-blue-500/10 text-blue-700' },
+  completed: { label: 'Completed', className: 'bg-sky-500/10 text-cyan-700' },
+}
 
 type FilterKey =
   | 'all'
@@ -59,8 +70,9 @@ function applyFilter(items: Recommendation[], filter: FilterKey): Recommendation
     case 'elixir':
       return list.sort((a, b) => a.avgElixir - b.avgElixir || a.rank - b.rank)
     case 'meta':
+      // Observed sample decks plus curated library decks.
       return list
-        .filter((item) => item.source === 'meta')
+        .filter((item) => item.source !== 'completed')
         .sort((a, b) => a.rank - b.rank)
     case 'archetype':
       return list.sort(
@@ -123,13 +135,9 @@ function RecommendationCard({
         </div>
         <Badge
           variant="secondary"
-          className={`shrink-0 text-[10px] ${
-            item.source === 'meta'
-              ? 'bg-emerald-500/10 text-emerald-600'
-              : 'bg-sky-500/10 text-cyan-700'
-          }`}
+          className={`shrink-0 text-[10px] ${SOURCE_BADGE[item.source].className}`}
         >
-          {item.source === 'meta' ? 'In sample' : 'Completed'}
+          {SOURCE_BADGE[item.source].label}
         </Badge>
       </div>
 
@@ -262,9 +270,10 @@ export function RecommendationPanel({
         <Radar className="size-8 text-primary/60" />
         <h3 className="text-lg font-semibold">Pick {MIN_SELECTED_CARDS}+ cards to discover decks</h3>
         <p className="max-w-md text-sm text-muted-foreground">
-          Once you select at least {MIN_SELECTED_CARDS} cards, RoyaleIQ scores every
-          meta deck and completed candidate against your selection and ranks the
-          most compatible builds.
+          Once you select at least {MIN_SELECTED_CARDS} cards, RoyaleIQ scores the
+          curated library of {META_DECK_COUNT} meta decks, every deck in the current
+          sample, and completions built around your selection — then ranks the most
+          compatible builds.
         </p>
       </section>
     )
@@ -327,8 +336,9 @@ export function RecommendationPanel({
         </div>
         <p className="text-xs text-muted-foreground">
           Meta decks that best match your selected cards and deck structure —
-          scored from {meta.battles.toLocaleString()} sampled battles ({meta.source},
-          {new Date(meta.generatedAt).toLocaleDateString()}). {SCORE_BASIS}
+          ranked from {meta.battles.toLocaleString()} sampled battles ({meta.source},
+          {new Date(meta.generatedAt).toLocaleDateString()}) plus a curated library
+          of {META_DECK_COUNT} meta decks. {SCORE_BASIS}
         </p>
         {meta.notice && (
           <p className="mt-1 text-[11px] text-amber-600/90">{meta.notice}</p>

@@ -3,7 +3,7 @@ import type { MetaSnapshot } from './battle'
 
 /**
  * One shared `/api/meta` reader for the client. The module-level cache means
- * Deck Analytics, the catalog and the dashboards reuse a single request per
+ * Deck Recommendation, the catalog and the dashboards reuse a single request per
  * mount wave instead of re-fetching per component, and every consumer sees the
  * same snapshot while it is fresh.
  */

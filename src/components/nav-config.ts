@@ -35,7 +35,7 @@ export const NAV_GROUPS: NavGroup[] = [
     items: [
       { href: '/', label: 'Dashboard', icon: LayoutDashboard },
       { href: '/cards', label: 'Card Analytics', icon: LayoutGrid },
-      { href: '/deck-lab', label: 'Deck Analytics', icon: FlaskConical },
+      { href: '/deck-lab', label: 'Deck Recommendation', icon: FlaskConical },
       { href: '/meta', label: 'Meta Overview', icon: TrendingUp },
       { href: '/player', label: 'Player Analysis', icon: UserRound },
       { href: '/matchup', label: 'Matchup Analysis', icon: Scale },

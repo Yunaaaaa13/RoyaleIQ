@@ -25,7 +25,7 @@ export default function DeckBuilderPage() {
         <h1 className="page-title">Build it here, analyse it there</h1>
         <p className="page-lede">
           Pick cards and watch the average elixir and archetype update live, save
-          the builds you like, then hand any deck to Deck Analytics with one
+          the builds you like, then hand any deck to Deck Recommendation with one
           click — the builder never jumps to analysis on its own.
         </p>
       </header>
