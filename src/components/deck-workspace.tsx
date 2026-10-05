@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { Bot, Check, ClipboardCopy, Eraser, LayoutTemplate, Pencil } from 'lucide-react'
 import { DiagnosisPanel, MatchupPanel } from '@/components/deck-panels'
+import { RecommendationPanel } from '@/components/recommendation-panel'
 import {
   DeckSlots,
   DeckStats,
@@ -13,15 +14,17 @@ import {
 } from '@/components/deck-selection'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { useMetaSnapshot } from '@/lib/use-meta'
 
 /**
  * Deck Analytics: the analysis side of the deck domain. Editing lives in the
  * Deck Builder, the coach in /ai-coach — this route reads a deck from the URL
- * (or builds one from the sample) and only ever scores it.
+ * and scores it, projects its matchups, and ranks the meta decks that fit it.
  */
 export function DeckWorkspace() {
   const { deck, setDeck, tag } = useDeckParams()
   const { copied, copy } = useCopyLink()
+  const { snapshot, loading: metaLoading, reload } = useMetaSnapshot()
   const analysis = analyzeIfReady(deck)
   const deckParam = encodeURIComponent(deck.join(','))
   const coachHref = `/ai-coach?deck=${deckParam}${
@@ -29,15 +32,26 @@ export function DeckWorkspace() {
   }`
 
   if (!analysis) {
+    const chosen = deck.length
     return (
       <section className="panel flex flex-col items-center gap-3 p-10 text-center">
         <span className="text-3xl">🏰</span>
-        <h2 className="text-lg font-semibold">Nothing analysed yet</h2>
+        <h2 className="text-lg font-semibold">
+          {chosen === 0
+            ? 'Build a deck to start analysis'
+            : `Incomplete deck — ${chosen}/4 cards selected`}
+        </h2>
         <p className="max-w-md text-sm text-muted-foreground">
-          Assemble a deck in the Deck Builder and send it here with one click — or
-          load the sample to see a full diagnosis, matchup read and scored swaps.
+          {chosen === 0
+            ? 'Select at least 4 cards. RoyaleIQ will analyse your deck structure, compare it with current meta patterns, and recommend compatible decks.'
+            : `Pick ${4 - chosen} more card(s) to unlock the diagnosis, matchups and meta recommendations.`}
         </p>
-        <div className="flex flex-wrap justify-center gap-2">
+        {chosen > 0 && (
+          <div className="w-full max-w-lg">
+            <DeckSlots deck={deck} evolvable={snapshot?.evolvable} />
+          </div>
+        )}
+        <div className="mt-2 flex flex-wrap justify-center gap-2">
           <Button asChild className="gap-2">
             <Link href="/deck-builder">
               <Pencil className="size-4" />
@@ -46,7 +60,7 @@ export function DeckWorkspace() {
           </Button>
           <Button variant="outline" className="gap-2" onClick={() => setDeck(SAMPLE)}>
             <LayoutTemplate className="size-4" />
-            Load the X-Bow sample
+            Try Example
           </Button>
         </div>
       </section>
@@ -102,20 +116,30 @@ export function DeckWorkspace() {
           </div>
         </div>
 
-        <DeckSlots deck={deck} />
+        <DeckSlots deck={deck} evolvable={snapshot?.evolvable} />
         <DeckStats analysis={analysis} />
       </section>
 
       <Tabs defaultValue="diagnosis" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-2">
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="diagnosis">Diagnosis</TabsTrigger>
           <TabsTrigger value="matchups">Matchups</TabsTrigger>
+          <TabsTrigger value="meta">Meta Decks</TabsTrigger>
         </TabsList>
         <TabsContent value="diagnosis">
-          <DiagnosisPanel analysis={analysis} />
+          <DiagnosisPanel analysis={analysis} meta={snapshot} />
         </TabsContent>
         <TabsContent value="matchups">
           <MatchupPanel analysis={analysis} />
+        </TabsContent>
+        <TabsContent value="meta">
+          <RecommendationPanel
+            selected={deck}
+            meta={snapshot}
+            loading={metaLoading}
+            onReload={reload}
+            onUse={setDeck}
+          />
         </TabsContent>
       </Tabs>
     </div>

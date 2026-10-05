@@ -615,7 +615,15 @@ function buildCostCurve(cards: RawCard[]): CostBucket[] {
   })
 }
 
-export function analyzeDeck(keys: string[]): DeckAnalysis {
+export interface AnalyzeOptions {
+  /** Skip the brute-force swap search — recommendation scoring does not need it. */
+  swaps?: boolean
+  /** Skip the nine-row archetype matchup projection. */
+  matchups?: boolean
+}
+
+export function analyzeDeck(keys: string[], options: AnalyzeOptions = {}): DeckAnalysis {
+  const { swaps = true, matchups = true } = options
   const cards = resolveDeck(keys)
   const scores = scoreDeck(cards)
   const composition = buildComposition(cards)
@@ -638,8 +646,8 @@ export function analyzeDeck(keys: string[]): DeckAnalysis {
     scores,
     composition,
     findings: buildFindings(cards, scores, composition),
-    swaps: buildSwaps(cards, scores, composition),
-    matchups: matchupMatrix(proxy.key, cards.map((card) => card.key)),
+    swaps: swaps ? buildSwaps(cards, scores, composition) : [],
+    matchups: matchups ? matchupMatrix(proxy.key, cards.map((card) => card.key)) : [],
     costCurve: buildCostCurve(cards),
     valid: cards.length === 8,
   }

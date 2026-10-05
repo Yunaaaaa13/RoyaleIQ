@@ -15,11 +15,27 @@ import { CardTile } from '@/components/card-tile'
 import { ScoreBar, SeverityIcon, StatTile } from '@/components/metrics'
 import { Badge } from '@/components/ui/badge'
 import type { DeckAnalysis } from '@/lib/analysis'
+import type { MetaSnapshot } from '@/lib/battle'
 import { getCard } from '@/lib/cards'
+import { deckStructure } from '@/lib/deck-structure'
 
 type Tone = 'gold' | 'violet' | 'cyan' | 'green' | 'rose'
 
-export function DiagnosisPanel({ analysis }: { analysis: DeckAnalysis }) {
+const ROLE_STATE_CLASS: Record<string, string> = {
+  ok: 'text-emerald-300',
+  gap: 'text-amber-300',
+  info: 'text-foreground',
+  unavailable: 'text-muted-foreground',
+}
+
+export function DiagnosisPanel({
+  analysis,
+  meta,
+}: {
+  analysis: DeckAnalysis
+  /** Optional meta snapshot: only used for the evolution row and meta fit. */
+  meta?: MetaSnapshot | null
+}) {
   const grade =
     analysis.scores.overall >= 7.5
       ? 'A'
@@ -35,6 +51,15 @@ export function DiagnosisPanel({ analysis }: { analysis: DeckAnalysis }) {
   const warnings = analysis.findings.filter((f) => f.severity === 'warning').length
   const positives = analysis.findings.filter((f) => f.severity === 'good').length
 
+  const structure = deckStructure(analysis, { evolvable: meta?.evolvable })
+  const strengths = analysis.findings.filter((f) => f.severity === 'good')
+  const weaknesses = analysis.findings.filter((f) => f.severity !== 'good')
+  const archetypeStat = meta?.archetypes.find((entry) => entry.key === analysis.archetype)
+  const checkedRows = structure.rows.filter(
+    (row) => row.state === 'ok' || row.state === 'gap',
+  ).length
+  const coveredRows = structure.rows.filter((row) => row.state === 'ok').length
+
   return (
     <div className="space-y-6">
       <div className="grid gap-4 lg:grid-cols-3">
@@ -44,15 +69,22 @@ export function DiagnosisPanel({ analysis }: { analysis: DeckAnalysis }) {
           </div>
           <div>
             <p className="text-xs uppercase tracking-wide text-muted-foreground">
-              Deck score
+              Deck health
             </p>
             <p className="text-2xl font-bold tabular-nums">
-              {analysis.scores.overall}
-              <span className="text-base text-muted-foreground">/10</span>
+              {structure.health}
+              <span className="text-base text-muted-foreground">/100</span>
             </p>
             <p className="text-xs text-muted-foreground">
-              {analysis.archetypeLabel} · {analysis.avgElixir} avg elixir
+              {analysis.archetypeLabel} · {analysis.avgElixir} avg elixir ·{' '}
+              {analysis.scores.overall}/10 score
             </p>
+            {archetypeStat && (
+              <p className="text-[11px] text-muted-foreground">
+                Meta fit: {archetypeStat.share}% share · {archetypeStat.winRate}% win
+                rate in sample
+              </p>
+            )}
           </div>
         </div>
 
@@ -86,6 +118,53 @@ export function DiagnosisPanel({ analysis }: { analysis: DeckAnalysis }) {
         <StatTile label="Strengths" value={positives} accent="green" />
       </div>
 
+      <section className="panel p-5">
+        <h3 className="mb-1 flex items-center gap-2 panel-title">
+          Role coverage
+          <Badge variant="secondary" className="text-[10px]">
+            {coveredRows}/{checkedRows} covered
+          </Badge>
+        </h3>
+        <p className="mb-3 text-xs text-muted-foreground">
+          Every role the analysis model checks, read from the card catalogue —
+          including the Evolution and Hero (Champion) rows, which only report
+          what the current data source actually carries.
+        </p>
+        <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+          {structure.rows.map((row) => (
+            <div
+              key={row.key}
+              className={`rounded-lg border p-2.5 ${
+                row.state === 'gap'
+                  ? 'border-amber-400/30 bg-amber-400/5'
+                  : row.state === 'unavailable'
+                    ? 'border-border bg-white/[0.02] opacity-75'
+                    : 'border-border bg-white/[0.03]'
+              }`}
+            >
+              <div className="flex items-center justify-between gap-2">
+                <span className="truncate text-xs font-medium">{row.label}</span>
+                <span
+                  className={`text-xs font-bold tabular-nums ${ROLE_STATE_CLASS[row.state]}`}
+                >
+                  {row.value}
+                </span>
+              </div>
+              {row.note && (
+                <p className="mt-0.5 text-[10px] leading-snug text-muted-foreground">
+                  {row.note}
+                </p>
+              )}
+            </div>
+          ))}
+        </div>
+        {structure.gaps.length > 0 && (
+          <p className="mt-3 rounded-lg border border-amber-400/30 bg-amber-400/10 p-2.5 text-xs text-amber-200">
+            ⚠ Missing or thin: {structure.gaps.join(', ')}
+          </p>
+        )}
+      </section>
+
       <div className="grid gap-4 lg:grid-cols-2">
         <section className="panel p-5">
           <h3 className="mb-3 flex items-center gap-2 panel-title">
@@ -94,27 +173,59 @@ export function DiagnosisPanel({ analysis }: { analysis: DeckAnalysis }) {
               {analysis.findings.length} findings
             </Badge>
           </h3>
-          <ul className="space-y-3">
-            {analysis.findings.map((finding) => (
-              <li
-                key={finding.code}
-                className="flex gap-3 rounded-lg border border-border bg-white/[0.03] p-3"
-              >
-                <SeverityIcon severity={finding.severity} />
-                <div>
-                  <p className="text-sm font-semibold">{finding.title}</p>
-                  <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground">
-                    {finding.detail}
-                  </p>
-                </div>
-              </li>
-            ))}
-            {!analysis.findings.length && (
-              <li className="text-sm text-muted-foreground">
-                Nothing to flag — add the remaining cards for a full diagnosis.
-              </li>
+          <div className="space-y-4">
+            {strengths.length > 0 && (
+              <div>
+                <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-emerald-300">
+                  Strengths
+                </p>
+                <ul className="space-y-3">
+                  {strengths.map((finding) => (
+                    <li
+                      key={finding.code}
+                      className="flex gap-3 rounded-lg border border-border bg-white/[0.03] p-3"
+                    >
+                      <SeverityIcon severity={finding.severity} />
+                      <div>
+                        <p className="text-sm font-semibold">{finding.title}</p>
+                        <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground">
+                          {finding.detail}
+                        </p>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             )}
-          </ul>
+            {weaknesses.length > 0 && (
+              <div>
+                <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-amber-300">
+                  Weaknesses &amp; role gaps
+                </p>
+                <ul className="space-y-3">
+                  {weaknesses.map((finding) => (
+                    <li
+                      key={finding.code}
+                      className="flex gap-3 rounded-lg border border-border bg-white/[0.03] p-3"
+                    >
+                      <SeverityIcon severity={finding.severity} />
+                      <div>
+                        <p className="text-sm font-semibold">{finding.title}</p>
+                        <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground">
+                          {finding.detail}
+                        </p>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {!analysis.findings.length && (
+              <p className="text-sm text-muted-foreground">
+                Nothing to flag — add the remaining cards for a full diagnosis.
+              </p>
+            )}
+          </div>
         </section>
 
         <section className="panel p-5">

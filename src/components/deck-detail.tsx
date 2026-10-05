@@ -8,6 +8,7 @@ import { DeckStats, analyzeIfReady } from '@/components/deck-selection'
 import { Button } from '@/components/ui/button'
 import { deckLabel } from '@/lib/battle'
 import { deckId, removeSavedDeck, saveDeck, useSavedDecks } from '@/lib/saved-decks'
+import { useMetaSnapshot } from '@/lib/use-meta'
 import { relativeAge } from '@/lib/utils'
 
 /**
@@ -17,6 +18,7 @@ import { relativeAge } from '@/lib/utils'
  */
 export function DeckDetail({ cards }: { cards: string[] }) {
   const saved = useSavedDecks()
+  const { snapshot } = useMetaSnapshot()
   const analysis = analyzeIfReady(cards)
   const id = deckId(cards)
   const entry = saved.find((deck) => deck.id === id)
@@ -108,7 +110,22 @@ export function DeckDetail({ cards }: { cards: string[] }) {
 
         <div className="mt-4 flex flex-wrap gap-1.5">
           {cards.map((key) => (
-            <CardTile key={key} cardKey={key} size="xs" showElixir={false} />
+            <CardTile
+              key={key}
+              cardKey={key}
+              size="xs"
+              showElixir={false}
+              overlay={
+                snapshot?.evolvable?.includes(key) ? (
+                  <span
+                    title="Observed played in evolved form in this sample"
+                    className="absolute -bottom-1 -right-1 rounded bg-emerald-400 px-1 text-[7px] font-black text-emerald-950 shadow"
+                  >
+                    EVO
+                  </span>
+                ) : undefined
+              }
+            />
           ))}
         </div>
 
@@ -116,7 +133,7 @@ export function DeckDetail({ cards }: { cards: string[] }) {
       </section>
 
       {analysis ? (
-        <DiagnosisPanel analysis={analysis} />
+        <DiagnosisPanel analysis={analysis} meta={snapshot} />
       ) : (
         <section className="panel p-8 text-center text-sm text-muted-foreground">
           Pick a few more cards to unlock the full diagnosis.

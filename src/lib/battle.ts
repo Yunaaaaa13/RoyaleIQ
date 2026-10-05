@@ -16,6 +16,11 @@ export interface NormalizedBattle {
   opponentTag?: string
   arena?: string
   /**
+   * Team-side cards played in evolved form (raw payload `evolutionLevel > 0`).
+   * Absent when the source does not report evolutions (demo data, older rows).
+   */
+  evolutions?: string[]
+  /**
    * Untouched Clash Royale payload. Carried alongside the normalised battle so
    * the diagnosis engine can read tower hit points, card levels and elixir
    * leaks, and dropped before anything is serialised to the client.
@@ -43,6 +48,8 @@ export interface DeckStat {
   usage: number
   winRate: number
   avgElixir: number
+  /** Cards observed evolved in battles with this signature, most frequent first. */
+  evoKeys?: string[]
 }
 
 export interface ArchetypeStat {
@@ -112,12 +119,30 @@ export interface MetaSnapshot {
   synergies: CardSynergy[]
   avgElixir: number
   notice?: string
+  /** Distinct cards observed evolved in this sample. Absent when the source reports no evolution data. */
+  evolvable?: string[]
 }
 
 export function deckKeys(cards: { name?: string }[] | undefined): string[] {
   if (!cards?.length) return []
   const keys = cards.map((card) => keyForName(card.name ?? '')).filter(Boolean) as string[]
   return Array.from(new Set(keys)).slice(0, 8)
+}
+
+/**
+ * Card keys the payload marks as played in evolved form. Empty when the source
+ * carries no `evolutionLevel`, which is what keeps demo and older data honest:
+ * an absent list never claims a card is (or is not) evolution-capable.
+ */
+export function evolvedKeys(
+  cards: { name?: string; evolutionLevel?: number }[] | undefined,
+): string[] {
+  if (!cards?.length) return []
+  const keys = cards
+    .filter((card) => (card.evolutionLevel ?? 0) > 0)
+    .map((card) => keyForName(card.name ?? ''))
+    .filter(Boolean) as string[]
+  return Array.from(new Set(keys))
 }
 
 /**
@@ -141,6 +166,10 @@ export function aggregateMeta(
   const teamCardBattles = new Map<string, Set<string>>()
   const teamCardWins = new Map<string, number>()
   const pairStats = new Map<string, { battles: number; wins: number; decks: Set<string> }>()
+  // Evolution is only reported for battles whose payload carries it; both maps
+  // stay empty for demo data so the snapshot simply omits the fields.
+  const evoCounts = new Map<string, Map<string, number>>()
+  const evolvable = new Set<string>()
   let teamDecks = 0
   let elixirTotal = 0
   let elixirDecks = 0
@@ -182,6 +211,15 @@ export function aggregateMeta(
       bucket.battles += 1
       if (outcome === 'win') bucket.wins += 1
       deckBattles.set(signature, bucket)
+
+      if (isTeam && battle.evolutions?.length) {
+        for (const key of battle.evolutions) {
+          evolvable.add(key)
+          const perDeck = evoCounts.get(signature) ?? new Map<string, number>()
+          perDeck.set(key, (perDeck.get(key) ?? 0) + 1)
+          evoCounts.set(signature, perDeck)
+        }
+      }
 
       const archetypeKey = detectArchetype(deck).archetype.key
       const archBucket = archetypeBattles.get(archetypeKey) ?? { battles: 0, wins: 0 }
@@ -229,6 +267,7 @@ export function aggregateMeta(
       const list = signature.split('|')
       const archetype = detectArchetype(list).archetype
       const label = deckLabel(list, archetype.key)
+      const evo = evoCounts.get(signature)
       return {
         id: signature,
         label,
@@ -240,6 +279,13 @@ export function aggregateMeta(
         avgElixir: round1(
           list.reduce((sum, key) => sum + (getCard(key)?.elixir ?? 0), 0) / list.length,
         ),
+        ...(evo && evo.size
+          ? {
+              evoKeys: Array.from(evo.entries())
+                .sort((a, b) => b[1] - a[1])
+                .map(([key]) => key),
+            }
+          : {}),
       }
     })
     .filter((deck) => deck.battles >= 1)
@@ -337,6 +383,7 @@ export function aggregateMeta(
     topWinRate,
     synergies,
     avgElixir: elixirDecks ? round1(elixirTotal / elixirDecks) : 0,
+    ...(evolvable.size ? { evolvable: Array.from(evolvable).sort() } : {}),
   }
 }
 

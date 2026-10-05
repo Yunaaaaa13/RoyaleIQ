@@ -1,6 +1,6 @@
 ﻿import 'server-only'
 import { CLASH_API_BASE } from './clash-api-base'
-import { aggregateMeta, deckKeys, type MetaSnapshot, type NormalizedBattle } from './battle'
+import { aggregateMeta, deckKeys, evolvedKeys, type MetaSnapshot, type NormalizedBattle } from './battle'
 import { getPrisma, isDbConfigured } from './db'
 import { describeNetworkError, fetchWithRetry } from './http'
 import { normalizeTag } from './tags'
@@ -378,7 +378,8 @@ export function normalizeBattle(raw: RawBattle, index: number): NormalizedBattle
   const opponent = raw.opponent?.[0]
   if (!team || !opponent) return null
 
-  const ourDeck = deckKeys(team.deck ?? team.cards ?? team.deckCycle)
+  const teamRefs = team.deck ?? team.cards ?? team.deckCycle
+  const ourDeck = deckKeys(teamRefs)
   const theirDeck = deckKeys(opponent.deck ?? opponent.cards ?? opponent.deckCycle)
   if (ourDeck.length < 4 || theirDeck.length < 4) return null
 
@@ -386,6 +387,7 @@ export function normalizeBattle(raw: RawBattle, index: number): NormalizedBattle
   const theirCrowns = raw.crowns?.opponent ?? opponent.crowns ?? 0
   const result =
     ourCrowns > theirCrowns ? 'win' : ourCrowns < theirCrowns ? 'loss' : 'draw'
+  const evolutions = evolvedKeys(teamRefs)
 
   return {
     id: `${raw.battleTime}-${index}`,
@@ -398,6 +400,7 @@ export function normalizeBattle(raw: RawBattle, index: number): NormalizedBattle
     opponentName: opponent.name ?? 'Unknown',
     opponentTag: opponent.tag,
     arena: raw.arena?.name,
+    ...(evolutions.length ? { evolutions } : {}),
     // Kept only for persistence: the raw payload carries tower hit points,
     // card levels and elixir leaks that the normalised shape throws away.
     raw,

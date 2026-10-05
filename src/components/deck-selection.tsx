@@ -66,9 +66,12 @@ export function useDeckParams() {
 export function DeckSlots({
   deck,
   onRemove,
+  evolvable,
 }: {
   deck: string[]
   onRemove?: (key: string) => void
+  /** Cards the current meta sample has observed played in evolved form. */
+  evolvable?: string[]
 }) {
   const slots = Array.from({ length: 8 }, (_unused, index) => deck[index])
   return (
@@ -82,7 +85,21 @@ export function DeckSlots({
         >
           {key ? (
             <>
-              <CardTile cardKey={key} size="md" showElixir={false} />
+              <CardTile
+                cardKey={key}
+                size="md"
+                showElixir={false}
+                overlay={
+                  evolvable?.includes(key) ? (
+                    <span
+                      title="Observed played in evolved form in this sample"
+                      className="absolute -bottom-1 -right-1 rounded bg-emerald-400 px-1 text-[8px] font-black text-emerald-950 shadow"
+                    >
+                      EVO
+                    </span>
+                  ) : undefined
+                }
+              />
               {onRemove && (
                 <button
                   type="button"
@@ -175,7 +192,7 @@ export function DeckSelection({
               onClick={() => setDeck(SAMPLE)}
             >
               <LayoutTemplate className="size-3.5" />
-              Load sample
+              Try Example
             </Button>
             {actions}
             <Button

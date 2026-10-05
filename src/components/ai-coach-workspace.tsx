@@ -40,7 +40,7 @@ export function AiCoachWorkspace() {
           <div className="flex flex-wrap justify-center gap-2">
             <Button variant="outline" className="gap-2" onClick={() => setDeck(SAMPLE)}>
               <LayoutTemplate className="size-4" />
-              Load the X-Bow sample
+              Try Example
             </Button>
             <Button asChild variant="outline" className="gap-2">
               <Link href={`/deck-lab?deck=${deckParam}`}>
