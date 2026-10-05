@@ -31,7 +31,7 @@ interface PlayerHit {
 type MetaState = 'loading' | 'ready' | 'failed'
 
 const winTone = (rate: number) =>
-  rate >= 52 ? 'text-emerald-300' : rate <= 48 ? 'text-rose-300' : 'text-muted-foreground'
+  rate >= 52 ? 'text-emerald-600' : rate <= 48 ? 'text-rose-600' : 'text-muted-foreground'
 
 function SectionHead({
   icon: Icon,
@@ -55,7 +55,7 @@ function DeckCard({ deck }: { deck: DeckStat }) {
   return (
     <Link
       href={`/deck-lab?deck=${encodeURIComponent(deck.cards.join(','))}`}
-      className="group block rounded-xl border border-border/70 bg-white/[0.03] p-4 transition-colors hover:border-primary/40 hover:bg-white/[0.05]"
+      className="group block rounded-xl border border-border/70 bg-slate-50 p-4 transition-colors hover:border-primary/40 hover:bg-slate-50"
     >
       <div className="mb-3 flex items-start justify-between gap-2">
         <div className="min-w-0">
@@ -89,7 +89,7 @@ function PlayerRow({ player }: { player: PlayerHit }) {
   return (
     <Link
       href={`/player?tag=${encodeURIComponent(player.tag)}`}
-      className="group flex items-center gap-3 rounded-xl border border-border/70 bg-white/[0.03] p-3 transition-colors hover:border-primary/40 hover:bg-white/[0.05]"
+      className="group flex items-center gap-3 rounded-xl border border-border/70 bg-slate-50 p-3 transition-colors hover:border-primary/40 hover:bg-slate-50"
     >
       <span className="grid size-9 shrink-0 place-items-center rounded-full bg-primary/15">
         <UserRound className="size-4 text-primary" />
@@ -351,11 +351,11 @@ export function SearchConsole() {
                 <Link
                   key={card.key}
                   href={`/cards/${card.key}`}
-                  className="group rounded-xl border border-border bg-white/[0.03] p-3 transition hover:border-yellow-300/40 hover:bg-white/10"
+                  className="group rounded-xl border border-border bg-slate-50 p-3 transition hover:border-amber-500/40 hover:bg-slate-100"
                 >
                   <CardTile cardKey={card.key} size="sm" showElixir={false} />
                   <div className="mt-2 min-w-0">
-                    <p className="truncate text-sm font-semibold group-hover:text-yellow-200">
+                    <p className="truncate text-sm font-semibold group-hover:text-foreground">
                       {card.name}
                     </p>
                     <p className="truncate text-[11px] text-muted-foreground">

@@ -22,8 +22,8 @@ import { deckStructure } from '@/lib/deck-structure'
 type Tone = 'gold' | 'violet' | 'cyan' | 'green' | 'rose'
 
 const ROLE_STATE_CLASS: Record<string, string> = {
-  ok: 'text-emerald-300',
-  gap: 'text-amber-300',
+  ok: 'text-emerald-600',
+  gap: 'text-amber-600',
   info: 'text-foreground',
   unavailable: 'text-muted-foreground',
 }
@@ -138,8 +138,8 @@ export function DiagnosisPanel({
                 row.state === 'gap'
                   ? 'border-amber-400/30 bg-amber-400/5'
                   : row.state === 'unavailable'
-                    ? 'border-border bg-white/[0.02] opacity-75'
-                    : 'border-border bg-white/[0.03]'
+                    ? 'border-border bg-slate-50 opacity-75'
+                    : 'border-border bg-slate-50'
               }`}
             >
               <div className="flex items-center justify-between gap-2">
@@ -159,7 +159,7 @@ export function DiagnosisPanel({
           ))}
         </div>
         {structure.gaps.length > 0 && (
-          <p className="mt-3 rounded-lg border border-amber-400/30 bg-amber-400/10 p-2.5 text-xs text-amber-200">
+          <p className="mt-3 rounded-lg border border-amber-300 bg-amber-50 p-2.5 text-xs text-amber-800">
             ⚠ Missing or thin: {structure.gaps.join(', ')}
           </p>
         )}
@@ -176,14 +176,14 @@ export function DiagnosisPanel({
           <div className="space-y-4">
             {strengths.length > 0 && (
               <div>
-                <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-emerald-300">
+                <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-emerald-600">
                   Strengths
                 </p>
                 <ul className="space-y-3">
                   {strengths.map((finding) => (
                     <li
                       key={finding.code}
-                      className="flex gap-3 rounded-lg border border-border bg-white/[0.03] p-3"
+                      className="flex gap-3 rounded-lg border border-border bg-slate-50 p-3"
                     >
                       <SeverityIcon severity={finding.severity} />
                       <div>
@@ -199,14 +199,14 @@ export function DiagnosisPanel({
             )}
             {weaknesses.length > 0 && (
               <div>
-                <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-amber-300">
+                <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-amber-600">
                   Weaknesses &amp; role gaps
                 </p>
                 <ul className="space-y-3">
                   {weaknesses.map((finding) => (
                     <li
                       key={finding.code}
-                      className="flex gap-3 rounded-lg border border-border bg-white/[0.03] p-3"
+                      className="flex gap-3 rounded-lg border border-border bg-slate-50 p-3"
                     >
                       <SeverityIcon severity={finding.severity} />
                       <div>
@@ -238,26 +238,27 @@ export function DiagnosisPanel({
           <div className="h-44 w-full">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={analysis.costCurve} margin={{ top: 6, right: 6, left: -22, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.08)" vertical={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(15,23,42,0.08)" vertical={false} />
                 <XAxis
                   dataKey="label"
-                  tick={{ fill: 'rgba(255,255,255,0.55)', fontSize: 11 }}
+                  tick={{ fill: '#6B7280', fontSize: 11 }}
                   axisLine={false}
                   tickLine={false}
                 />
                 <YAxis
                   allowDecimals={false}
-                  tick={{ fill: 'rgba(255,255,255,0.55)', fontSize: 11 }}
+                  tick={{ fill: '#6B7280', fontSize: 11 }}
                   axisLine={false}
                   tickLine={false}
                 />
                 <ReTooltip
-                  cursor={{ fill: 'rgba(255,255,255,0.06)' }}
+                  cursor={{ fill: 'rgba(15,23,42,0.05)' }}
                   contentStyle={{
-                    background: '#141a2e',
-                    border: '1px solid rgba(255,255,255,0.12)',
+                    background: '#ffffff',
+                    border: '1px solid #E3EAF3',
                     borderRadius: 8,
                     fontSize: 12,
+                    color: '#172033',
                   }}
                   formatter={(value, name) => [value, String(name ?? 'cards')]}
                   labelFormatter={(label) => `${label} elixir`}
@@ -266,7 +267,7 @@ export function DiagnosisPanel({
                   {analysis.costCurve.map((entry) => (
                     <Cell
                       key={entry.elixir}
-                      fill={entry.elixir <= 2 ? '#38bdf8' : entry.elixir >= 5 ? '#fb7185' : '#a78bfa'}
+                      fill={entry.elixir <= 2 ? '#2F80ED' : entry.elixir >= 5 ? '#D64545' : '#8FB8EC'}
                     />
                   ))}
                 </Bar>
@@ -283,7 +284,7 @@ export function DiagnosisPanel({
               ['Air answers', analysis.composition.airDefense],
               ['Splash', analysis.composition.splash],
             ].map(([label, list]) => (
-              <div key={label as string} className="rounded-lg bg-white/[0.03] p-2">
+              <div key={label as string} className="rounded-lg bg-slate-50 p-2">
                 <p className="text-[10px] uppercase tracking-wide text-muted-foreground">
                   {label as string}
                 </p>
@@ -300,7 +301,7 @@ export function DiagnosisPanel({
 
       <section className="panel p-5">
         <h3 className="mb-1 flex items-center gap-2 panel-title">
-          <Sparkles className="size-4 text-yellow-300" />
+          <Sparkles className="size-4 text-amber-600" />
           Recommended changes
         </h3>
         <p className="mb-4 text-xs text-muted-foreground">
@@ -308,7 +309,7 @@ export function DiagnosisPanel({
         </p>
 
         {!analysis.swaps.length ? (
-          <p className="rounded-lg border border-emerald-400/20 bg-emerald-400/10 p-4 text-sm text-emerald-200">
+          <p className="rounded-lg border border-emerald-300/60 bg-emerald-50 p-4 text-sm text-emerald-800">
             No structural swaps recommended — this deck already covers its roles well.
           </p>
         ) : (
@@ -316,11 +317,11 @@ export function DiagnosisPanel({
             {analysis.swaps.map((swap) => (
               <article
                 key={`${swap.from}-${swap.to}`}
-                className="rounded-xl border border-border bg-white/[0.03] p-4"
+                className="rounded-xl border border-border bg-slate-50 p-4"
               >
                 <div className="flex items-center justify-center gap-3">
                   <CardTile cardKey={swap.from} size="sm" showName />
-                  <ArrowRight className="size-5 shrink-0 text-yellow-300" />
+                  <ArrowRight className="size-5 shrink-0 text-amber-600" />
                   <CardTile cardKey={swap.to} size="sm" showName />
                 </div>
                 <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
@@ -328,13 +329,13 @@ export function DiagnosisPanel({
                 </p>
                 <ul className="mt-2 space-y-1 text-xs">
                   {swap.gains.map((gain) => (
-                    <li key={gain} className="flex gap-1.5 text-emerald-300">
+                    <li key={gain} className="flex gap-1.5 text-emerald-600">
                       <span>+</span>
                       {gain}
                     </li>
                   ))}
                   {swap.tradeoffs.map((tradeoff) => (
-                    <li key={tradeoff} className="flex gap-1.5 text-amber-300">
+                    <li key={tradeoff} className="flex gap-1.5 text-amber-600">
                       <span>−</span>
                       {tradeoff}
                     </li>
@@ -363,7 +364,7 @@ export function MatchupPanel({ analysis }: { analysis: DeckAnalysis }) {
 
       <section className="panel p-5">
         <h3 className="mb-4 flex items-center gap-2 panel-title">
-          <Swords className="size-4 text-cyan-300" />
+          <Swords className="size-4 text-cyan-700" />
           Projected win rate by archetype
         </h3>
         <div className="space-y-3">
@@ -372,32 +373,32 @@ export function MatchupPanel({ analysis }: { analysis: DeckAnalysis }) {
               <div className="flex items-center justify-between text-xs">
                 <span className="flex items-center gap-2 font-medium">
                   {line.verdict === 'favored' && (
-                    <TrendingUp className="size-3.5 text-emerald-400" />
+                    <TrendingUp className="size-3.5 text-emerald-600" />
                   )}
                   {line.verdict === 'unfavored' && (
-                    <TrendingDown className="size-3.5 text-rose-400" />
+                    <TrendingDown className="size-3.5 text-rose-600" />
                   )}
                   {line.label}
                 </span>
                 <span
                   className={
                     line.verdict === 'favored'
-                      ? 'font-bold text-emerald-300'
+                      ? 'font-bold text-emerald-600'
                       : line.verdict === 'unfavored'
-                        ? 'font-bold text-rose-300'
+                        ? 'font-bold text-rose-600'
                         : 'font-bold text-muted-foreground'
                   }
                 >
                   {line.score}%
                 </span>
               </div>
-              <div className="h-2 overflow-hidden rounded-full bg-white/10">
+              <div className="h-2 overflow-hidden rounded-full bg-slate-100">
                 <div
                   className={`h-full rounded-full transition-all duration-700 ${
                     line.verdict === 'favored'
-                      ? 'bg-emerald-400'
+                      ? 'bg-emerald-500'
                       : line.verdict === 'unfavored'
-                        ? 'bg-rose-400'
+                        ? 'bg-rose-500'
                         : 'bg-slate-400'
                   }`}
                   style={{ width: `${line.score}%` }}

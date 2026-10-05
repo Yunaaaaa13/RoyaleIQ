@@ -19,17 +19,17 @@ export function SiteSidebar() {
     <aside className="fixed inset-y-0 left-0 z-40 hidden w-60 flex-col border-r border-sidebar-border bg-sidebar lg:flex">
       <Link
         href="/"
-        className="flex h-16 shrink-0 items-center gap-2.5 border-b border-sidebar-border px-5 transition-colors hover:bg-white/[0.03]"
+        className="flex h-16 shrink-0 items-center gap-2.5 border-b border-sidebar-border px-5 transition-colors hover:bg-slate-50"
       >
-        <span className="grid size-8 place-items-center rounded-lg bg-gradient-to-br from-blue-400 to-indigo-600 text-white shadow-lg shadow-blue-600/25">
+        <span className="grid size-8 place-items-center rounded-lg bg-primary text-white shadow-sm">
           <Crown className="size-4" strokeWidth={2.5} />
         </span>
         <span className="flex flex-col leading-none">
-          <span className="text-[15px] font-bold tracking-tight">
+          <span className="text-[15px] font-bold tracking-tight text-foreground">
             Royale<span className="gold-text">IQ</span>
           </span>
-          <span className="text-[9px] uppercase tracking-[0.2em] text-muted-foreground">
-            Deck Intelligence
+          <span className="mt-0.5 text-[9px] uppercase tracking-[0.16em] text-muted-foreground">
+            Clash Royale Analytics
           </span>
         </span>
       </Link>
@@ -65,24 +65,17 @@ export function SiteSidebar() {
                         <Link
                           href={item.href}
                           className={cn(
-                            'group relative flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-[13px] font-medium transition-colors',
+                            'group flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-[13px] font-medium transition-colors',
                             active
-                              ? 'bg-primary/15 text-foreground'
-                              : 'text-sidebar-foreground/70 hover:bg-white/[0.06] hover:text-foreground',
+                              ? 'bg-sidebar-accent text-sidebar-primary'
+                              : 'text-slate-600 hover:bg-slate-50 hover:text-foreground',
                           )}
                         >
-                          <span
-                            aria-hidden
-                            className={cn(
-                              'absolute -left-3 top-1/2 h-4 w-0.5 -translate-y-1/2 rounded-r-full bg-primary transition-all',
-                              active ? 'opacity-100' : 'opacity-0 group-hover:opacity-40',
-                            )}
-                          />
                           <item.icon
                             className={cn(
                               'size-4 shrink-0 transition-colors',
                               active
-                                ? 'text-primary'
+                                ? 'text-sidebar-primary'
                                 : 'text-muted-foreground group-hover:text-foreground',
                             )}
                           />
@@ -101,9 +94,9 @@ export function SiteSidebar() {
       <div className="border-t border-sidebar-border p-3">
         <Link
           href="/ai-coach"
-          className="group flex items-center gap-2.5 rounded-xl border border-primary/25 bg-primary/10 px-3 py-2.5 text-[13px] font-medium transition-colors hover:border-primary/45 hover:bg-primary/15"
+          className="group flex items-center gap-2.5 rounded-lg border border-border bg-slate-50 px-3 py-2.5 text-[13px] font-medium text-slate-700 transition-colors hover:border-primary/30 hover:bg-accent hover:text-accent-foreground"
         >
-          <Sparkles className="size-4 shrink-0 text-primary transition-transform group-hover:scale-110" />
+          <Sparkles className="size-4 shrink-0 text-primary" />
           <span className="min-w-0 flex-1 truncate">Ask the AI coach</span>
         </Link>
       </div>

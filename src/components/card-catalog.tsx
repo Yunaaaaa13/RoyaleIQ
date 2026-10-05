@@ -38,7 +38,7 @@ const SORTS: { value: SortKey; label: string }[] = [
 ]
 
 const winTone = (rate: number) =>
-  rate >= 52 ? 'text-emerald-300' : rate <= 48 ? 'text-rose-300' : 'text-muted-foreground'
+  rate >= 52 ? 'text-emerald-600' : rate <= 48 ? 'text-rose-600' : 'text-muted-foreground'
 
 export function CardCatalog() {
   const router = useRouter()
@@ -204,7 +204,7 @@ export function CardCatalog() {
       </section>
 
       {error && (
-        <section className="panel p-6 text-sm text-rose-300" role="alert">
+        <section className="panel p-6 text-sm text-rose-600" role="alert">
           {error}
         </section>
       )}
@@ -235,16 +235,16 @@ export function CardCatalog() {
                 key={card.key}
                 href={`/cards/${card.key}`}
                 className={cn(
-                  'group rounded-xl border border-border bg-white/[0.03] p-3 transition',
-                  'hover:border-yellow-300/40 hover:bg-white/10 focus-visible:outline-none',
-                  'focus-visible:ring-2 focus-visible:ring-yellow-300/60',
+                  'group rounded-xl border border-border bg-slate-50 p-3 transition',
+                  'hover:border-amber-500/40 hover:bg-slate-100 focus-visible:outline-none',
+                  'focus-visible:ring-2 focus-visible:ring-amber-500/60',
                 )}
               >
                 {/* Stacked instead of side by side: at 360px a two-column cell
                     leaves the name under 70px, which truncates most card names. */}
                 <CardTile cardKey={card.key} size="sm" showElixir={false} />
                 <div className="mt-2 min-w-0">
-                  <p className="truncate text-sm font-semibold group-hover:text-yellow-200">
+                  <p className="truncate text-sm font-semibold group-hover:text-foreground">
                     {card.name}
                   </p>
                   <p className="truncate text-[11px] text-muted-foreground">

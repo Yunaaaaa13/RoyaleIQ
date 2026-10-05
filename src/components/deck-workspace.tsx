@@ -98,7 +98,7 @@ export function DeckWorkspace() {
               disabled={!deck.length}
             >
               {copied ? (
-                <Check className="size-3.5 text-emerald-400" />
+                <Check className="size-3.5 text-emerald-600" />
               ) : (
                 <ClipboardCopy className="size-3.5" />
               )}

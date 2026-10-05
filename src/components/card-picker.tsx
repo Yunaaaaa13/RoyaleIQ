@@ -96,8 +96,8 @@ export function CardPicker({ selected, onToggle, max, disabledTitle }: CardPicke
               onClick={() => setFilter(entry.key)}
               className={`rounded-full border px-2.5 py-1 text-xs font-medium transition ${
                 filter === entry.key
-                  ? 'border-yellow-300/60 bg-yellow-300/15 text-yellow-200'
-                  : 'border-border bg-white/[0.03] text-muted-foreground hover:text-foreground'
+                  ? 'border-amber-400 bg-amber-50 text-amber-700'
+                  : 'border-border bg-slate-50 text-muted-foreground hover:text-foreground'
               }`}
             >
               {entry.label}
@@ -107,12 +107,12 @@ export function CardPicker({ selected, onToggle, max, disabledTitle }: CardPicke
       </div>
 
       {full && (
-        <p className="text-xs text-yellow-200/90">
+        <p className="text-xs text-amber-700">
           {disabledTitle ?? 'Deck is full — remove a card to swap it.'}
         </p>
       )}
 
-      <div className="grid max-h-[26rem] grid-cols-4 gap-2 overflow-y-auto rounded-xl border border-border bg-black/20 p-3 sm:grid-cols-6 md:grid-cols-8">
+      <div className="grid max-h-[26rem] grid-cols-4 gap-2 overflow-y-auto rounded-xl border border-border bg-slate-100 p-3 sm:grid-cols-6 md:grid-cols-8">
         {cards.map((card) => {
           const active = selected.includes(card.key)
           const blocked = full && !active
@@ -124,7 +124,7 @@ export function CardPicker({ selected, onToggle, max, disabledTitle }: CardPicke
               onClick={() => onToggle(card.key)}
               title={`${card.name} · ${card.elixir} elixir`}
               className={`flex flex-col items-center gap-1 rounded-lg p-1 transition ${
-                active ? 'bg-yellow-300/15 ring-1 ring-yellow-300/50' : 'hover:bg-white/[0.03]'
+                active ? 'bg-amber-500/10 ring-1 ring-amber-500/50' : 'hover:bg-slate-50'
               } ${blocked ? 'opacity-30' : ''}`}
             >
               <CardTile cardKey={card.key} size="sm" showElixir={false} selected={active} />

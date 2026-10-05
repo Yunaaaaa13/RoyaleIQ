@@ -41,14 +41,14 @@ interface PlayerResponse {
 }
 
 const VERDICT_TONE: Record<string, string> = {
-  strong: 'text-emerald-300',
+  strong: 'text-emerald-600',
   even: 'text-muted-foreground',
-  weak: 'text-rose-300',
+  weak: 'text-rose-600',
 }
 
 function ArchetypeRow({ record }: { record: ArchetypeRecord }) {
   return (
-    <li className="flex items-center gap-3 rounded-lg border border-border bg-white/[0.03] px-3 py-2">
+    <li className="flex items-center gap-3 rounded-lg border border-border bg-slate-50 px-3 py-2">
       <span className="flex-1 truncate text-sm font-medium">{record.label}</span>
       <span className="text-xs text-muted-foreground">{record.battles} games</span>
       <span
@@ -61,9 +61,9 @@ function ArchetypeRow({ record }: { record: ArchetypeRecord }) {
           variant="outline"
           className={
             record.verdict === 'strong'
-              ? 'text-emerald-300'
+              ? 'text-emerald-600'
               : record.verdict === 'weak'
-                ? 'text-rose-300'
+                ? 'text-rose-600'
                 : ''
           }
         >
@@ -214,10 +214,10 @@ export function PlayerPanel({
         display: `${card.winRate}% wr`,
         tone:
           card.winRate >= 52
-            ? 'bg-emerald-400'
+            ? 'bg-emerald-500'
             : card.winRate <= 48
-              ? 'bg-rose-400'
-              : 'bg-cyan-400',
+              ? 'bg-rose-500'
+              : 'bg-sky-500',
       })),
     [stats],
   )
@@ -324,7 +324,7 @@ export function PlayerPanel({
           {history.map((item) => (
             <span
               key={item.tag}
-              className="flex items-center gap-1.5 rounded-full border border-border bg-white/[0.03] py-1 pl-3 pr-1.5 text-xs transition-colors hover:border-white/20"
+              className="flex items-center gap-1.5 rounded-full border border-border bg-slate-50 py-1 pl-3 pr-1.5 text-xs transition-colors hover:border-slate-300"
             >
               <button
                 type="button"
@@ -336,14 +336,14 @@ export function PlayerPanel({
               <span className="font-mono text-[10px] text-muted-foreground">
                 {item.tag}
               </span>
-              <span className="font-mono text-[10px] text-yellow-300/80">
+              <span className="font-mono text-[10px] text-amber-600/80">
                 {item.trophies.toLocaleString()}
               </span>
               <button
                 type="button"
                 aria-label={`Remove ${item.name} from recent searches`}
                 onClick={() => removeRecent(item.tag)}
-                className="grid size-5 place-items-center rounded-full text-muted-foreground transition hover:bg-white/10 hover:text-foreground"
+                className="grid size-5 place-items-center rounded-full text-muted-foreground transition hover:bg-slate-100 hover:text-foreground"
               >
                 ×
               </button>
@@ -360,7 +360,7 @@ export function PlayerPanel({
       )}
 
       {error && (
-        <Alert className="border-rose-400/30 bg-rose-400/10">
+        <Alert className="border-rose-500/30 bg-rose-500/10">
           <AlertTitle>Could not load that player</AlertTitle>
           <AlertDescription>{error}</AlertDescription>
         </Alert>
@@ -368,7 +368,7 @@ export function PlayerPanel({
 
       {!payload && !error && !loading && (
         <section className="panel grid place-items-center gap-3 px-6 py-14 text-center">
-          <span className="grid size-12 place-items-center rounded-2xl bg-white/[0.03] text-yellow-300">
+          <span className="grid size-12 place-items-center rounded-2xl bg-slate-50 text-amber-600">
             <Search className="size-5" />
           </span>
           <h2 className="text-lg font-semibold">Search a player tag to begin</h2>
@@ -393,7 +393,7 @@ export function PlayerPanel({
       )}
 
       {payload?.notice && (
-        <Alert className="border-yellow-400/30 bg-yellow-400/10">
+        <Alert className="border-amber-500/30 bg-amber-500/10">
           <AlertTitle className="flex items-center gap-2">
             <Database className="size-4" />
             Stored profile
@@ -405,7 +405,7 @@ export function PlayerPanel({
       {profile && stats && (
         <>
           <section className="panel relative overflow-hidden p-5">
-            <div className="pointer-events-none absolute -right-16 -top-16 size-56 rounded-full bg-yellow-400/10 blur-3xl" />
+            <div className="pointer-events-none absolute -right-16 -top-16 size-56 rounded-full bg-amber-500/10 blur-3xl" />
             <div className="flex flex-wrap items-center gap-5">
               <div className="grid size-16 place-items-center rounded-2xl bg-gradient-to-br from-yellow-300 to-amber-600 text-black">
                 <Crown className="size-8" />
@@ -421,7 +421,7 @@ export function PlayerPanel({
                     </span>
                   )}
                   <Badge variant="outline">{profile.arena?.name}</Badge>
-                  <Badge variant="outline" className="text-yellow-300">
+                  <Badge variant="outline" className="text-amber-600">
                     {profile.trophies.toLocaleString()} trophies
                   </Badge>
                   <Badge variant="outline" className="gap-1">
@@ -442,7 +442,7 @@ export function PlayerPanel({
                   {recent[0]?.battle.deck.length === 8 && (
                     <Link
                       href={`/ai-coach?deck=${encodeURIComponent(recent[0].battle.deck.join(','))}&tag=${encodeURIComponent(profile.tag)}`}
-                      className="inline-flex items-center gap-1.5 rounded-full border border-violet-400/40 px-2.5 py-1 font-medium text-violet-300 transition hover:bg-violet-400/10"
+                      className="inline-flex items-center gap-1.5 rounded-full border border-violet-400/40 px-2.5 py-1 font-medium text-blue-600 transition hover:bg-blue-500/10"
                     >
                       <Bot className="size-3" />
                       Coach this deck
@@ -457,7 +457,7 @@ export function PlayerPanel({
                     disabled={trackBusy}
                     className={`h-7 gap-1.5 rounded-full px-3 text-xs font-medium ${
                       tracked
-                        ? 'border-yellow-400/50 bg-yellow-400/10 text-yellow-300'
+                        ? 'border-yellow-400/50 bg-amber-500/10 text-amber-600'
                         : ''
                     }`}
                   >
@@ -465,7 +465,7 @@ export function PlayerPanel({
                     {trackBusy ? 'Saving…' : tracked ? 'Tracking' : 'Track'}
                   </Button>
                   {trackNotice && (
-                    <span className="text-[11px] text-rose-300">{trackNotice}</span>
+                    <span className="text-[11px] text-rose-600">{trackNotice}</span>
                   )}
                 </div>
               </div>
@@ -486,34 +486,35 @@ export function PlayerPanel({
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={trend} margin={{ top: 8, right: 12, left: -22, bottom: 0 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.08)" />
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(15,23,42,0.08)" />
                     <XAxis
                       dataKey="month"
-                      tick={{ fill: 'rgba(255,255,255,0.6)', fontSize: 11 }}
+                      tick={{ fill: '#6B7280', fontSize: 11 }}
                       axisLine={false}
                       tickLine={false}
                     />
                     <YAxis
                       domain={[0, 100]}
-                      tick={{ fill: 'rgba(255,255,255,0.6)', fontSize: 11 }}
+                      tick={{ fill: '#6B7280', fontSize: 11 }}
                       axisLine={false}
                       tickLine={false}
                     />
                     <ReTooltip
                       contentStyle={{
-                        background: '#141a2e',
-                        border: '1px solid rgba(255,255,255,0.12)',
+                        background: '#ffffff',
+                        border: '1px solid #E3EAF3',
                         borderRadius: 8,
                         fontSize: 12,
+                    color: '#172033',
                       }}
                       formatter={(value) => [`${value}%`, 'Win rate']}
                     />
                     <Line
                       type="monotone"
                       dataKey="winRate"
-                      stroke="#facc15"
+                      stroke="#F5B942"
                       strokeWidth={2.5}
-                      dot={{ r: 4, fill: '#facc15' }}
+                      dot={{ r: 4, fill: '#F5B942' }}
                     />
                   </LineChart>
                 </ResponsiveContainer>
@@ -554,9 +555,9 @@ export function PlayerPanel({
               </h3>
               <BarList items={usageItems} />
               {stats.worstCard && (
-                <div className="mt-4 rounded-lg border border-rose-400/25 bg-rose-400/10 p-3 text-xs">
-                  <p className="font-semibold text-rose-200">Worst card in your deck</p>
-                  <p className="mt-1 text-rose-100/80">
+                <div className="mt-4 rounded-lg border border-rose-400/25 bg-rose-500/10 p-3 text-xs">
+                  <p className="font-semibold text-rose-600">Worst card in your deck</p>
+                  <p className="mt-1 text-rose-600/80">
                     {stats.worstCard.name} — {stats.worstCard.winRate}% win rate across{' '}
                     {stats.worstCard.battles} games.
                   </p>
@@ -612,16 +613,16 @@ export function PlayerPanel({
                   <li key={battle.id}>
                     <Link
                       href={`/battle?tag=${encodeURIComponent(urlTag)}&t=${encodeURIComponent(battle.time)}`}
-                      className="block w-full rounded-xl border border-border bg-white/[0.03] px-3 py-3 text-left text-sm transition-colors hover:border-white/20 hover:bg-white/10"
+                      className="block w-full rounded-xl border border-border bg-slate-50 px-3 py-3 text-left text-sm transition-colors hover:border-slate-300 hover:bg-slate-100"
                     >
                         <span className="flex items-center gap-3">
                           <span
                             className={`grid size-7 shrink-0 place-items-center rounded-md text-xs font-bold ${
                               battle.result === 'win'
-                                ? 'bg-emerald-500/20 text-emerald-300'
+                                ? 'bg-emerald-500/10 text-emerald-600'
                                 : battle.result === 'loss'
-                                  ? 'bg-rose-500/20 text-rose-300'
-                                  : 'bg-white/10 text-muted-foreground'
+                                  ? 'bg-rose-500/10 text-rose-600'
+                                  : 'bg-slate-100 text-muted-foreground'
                             }`}
                           >
                             {battle.result === 'win'

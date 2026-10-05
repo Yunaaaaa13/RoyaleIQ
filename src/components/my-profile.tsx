@@ -80,7 +80,7 @@ export function MyProfile() {
           )}
         </form>
         {problem && (
-          <p role="alert" className="text-xs text-rose-300">
+          <p role="alert" className="text-xs text-rose-600">
             {problem}
           </p>
         )}

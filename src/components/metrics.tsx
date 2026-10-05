@@ -3,11 +3,11 @@ import { AlertTriangle, CheckCircle2, ShieldAlert } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const TONE: Record<string, string> = {
-  gold: 'bg-yellow-400',
-  cyan: 'bg-cyan-400',
-  violet: 'bg-violet-400',
-  green: 'bg-emerald-400',
-  rose: 'bg-rose-400',
+  gold: 'bg-amber-500',
+  cyan: 'bg-sky-500',
+  violet: 'bg-blue-500',
+  green: 'bg-emerald-500',
+  rose: 'bg-rose-500',
 }
 
 export function ScoreBar({
@@ -33,7 +33,7 @@ export function ScoreBar({
           <span className="text-muted-foreground">/{max}</span>
         </span>
       </div>
-      <div className="h-1.5 overflow-hidden rounded-full bg-white/10">
+      <div className="h-1.5 overflow-hidden rounded-full bg-slate-100">
         <div
           className={cn('h-full rounded-full transition-all duration-700', TONE[tone])}
           style={{ width: `${pct}%` }}
@@ -44,43 +44,59 @@ export function ScoreBar({
   )
 }
 
+/**
+ * KPI card: quiet label, value-forward, supporting context underneath.
+ * Flat white surface with a hairline border — no glow, no gradient.
+ */
 export function StatTile({
   label,
   value,
   sub,
   accent,
+  icon,
 }: {
   label: string
   value: ReactNode
   sub?: string
   accent?: 'gold' | 'rose' | 'green' | 'cyan'
+  icon?: ReactNode
 }) {
-  const accentClass = {
-    gold: 'text-gold',
-    rose: 'text-rose-300',
-    green: 'text-emerald-300',
-    cyan: 'text-cyan-300',
-  }[accent ?? 'gold']
+  const accentClass = accent
+    ? {
+        gold: 'text-amber-600',
+        rose: 'text-rose-600',
+        green: 'text-emerald-600',
+        cyan: 'text-sky-600',
+      }[accent]
+    : 'text-foreground'
 
   return (
     <div className="kpi">
-      <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-        {label}
-      </p>
-      <p className={cn('mt-1.5 text-2xl font-bold tracking-tight tabular-nums', accentClass)}>
+      <div className="flex items-start justify-between gap-2">
+        <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+          {label}
+        </p>
+        {icon && <span className="text-primary/70">{icon}</span>}
+      </div>
+      <p
+        className={cn(
+          'mt-1.5 text-[28px] font-bold leading-none tracking-tight tabular-nums',
+          accentClass,
+        )}
+      >
         {value}
       </p>
-      {sub && <p className="mt-0.5 text-[11px] leading-snug text-muted-foreground">{sub}</p>}
+      {sub && <p className="mt-1.5 text-[11px] leading-snug text-muted-foreground">{sub}</p>}
     </div>
   )
 }
 
 export function SeverityIcon({ severity }: { severity: string }) {
   if (severity === 'good')
-    return <CheckCircle2 className="size-4 shrink-0 text-emerald-400" />
+    return <CheckCircle2 className="size-4 shrink-0 text-emerald-500" />
   if (severity === 'critical')
-    return <ShieldAlert className="size-4 shrink-0 text-rose-400" />
-  return <AlertTriangle className="size-4 shrink-0 text-amber-400" />
+    return <ShieldAlert className="size-4 shrink-0 text-rose-500" />
+  return <AlertTriangle className="size-4 shrink-0 text-amber-500" />
 }
 
 export function BarList({
@@ -97,7 +113,7 @@ export function BarList({
             <span className="truncate text-muted-foreground">{item.label}</span>
             <span className="shrink-0 font-semibold tabular-nums">{item.display}</span>
           </div>
-          <div className="h-1.5 overflow-hidden rounded-full bg-white/10">
+          <div className="h-1.5 overflow-hidden rounded-full bg-slate-100">
             <div
               className={cn('h-full rounded-full transition-all duration-700', item.tone ?? 'bg-primary')}
               style={{ width: `${(item.value / max) * 100}%` }}

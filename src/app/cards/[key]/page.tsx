@@ -45,7 +45,7 @@ export default async function CardPage({ params }: CardPageProps) {
       <header className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center">
         <CardTile cardKey={card.key} size="lg" showElixir />
         <div className="min-w-0">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-yellow-300/80">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-amber-600/80">
             Card Intelligence
           </p>
           <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">{card.name}</h1>
@@ -55,7 +55,7 @@ export default async function CardPage({ params }: CardPageProps) {
             <Badge variant="outline">{card.type}</Badge>
             <Badge variant="outline">{arenaLabel(card.arena)}</Badge>
             {combat.roles.map((role) => (
-              <Badge key={role} variant="outline" className="border-yellow-300/30 text-yellow-200/90">
+              <Badge key={role} variant="outline" className="border-amber-300 text-amber-700">
                 {ROLE_LABEL[role]}
               </Badge>
             ))}

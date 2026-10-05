@@ -54,49 +54,46 @@
 }
 
 :root {
-  /* Deep navy base, blue primary, gold + violet as small accents. */
-  --background: oklch(0.135 0.026 258);
-  --foreground: oklch(0.965 0.008 255);
-  --card: oklch(0.178 0.03 258);
-  --card-foreground: oklch(0.965 0.008 255);
-  --popover: oklch(0.19 0.032 258);
-  --popover-foreground: oklch(0.965 0.008 255);
-  --primary: oklch(0.63 0.155 255);
-  --primary-foreground: oklch(0.985 0.005 255);
-  --secondary: oklch(0.255 0.036 258);
-  --secondary-foreground: oklch(0.965 0.008 255);
-  --muted: oklch(0.245 0.028 258);
-  --muted-foreground: oklch(0.72 0.028 262);
-  --accent: oklch(0.305 0.055 258);
-  --accent-foreground: oklch(0.965 0.008 255);
-  --destructive: oklch(0.64 0.21 25);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 14%);
-  --ring: oklch(0.63 0.155 255);
-  --chart-1: oklch(0.63 0.155 255);
-  --chart-2: oklch(0.75 0.14 205);
-  --chart-3: oklch(0.68 0.19 300);
-  --chart-4: oklch(0.84 0.13 85);
-  --chart-5: oklch(0.72 0.16 150);
-  --gold: oklch(0.84 0.13 85);
-  --gold-foreground: oklch(0.2 0.05 85);
-  --royale: oklch(0.64 0.19 300);
-  --success: oklch(0.72 0.17 150);
-  --warning: oklch(0.78 0.15 70);
-  --sidebar: oklch(0.115 0.024 258);
-  --sidebar-foreground: oklch(0.86 0.012 258);
-  --sidebar-primary: oklch(0.63 0.155 255);
-  --sidebar-primary-foreground: oklch(0.985 0.005 255);
-  --sidebar-accent: oklch(0.235 0.04 258);
-  --sidebar-accent-foreground: oklch(0.965 0.008 255);
-  --sidebar-border: oklch(1 0 0 / 9%);
-  --sidebar-ring: oklch(0.63 0.155 255);
+  /* Light analytics identity: white surfaces, blue brand, gold only as a
+     small Clash Royale-inspired highlight. */
+  --background: #F5F8FC;
+  --foreground: #172033;
+  --card: #FFFFFF;
+  --card-foreground: #172033;
+  --popover: #FFFFFF;
+  --popover-foreground: #172033;
+  --primary: #2F80ED;
+  --primary-foreground: #FFFFFF;
+  --secondary: #EAF3FF;
+  --secondary-foreground: #174A8B;
+  --muted: #EDF2F8;
+  --muted-foreground: #6B7280;
+  --accent: #EAF3FF;
+  --accent-foreground: #174A8B;
+  --destructive: #D64545;
+  --border: #E3EAF3;
+  --input: #E3EAF3;
+  --ring: #2F80ED;
+  --chart-1: #2F80ED;
+  --chart-2: #174A8B;
+  --chart-3: #8FB8EC;
+  --chart-4: #F5B942;
+  --chart-5: #22A06B;
+  --gold: #F5B942;
+  --gold-foreground: #8A5A00;
+  --royale: #2F80ED;
+  --success: #22A06B;
+  --warning: #F5B942;
+  --sidebar: #FFFFFF;
+  --sidebar-foreground: #172033;
+  --sidebar-primary: #2F80ED;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #EAF3FF;
+  --sidebar-accent-foreground: #174A8B;
+  --sidebar-border: #E3EAF3;
+  --sidebar-ring: #2F80ED;
   --radius: 0.75rem;
-  color-scheme: dark;
-}
-
-.dark {
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 @layer base {
@@ -105,17 +102,12 @@
   }
   body {
     @apply bg-background text-foreground antialiased;
-    background-image:
-      radial-gradient(1100px 540px at 6% -14%, rgb(37 99 235 / 16%), transparent 62%),
-      radial-gradient(940px 480px at 96% -8%, rgb(139 92 246 / 12%), transparent 58%),
-      radial-gradient(900px 700px at 50% 118%, rgb(14 165 233 / 7%), transparent 60%);
-    background-attachment: fixed;
   }
   html {
     @apply font-sans scroll-smooth;
   }
   ::selection {
-    background: color-mix(in oklch, var(--primary) 40%, transparent);
+    background: rgb(47 128 237 / 18%);
     color: var(--foreground);
   }
 }
@@ -125,18 +117,15 @@
     text-wrap: balance;
   }
 
-  /* Surface: one card treatment reused by every panel on the site. */
+  /* Surface: one flat card treatment reused by every panel on the site. */
   .panel {
-    @apply rounded-2xl border border-border/90 bg-card/70;
-    box-shadow:
-      inset 0 1px 0 0 rgb(255 255 255 / 4%),
-      0 18px 40px -32px rgb(0 0 0 / 90%);
-    backdrop-filter: blur(8px);
+    @apply rounded-xl border border-border bg-card;
+    box-shadow: 0 1px 2px rgb(23 32 51 / 4%);
   }
 
   /* Shared page header rhythm. */
   .eyebrow {
-    @apply text-[11px] font-semibold uppercase tracking-[0.18em] text-primary/85;
+    @apply text-[11px] font-semibold uppercase tracking-[0.18em] text-primary;
   }
   .page-title {
     @apply text-2xl font-bold tracking-tight text-foreground sm:text-3xl;
@@ -148,38 +137,43 @@
     @apply text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground;
   }
   .panel-title {
-    @apply text-xs font-semibold uppercase tracking-[0.16em] text-foreground/85;
+    @apply text-[15px] font-semibold tracking-tight text-foreground/90;
   }
   .panel-head {
-    @apply mb-4 flex flex-wrap items-start justify-between gap-2 border-b border-border/70 pb-3;
+    @apply mb-4 flex flex-wrap items-start justify-between gap-2 border-b border-border pb-3;
   }
 
-  /* KPI surface: value-forward, quiet label, hairline accent. */
+  /* KPI surface: flat white card, hairline border, quiet label. */
   .kpi {
-    @apply relative overflow-hidden rounded-2xl border border-border/80 bg-gradient-to-b from-white/[0.055] to-white/[0.015] p-4 transition-colors;
-  }
-  .kpi::before {
-    content: "";
-    @apply absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent;
+    @apply rounded-xl border border-border bg-card p-4 transition-colors;
+    box-shadow: 0 1px 2px rgb(23 32 51 / 4%);
   }
 
+  /* Readable gold accent for the RoyaleIQ mark. */
   .gold-text {
-    background: linear-gradient(120deg, oklch(0.9 0.12 85), oklch(0.78 0.15 65));
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-  }
-
-  .grid-noise {
-    background-image:
-      linear-gradient(rgb(255 255 255 / 4%) 1px, transparent 1px),
-      linear-gradient(90deg, rgb(255 255 255 / 4%) 1px, transparent 1px);
-    background-size: 34px 34px;
+    color: #C07F13;
   }
 
   .scroll-thin {
     scrollbar-width: thin;
-    scrollbar-color: rgb(255 255 255 / 14%) transparent;
+    scrollbar-color: rgb(23 32 51 / 18%) transparent;
+  }
+
+  /* Analytics table rhythm. */
+  .data-table {
+    @apply w-full text-sm;
+  }
+  .data-table thead tr {
+    @apply border-b border-border text-left text-[10px] uppercase tracking-[0.14em] text-muted-foreground;
+  }
+  .data-table thead th {
+    @apply py-2.5 pr-3 font-semibold;
+  }
+  .data-table tbody tr {
+    @apply border-b border-border/60 transition-colors hover:bg-slate-50;
+  }
+  .data-table tbody td {
+    @apply py-2 pr-3;
   }
 }
 

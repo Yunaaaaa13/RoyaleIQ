@@ -25,7 +25,7 @@ const span = (iso: string) =>
 
 /** A rate is only colour-coded once it clears the gate; before that it is a count. */
 const rateTone = (winRate: number, show: boolean) =>
-  !show ? 'text-muted-foreground' : winRate >= 55 ? 'text-emerald-300' : winRate <= 45 ? 'text-rose-300' : 'text-foreground'
+  !show ? 'text-muted-foreground' : winRate >= 55 ? 'text-emerald-600' : winRate <= 45 ? 'text-rose-600' : 'text-foreground'
 
 function PairingTable({
   gates,
@@ -116,7 +116,7 @@ function EdgeList({
       <h4
         className={cn(
           'mb-1.5 text-[11px] font-semibold uppercase tracking-wide',
-          tone === 'best' ? 'text-emerald-300/80' : 'text-rose-300/80',
+          tone === 'best' ? 'text-emerald-600/80' : 'text-rose-600/80',
         )}
       >
         {title}
@@ -126,14 +126,14 @@ function EdgeList({
           {edges.map((edge) => (
             <li
               key={edge.to}
-              className="flex items-center justify-between gap-3 rounded-lg border border-border bg-white/[0.03] px-3 py-2"
+              className="flex items-center justify-between gap-3 rounded-lg border border-border bg-slate-50 px-3 py-2"
             >
               <span className="min-w-0 truncate text-xs">{edge.toLabel}</span>
               <span className="shrink-0 text-right">
                 <span
                   className={cn(
                     'block text-xs font-bold tabular-nums',
-                    tone === 'best' ? 'text-emerald-300' : 'text-rose-300',
+                    tone === 'best' ? 'text-emerald-600' : 'text-rose-600',
                   )}
                 >
                   {edge.winRate}%
@@ -191,7 +191,7 @@ export function CardMatchups({ cardKey, cardName }: { cardKey: string; cardName:
 
   if (status === 'error') {
     return (
-      <Alert className="border-rose-400/30 bg-rose-400/10">
+      <Alert className="border-rose-500/30 bg-rose-500/10">
         <AlertTitle>Matchups unavailable</AlertTitle>
         <AlertDescription className="space-y-3">
           <p>{error}</p>
@@ -249,7 +249,7 @@ export function CardMatchups({ cardKey, cardName }: { cardKey: string; cardName:
         <div className="mb-4 flex items-start justify-between gap-4">
           <div className="min-w-0">
             <h3 className="mb-1 flex items-center gap-2 panel-title">
-              <Target className="size-4 text-cyan-300" />
+              <Target className="size-4 text-cyan-700" />
               By opposing archetype
             </h3>
             <p className="text-xs leading-relaxed text-muted-foreground">
@@ -296,7 +296,7 @@ export function CardMatchups({ cardKey, cardName }: { cardKey: string; cardName:
         <div className="mb-4 flex items-start justify-between gap-4">
           <div className="min-w-0">
             <h3 className="mb-1 flex items-center gap-2 panel-title">
-              <Swords className="size-4 text-amber-300" />
+              <Swords className="size-4 text-amber-600" />
               Head to head
             </h3>
             <p className="text-xs leading-relaxed text-muted-foreground">
@@ -331,7 +331,7 @@ export function CardMatchups({ cardKey, cardName }: { cardKey: string; cardName:
         </div>
       </section>
 
-      <p className="rounded-lg border border-border bg-white/[0.03] px-3 py-2 text-[11px] leading-relaxed text-muted-foreground">
+      <p className="rounded-lg border border-border bg-slate-50 px-3 py-2 text-[11px] leading-relaxed text-muted-foreground">
         These are battles, not a controlled test: the deck around {cardName}, the archetype it sat
         in and who played it are all still inside the number. Read a gap as a lead worth checking,
         not a verdict on the card.

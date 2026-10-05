@@ -91,7 +91,7 @@ export function DeckBuilderWorkspace() {
             {saved.map((entry) => (
               <li
                 key={entry.id}
-                className="flex flex-wrap items-center gap-3 rounded-xl border border-border/70 bg-white/[0.03] p-3"
+                className="flex flex-wrap items-center gap-3 rounded-xl border border-border/70 bg-slate-50 p-3"
               >
                 <span className="flex min-w-0 flex-1 flex-wrap gap-1">
                   {entry.cards.map((key) => (

@@ -27,12 +27,12 @@ const QUADRANTS = {
   gem: {
     label: 'Hidden Gem',
     hint: 'Below-median usage, win rate at or above 50%',
-    color: '#34d399',
+    color: '#22A06B',
   },
   power: {
     label: 'Meta Powerhouse',
     hint: 'Above-median usage, win rate at or above 50%',
-    color: '#22d3ee',
+    color: '#2F80ED',
   },
   impact: {
     label: 'Low Impact',
@@ -42,7 +42,7 @@ const QUADRANTS = {
   overplayed: {
     label: 'Overplayed',
     hint: 'Above-median usage, win rate below 50%',
-    color: '#fb7185',
+    color: '#D64545',
   },
 } as const
 
@@ -98,12 +98,12 @@ function MatrixTooltip({ payload }: Partial<TooltipContentProps<number, string>>
   const point = entry?.payload
   if (!point) return null
   return (
-    <div className="rounded-lg border border-border bg-[#141a2e] px-3 py-2 text-xs shadow-lg">
+    <div className="rounded-lg border border-border bg-white px-3 py-2 text-xs shadow-lg">
       <p className="font-semibold">{point.name}</p>
       <p className="text-muted-foreground">
         {point.usage}% usage · {point.battles} battle{point.battles === 1 ? '' : 's'}
       </p>
-      <p className={point.winRate >= 50 ? 'text-emerald-300' : 'text-rose-300'}>
+      <p className={point.winRate >= 50 ? 'text-emerald-600' : 'text-rose-600'}>
         {point.winRate}% win rate
         <span className="text-muted-foreground"> vs {point.expected}% expected</span>
       </p>
@@ -117,10 +117,10 @@ function MatrixTooltip({ payload }: Partial<TooltipContentProps<number, string>>
 }
 
 const SIGNAL: Record<string, { label: string; className: string }> = {
-  underused: { label: 'Underused, outperforming', className: 'text-emerald-300' },
-  outperforming: { label: 'Outperforming', className: 'text-emerald-300' },
-  overplayed: { label: 'High usage, below expectation', className: 'text-rose-300' },
-  underperforming: { label: 'Underperforming', className: 'text-rose-300' },
+  underused: { label: 'Underused, outperforming', className: 'text-emerald-600' },
+  outperforming: { label: 'Outperforming', className: 'text-emerald-600' },
+  overplayed: { label: 'High usage, below expectation', className: 'text-rose-600' },
+  underperforming: { label: 'Underperforming', className: 'text-rose-600' },
 }
 
 // ---------------------------------------------------------------------------
@@ -247,7 +247,7 @@ export function MetaMatrix({ snapshot }: { snapshot: MetaSnapshot }) {
         </p>
 
         {snapshot.battles < 50 && (
-          <Alert className="mb-4 border-yellow-400/30 bg-yellow-400/10">
+          <Alert className="mb-4 border-amber-500/30 bg-amber-500/10">
             <AlertTitle>Small sample</AlertTitle>
             <AlertDescription>
               {snapshot.battles} battles sit behind this chart. Cards seen in fewer than{' '}
@@ -260,7 +260,7 @@ export function MetaMatrix({ snapshot }: { snapshot: MetaSnapshot }) {
         <div className="h-[360px]">
           <ResponsiveContainer width="100%" height="100%">
             <ScatterChart margin={{ top: 12, right: 16, bottom: 12, left: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.08)" />
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(15,23,42,0.08)" />
               <ReferenceArea
                 x1={0}
                 x2={usageThreshold}
@@ -299,14 +299,14 @@ export function MetaMatrix({ snapshot }: { snapshot: MetaSnapshot }) {
                 name="Usage"
                 unit="%"
                 domain={[0, xMax]}
-                tick={{ fill: 'rgba(255,255,255,0.55)', fontSize: 11 }}
+                tick={{ fill: '#6B7280', fontSize: 11 }}
                 axisLine={false}
                 tickLine={false}
                 label={{
                   value: 'Usage in this sample',
                   position: 'insideBottom',
                   offset: -6,
-                  fill: 'rgba(255,255,255,0.45)',
+                  fill: '#ffffff',
                   fontSize: 11,
                 }}
               />
@@ -316,7 +316,7 @@ export function MetaMatrix({ snapshot }: { snapshot: MetaSnapshot }) {
                 name="Win rate"
                 unit="%"
                 domain={[yMin, yMax]}
-                tick={{ fill: 'rgba(255,255,255,0.55)', fontSize: 11 }}
+                tick={{ fill: '#6B7280', fontSize: 11 }}
                 axisLine={false}
                 tickLine={false}
                 label={{
@@ -324,20 +324,20 @@ export function MetaMatrix({ snapshot }: { snapshot: MetaSnapshot }) {
                   angle: -90,
                   position: 'insideLeft',
                   offset: 8,
-                  fill: 'rgba(255,255,255,0.45)',
+                  fill: '#ffffff',
                   fontSize: 11,
                 }}
               />
               <ZAxis type="number" dataKey="battles" range={[20, 420]} name="Battles" />
-              <ReferenceLine y={50} stroke="rgba(255,255,255,0.3)" />
+              <ReferenceLine y={50} stroke="rgba(15,23,42,0.25)" />
               <ReferenceLine
                 x={usageThreshold}
-                stroke="rgba(255,255,255,0.3)"
+                stroke="rgba(15,23,42,0.25)"
                 strokeDasharray="4 4"
               />
               <ReTooltip
                 content={<MatrixTooltip />}
-                cursor={{ strokeDasharray: '3 3', stroke: 'rgba(255,255,255,0.25)' }}
+                cursor={{ strokeDasharray: '3 3', stroke: 'rgba(15,23,42,0.2)' }}
               />
               <Scatter data={points} fillOpacity={0.9} isAnimationActive={false}>
                 {points.map((point) => (
@@ -346,7 +346,7 @@ export function MetaMatrix({ snapshot }: { snapshot: MetaSnapshot }) {
                     fill={
                       point.qualified
                         ? QUADRANTS[point.quadrant].color
-                        : 'rgba(255,255,255,0.22)'
+                        : 'rgba(15,23,42,0.15)'
                     }
                   />
                 ))}
@@ -359,7 +359,7 @@ export function MetaMatrix({ snapshot }: { snapshot: MetaSnapshot }) {
           {(Object.keys(QUADRANTS) as QuadrantKey[]).map((key) => (
             <div
               key={key}
-              className="rounded-lg border border-border bg-white/[0.03] px-3 py-2"
+              className="rounded-lg border border-border bg-slate-50 px-3 py-2"
             >
               <p className="flex items-center gap-2 text-sm font-semibold">
                 <span
@@ -446,7 +446,7 @@ export function MetaMatrix({ snapshot }: { snapshot: MetaSnapshot }) {
                 return (
                   <tr
                     key={point.key}
-                    className="border-b border-border/60 transition hover:bg-white/[0.03]"
+                    className="border-b border-border/60 transition hover:bg-slate-50"
                   >
                     <td className="py-2 pr-3">
                       <div className="flex items-center gap-2">
@@ -465,7 +465,7 @@ export function MetaMatrix({ snapshot }: { snapshot: MetaSnapshot }) {
                     </td>
                     <td
                       className={`py-2 pr-3 text-right font-bold tabular-nums ${
-                        point.gap > 0 ? 'text-emerald-300' : 'text-rose-300'
+                        point.gap > 0 ? 'text-emerald-600' : 'text-rose-600'
                       }`}
                     >
                       {point.gap > 0 ? '+' : ''}

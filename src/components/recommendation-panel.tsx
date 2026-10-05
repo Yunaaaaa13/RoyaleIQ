@@ -77,7 +77,7 @@ function EvoBadge({ show }: { show: boolean }) {
   return (
     <span
       title="Observed played in evolved form in this sample"
-      className="absolute -bottom-1 -right-1 rounded bg-emerald-400 px-[3px] text-[7px] font-black leading-[1.4] text-emerald-950 shadow"
+      className="absolute -bottom-1 -right-1 rounded bg-emerald-500 px-[3px] text-[7px] font-black leading-[1.4] text-emerald-950 shadow"
     >
       EVO
     </span>
@@ -108,7 +108,7 @@ function RecommendationCard({
   ]
 
   return (
-    <article className="flex flex-col gap-3 rounded-xl border border-border bg-white/[0.03] p-4">
+    <article className="flex flex-col gap-3 rounded-xl border border-border bg-slate-50 p-4">
       <div className="flex items-start justify-between gap-2">
         <div className="flex min-w-0 items-center gap-2">
           <span className="grid size-7 shrink-0 place-items-center rounded-lg bg-primary/15 text-xs font-black text-primary">
@@ -125,8 +125,8 @@ function RecommendationCard({
           variant="secondary"
           className={`shrink-0 text-[10px] ${
             item.source === 'meta'
-              ? 'bg-emerald-400/10 text-emerald-300'
-              : 'bg-cyan-400/10 text-cyan-300'
+              ? 'bg-emerald-500/10 text-emerald-600'
+              : 'bg-sky-500/10 text-cyan-700'
           }`}
         >
           {item.source === 'meta' ? 'In sample' : 'Completed'}
@@ -155,9 +155,9 @@ function RecommendationCard({
             <span className="text-sm">%</span>
           </span>
         </div>
-        <div className="h-1.5 overflow-hidden rounded-full bg-white/10">
+        <div className="h-1.5 overflow-hidden rounded-full bg-slate-100">
           <div
-            className="h-full rounded-full bg-gradient-to-r from-primary to-cyan-400 transition-all duration-700"
+            className="h-full rounded-full bg-gradient-to-r from-primary to-sky-500 transition-all duration-700"
             style={{ width: `${item.compatibility}%` }}
           />
         </div>
@@ -165,7 +165,7 @@ function RecommendationCard({
 
       <div className="grid grid-cols-2 gap-2 text-xs">
         {stats.map((stat) => (
-          <div key={stat.label} className="rounded-lg bg-white/[0.03] p-2">
+          <div key={stat.label} className="rounded-lg bg-slate-50 p-2">
             <p className="text-[10px] uppercase tracking-wide text-muted-foreground">
               {stat.label}
             </p>
@@ -173,7 +173,7 @@ function RecommendationCard({
             {stat.sub && <p className="truncate text-[10px] text-muted-foreground">{stat.sub}</p>}
           </div>
         ))}
-        <div className="col-span-2 rounded-lg bg-white/[0.03] p-2">
+        <div className="col-span-2 rounded-lg bg-slate-50 p-2">
           <p className="text-[10px] uppercase tracking-wide text-muted-foreground">
             Hero (Champion)
           </p>
@@ -192,7 +192,7 @@ function RecommendationCard({
         <ul className="space-y-1 text-xs">
           {item.reasons.map((reason) => (
             <li key={reason} className="flex gap-1.5 text-muted-foreground">
-              <Check className="mt-0.5 size-3 shrink-0 text-emerald-400" />
+              <Check className="mt-0.5 size-3 shrink-0 text-emerald-600" />
               <span>{reason}</span>
             </li>
           ))}
@@ -286,7 +286,7 @@ export function RecommendationPanel({
   if (!meta) {
     return (
       <section className="panel flex flex-col items-center gap-3 p-10 text-center">
-        <Radar className="size-8 text-rose-300/70" />
+        <Radar className="size-8 text-rose-600/70" />
         <h3 className="text-lg font-semibold">Meta data unavailable</h3>
         <p className="max-w-md text-sm text-muted-foreground">
           Recommendations need the current meta snapshot. Retry the load — no
@@ -331,7 +331,7 @@ export function RecommendationPanel({
           {new Date(meta.generatedAt).toLocaleDateString()}). {SCORE_BASIS}
         </p>
         {meta.notice && (
-          <p className="mt-1 text-[11px] text-amber-300/90">{meta.notice}</p>
+          <p className="mt-1 text-[11px] text-amber-600/90">{meta.notice}</p>
         )}
       </div>
 
@@ -347,7 +347,7 @@ export function RecommendationPanel({
             className={`rounded-full border px-3 py-1 text-xs font-medium transition ${
               filter === entry.key
                 ? 'border-primary/60 bg-primary/15 text-primary'
-                : 'border-border bg-white/[0.03] text-muted-foreground hover:text-foreground'
+                : 'border-border bg-slate-50 text-muted-foreground hover:text-foreground'
             }`}
           >
             {entry.label}

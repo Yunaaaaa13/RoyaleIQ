@@ -80,7 +80,7 @@ export function DeckSlots({
         <div
           key={`${key ?? 'empty'}-${index}`}
           className={`group relative grid aspect-[3/4] place-items-center rounded-xl border border-dashed ${
-            key ? 'border-solid border-white/15 bg-white/[0.03]' : 'border-white/15'
+            key ? 'border-solid border-slate-200 bg-slate-50' : 'border-slate-200'
           }`}
         >
           {key ? (
@@ -93,7 +93,7 @@ export function DeckSlots({
                   evolvable?.includes(key) ? (
                     <span
                       title="Observed played in evolved form in this sample"
-                      className="absolute -bottom-1 -right-1 rounded bg-emerald-400 px-1 text-[8px] font-black text-emerald-950 shadow"
+                      className="absolute -bottom-1 -right-1 rounded bg-emerald-500 px-1 text-[8px] font-black text-emerald-950 shadow"
                     >
                       EVO
                     </span>
@@ -105,14 +105,14 @@ export function DeckSlots({
                   type="button"
                   onClick={() => onRemove(key)}
                   aria-label={`Remove ${getCard(key)?.name}`}
-                  className="absolute -right-1.5 -top-1.5 grid size-5 place-items-center rounded-full border border-white/20 bg-rose-500/90 text-white opacity-0 transition hover:scale-110 focus-visible:opacity-100 group-hover:opacity-100 sm:opacity-100"
+                  className="absolute -right-1.5 -top-1.5 grid size-5 place-items-center rounded-full border border-slate-200 bg-rose-500/90 text-white opacity-0 transition hover:scale-110 focus-visible:opacity-100 group-hover:opacity-100 sm:opacity-100"
                 >
                   <X className="size-3" />
                 </button>
               )}
             </>
           ) : (
-            <span className="text-2xl text-white/15">{index + 1}</span>
+            <span className="text-2xl text-slate-300">{index + 1}</span>
           )}
         </div>
       ))}
@@ -130,10 +130,10 @@ export function DeckStats({ analysis }: { analysis: DeckAnalysis }) {
         value={analysis.archetypeLabel}
         sub={`${Math.round(analysis.archetypeConfidence * 100)}% confidence`}
       />
-      <div className="rounded-xl border border-border bg-white/[0.03] p-3">
+      <div className="rounded-xl border border-border bg-slate-50 p-3">
         <ScoreBar label="Overall" value={analysis.scores.overall} tone="gold" />
       </div>
-      <div className="rounded-xl border border-border bg-white/[0.03] p-3">
+      <div className="rounded-xl border border-border bg-slate-50 p-3">
         <ScoreBar label="Air defense" value={analysis.scores.airDefense} tone="cyan" />
       </div>
     </div>
@@ -203,7 +203,7 @@ export function DeckSelection({
               disabled={!deck.length}
             >
               {copied ? (
-                <Check className="size-3.5 text-emerald-400" />
+                <Check className="size-3.5 text-emerald-600" />
               ) : (
                 <ClipboardCopy className="size-3.5" />
               )}

@@ -20,7 +20,7 @@ import type { CardIntel, RecommendedDeck } from '@/lib/card-intel'
 import { cn, relativeAge } from '@/lib/utils'
 
 const winTone = (rate: number) =>
-  rate >= 52 ? 'text-emerald-300' : rate <= 48 ? 'text-rose-300' : ''
+  rate >= 52 ? 'text-emerald-600' : rate <= 48 ? 'text-rose-600' : ''
 
 const timeLabel = (iso: string) =>
   new Date(iso).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
@@ -40,17 +40,17 @@ function Skeleton() {
 
 function AiScore({ deck }: { deck: RecommendedDeck }) {
   return (
-    <div className="rounded-lg border border-border bg-white/[0.03] p-2.5">
+    <div className="rounded-lg border border-border bg-slate-50 p-2.5">
       <div className="flex items-baseline justify-between gap-2">
         <span className="text-[11px] uppercase tracking-wide text-muted-foreground">AI Score</span>
-        <span className="text-sm font-bold tabular-nums text-yellow-300">
+        <span className="text-sm font-bold tabular-nums text-amber-600">
           {deck.aiScore}
           <span className="text-muted-foreground">/100</span>
         </span>
       </div>
-      <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-white/10">
+      <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-slate-100">
         <div
-          className="h-full rounded-full bg-yellow-400"
+          className="h-full rounded-full bg-amber-500"
           style={{ width: `${deck.aiScore}%` }}
         />
       </div>
@@ -95,7 +95,7 @@ export function CardDetail({ cardKey }: { cardKey: string }) {
 
   if (error) {
     return (
-      <Alert className="border-rose-400/30 bg-rose-400/10" role="alert">
+      <Alert className="border-rose-500/30 bg-rose-500/10" role="alert">
         <AlertTitle>Card not found</AlertTitle>
         <AlertDescription className="space-y-3">
           <p>{error}</p>
@@ -185,17 +185,17 @@ export function CardDetail({ cardKey }: { cardKey: string }) {
               />
             </div>
 
-            <div className="rounded-xl border border-border bg-white/[0.03] p-4">
+            <div className="rounded-xl border border-border bg-slate-50 p-4">
               <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
                 <h3 className="section-title">
                   Usage trend
                 </h3>
                 <div className="flex items-center gap-3 text-[11px]">
                   <span className="flex items-center gap-1.5">
-                    <span className="size-2 rounded-full bg-yellow-400" /> Usage %
+                    <span className="size-2 rounded-full bg-amber-500" /> Usage %
                   </span>
                   <span className="flex items-center gap-1.5">
-                    <span className="size-2 rounded-full bg-cyan-400" /> Win rate %
+                    <span className="size-2 rounded-full bg-sky-500" /> Win rate %
                   </span>
                 </div>
               </div>
@@ -205,30 +205,31 @@ export function CardDetail({ cardKey }: { cardKey: string }) {
                 <div className="h-48 w-full min-w-0">
                   <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={trendData} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.08)" />
+                      <CartesianGrid strokeDasharray="3 3" stroke="rgba(15,23,42,0.08)" />
                       <XAxis
                         dataKey="label"
-                        tick={{ fill: 'rgba(255,255,255,0.55)', fontSize: 11 }}
+                        tick={{ fill: '#6B7280', fontSize: 11 }}
                         minTickGap={28}
                       />
                       <YAxis
                         domain={[0, 100]}
                         width={36}
-                        tick={{ fill: 'rgba(255,255,255,0.55)', fontSize: 11 }}
+                        tick={{ fill: '#6B7280', fontSize: 11 }}
                       />
                       <ReTooltip
                         contentStyle={{
-                          background: '#0b1020',
-                          border: '1px solid rgba(255,255,255,0.15)',
+                          background: '#ffffff',
+                          border: '1px solid #E3EAF3',
                           borderRadius: 10,
                           fontSize: 12,
+                          color: '#172033',
                         }}
                       />
                       <Line
                         type="monotone"
                         dataKey="usage"
                         name="Usage %"
-                        stroke="#facc15"
+                        stroke="#F5B942"
                         strokeWidth={2}
                         dot={false}
                       />
@@ -236,7 +237,7 @@ export function CardDetail({ cardKey }: { cardKey: string }) {
                         type="monotone"
                         dataKey="winRate"
                         name="Win rate %"
-                        stroke="#22d3ee"
+                        stroke="#2F80ED"
                         strokeWidth={2}
                         dot={false}
                       />
@@ -271,16 +272,16 @@ export function CardDetail({ cardKey }: { cardKey: string }) {
             </div>
 
             {insight && (
-              <div className="rounded-xl border border-yellow-300/20 bg-yellow-400/5 p-4">
+              <div className="rounded-xl border border-yellow-300/20 bg-amber-500/5 p-4">
                 <div className="mb-2 flex items-center gap-2">
-                  <Sparkles className="size-4 text-yellow-300" />
+                  <Sparkles className="size-4 text-amber-600" />
                   <h3 className="text-sm font-semibold">AI intelligence</h3>
                 </div>
                 <p className="mb-3 text-sm leading-relaxed">{insight.headline}</p>
                 <dl className="space-y-2.5">
                   {insight.items.map((item) => (
                     <div key={item.label}>
-                      <dt className="text-[11px] font-semibold uppercase tracking-wide text-yellow-200/80">
+                      <dt className="text-[11px] font-semibold uppercase tracking-wide text-amber-600/80">
                         {item.label}
                       </dt>
                       <dd className="text-xs leading-relaxed text-muted-foreground">{item.text}</dd>
@@ -316,7 +317,7 @@ export function CardDetail({ cardKey }: { cardKey: string }) {
         ) : (
           <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
             {decks.decks.map((deck) => (
-              <article key={deck.id} className="rounded-xl border border-border bg-white/[0.03] p-4">
+              <article key={deck.id} className="rounded-xl border border-border bg-slate-50 p-4">
                 <div className="mb-3 flex items-start justify-between gap-3">
                   <div className="min-w-0">
                     <p className="text-[11px] text-muted-foreground">#{deck.rank}</p>
@@ -378,7 +379,7 @@ export function CardDetail({ cardKey }: { cardKey: string }) {
                   { label: 'Best support', entry: synergy.bestSupport },
                   { label: 'Best win condition', entry: synergy.bestWinCondition },
                 ].map(({ label, entry }) => (
-                  <div key={label} className="rounded-xl border border-border bg-white/[0.03] p-3">
+                  <div key={label} className="rounded-xl border border-border bg-slate-50 p-3">
                     <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
                       {label}
                     </p>
@@ -423,7 +424,7 @@ export function CardDetail({ cardKey }: { cardKey: string }) {
                         <td className="py-2 pr-3">
                           <Link
                             href={`/cards/${pair.key}`}
-                            className="font-medium transition hover:text-yellow-200"
+                            className="font-medium transition hover:text-foreground"
                           >
                             {pair.name}
                           </Link>
@@ -438,7 +439,7 @@ export function CardDetail({ cardKey }: { cardKey: string }) {
                         <td
                           className={cn(
                             'py-2 text-right tabular-nums',
-                            pair.delta >= 0 ? 'text-emerald-300' : 'text-rose-300',
+                            pair.delta >= 0 ? 'text-emerald-600' : 'text-rose-600',
                           )}
                         >
                           {pair.delta > 0 ? '+' : ''}
@@ -455,7 +456,7 @@ export function CardDetail({ cardKey }: { cardKey: string }) {
 
         <section className="panel p-5">
           <div className="mb-1 flex items-center gap-2">
-            <Target className="size-4 text-cyan-300" />
+            <Target className="size-4 text-cyan-700" />
             <h3 className="panel-title">Counter analysis</h3>
           </div>
           <p className="mb-4 text-xs leading-relaxed text-muted-foreground">
@@ -466,14 +467,14 @@ export function CardDetail({ cardKey }: { cardKey: string }) {
             <>
               <p className="mb-3 text-xs leading-relaxed text-muted-foreground">{counters.reason}</p>
               {counters.lowSample && (
-                <p className="mb-3 text-[11px] font-medium text-amber-300">
+                <p className="mb-3 text-[11px] font-medium text-amber-600">
                   Small sample - treat every rate below as a hint, not a verdict.
                 </p>
               )}
               <div className="grid gap-4 sm:grid-cols-2">
                 {([
-                  ['Beats most often', 'best', 'text-emerald-300', 'text-emerald-300/80'],
-                  ['Loses to most often', 'worst', 'text-rose-300', 'text-rose-300/80'],
+                  ['Beats most often', 'best', 'text-emerald-600', 'text-emerald-600/80'],
+                  ['Loses to most often', 'worst', 'text-rose-600', 'text-rose-600/80'],
                 ] as const).map(([title, side, valueTone, titleTone]) => (
                   <div key={side} className="min-w-0">
                     <h4 className={`mb-1.5 text-[11px] font-semibold uppercase tracking-wide ${titleTone}`}>
@@ -484,7 +485,7 @@ export function CardDetail({ cardKey }: { cardKey: string }) {
                         counters[side].map((row) => (
                           <li
                             key={row.key}
-                            className="flex items-center justify-between gap-3 rounded-lg border border-border bg-white/[0.03] px-3 py-2"
+                            className="flex items-center justify-between gap-3 rounded-lg border border-border bg-slate-50 px-3 py-2"
                           >
                             <span className="min-w-0 truncate text-xs">{row.label}</span>
                             <span className="shrink-0 text-right">
@@ -514,7 +515,7 @@ export function CardDetail({ cardKey }: { cardKey: string }) {
               </Button>
             </>
           ) : (
-            <Alert className="border-cyan-400/25 bg-cyan-400/5">
+            <Alert className="border-cyan-400/25 bg-sky-500/5">
               <AlertTitle>Not measured at card level</AlertTitle>
               <AlertDescription className="space-y-3">
                 <p>{counters.reason}</p>

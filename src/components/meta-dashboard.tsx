@@ -37,14 +37,14 @@ import {
 import type { MetaSnapshot } from '@/lib/battle'
 
 const PIE_COLORS = [
-  '#3b82f6',
-  '#22d3ee',
-  '#a78bfa',
-  '#facc15',
-  '#34d399',
-  '#fb7185',
-  '#60a5fa',
-  '#e879f9',
+  '#2F80ED',
+  '#174A8B',
+  '#8FB8EC',
+  '#F5B942',
+  '#22A06B',
+  '#5B9BD5',
+  '#1B3A6B',
+  '#A9C4E8',
 ]
 
 type SortKey = 'usage' | 'winRate' | 'name' | 'elixir'
@@ -107,7 +107,7 @@ export function MetaDashboard() {
           label: card.name,
           value: card.usage,
           display: `${card.usage}%`,
-          tone: 'bg-cyan-400',
+          tone: 'bg-sky-500',
         })),
     [snapshot],
   )
@@ -148,7 +148,7 @@ export function MetaDashboard() {
 
   if (error || !snapshot) {
     return (
-      <Alert className="border-rose-400/30 bg-rose-400/10">
+      <Alert className="border-rose-500/30 bg-rose-500/10">
         <AlertTitle>Meta unavailable</AlertTitle>
         <AlertDescription className="flex items-center gap-3">
           {error}
@@ -163,7 +163,7 @@ export function MetaDashboard() {
   return (
     <div className="space-y-5">
       {snapshot.notice && (
-        <Alert className="border-yellow-400/30 bg-yellow-400/10">
+        <Alert className="border-amber-500/30 bg-amber-500/10">
           <AlertTitle className="flex items-center gap-2">
             <Database className="size-4" />
             {snapshot.source === 'demo' ? 'Demo dataset' : 'Serving a stored sample'}
@@ -222,7 +222,7 @@ export function MetaDashboard() {
                   innerRadius={48}
                   outerRadius={80}
                   paddingAngle={2}
-                  stroke="rgba(0,0,0,0.4)"
+                  stroke="#E3EAF3"
                 >
                   {archetypeData.map((entry) => (
                     <Cell key={entry.name} fill={entry.fill} />
@@ -230,10 +230,11 @@ export function MetaDashboard() {
                 </Pie>
                 <ReTooltip
                   contentStyle={{
-                    background: '#141a2e',
-                    border: '1px solid rgba(255,255,255,0.12)',
+                    background: '#ffffff',
+                    border: '1px solid #E3EAF3',
                     borderRadius: 8,
                     fontSize: 12,
+                    color: '#172033',
                   }}
                   formatter={(value, name) => [`${value}%`, String(name)]}
                 />
@@ -299,7 +300,7 @@ export function MetaDashboard() {
               {cards.map((card) => (
                 <tr
                   key={card.key}
-                  className="border-b border-border/50 transition hover:bg-white/[0.04]"
+                  className="border-b border-border/50 transition hover:bg-slate-50"
                 >
                   <td className="py-2 pr-3">
                     <Link
@@ -320,9 +321,9 @@ export function MetaDashboard() {
                   <td
                     className={`py-2 text-right font-semibold tabular-nums ${
                       card.winRate >= 52
-                        ? 'text-emerald-300'
+                        ? 'text-emerald-600'
                         : card.winRate <= 48
-                          ? 'text-rose-300'
+                          ? 'text-rose-600'
                           : ''
                     }`}
                   >
@@ -375,8 +376,8 @@ export function MetaDashboard() {
                   variant="outline"
                   className={
                     entry.delta >= 0
-                      ? 'gap-1 text-emerald-300'
-                      : 'gap-1 text-rose-300'
+                      ? 'gap-1 text-emerald-600'
+                      : 'gap-1 text-rose-600'
                   }
                 >
                   {entry.delta >= 0 ? (
@@ -416,11 +417,11 @@ export function MetaDashboard() {
                 layout="vertical"
                 margin={{ top: 4, right: 16, left: 8, bottom: 4 }}
               >
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.08)" horizontal={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(15,23,42,0.08)" horizontal={false} />
                 <XAxis
                   type="number"
                   domain={winRateDomain}
-                  tick={{ fill: 'rgba(255,255,255,0.55)', fontSize: 11 }}
+                  tick={{ fill: '#6B7280', fontSize: 11 }}
                   axisLine={false}
                   tickLine={false}
                 />
@@ -428,21 +429,22 @@ export function MetaDashboard() {
                   type="category"
                   dataKey="name"
                   width={96}
-                  tick={{ fill: 'rgba(255,255,255,0.7)', fontSize: 11 }}
+                  tick={{ fill: '#172033', fontSize: 11 }}
                   axisLine={false}
                   tickLine={false}
                 />
                 <ReTooltip
-                  cursor={{ fill: 'rgba(255,255,255,0.06)' }}
+                  cursor={{ fill: 'rgba(15,23,42,0.05)' }}
                   contentStyle={{
-                    background: '#141a2e',
-                    border: '1px solid rgba(255,255,255,0.12)',
+                    background: '#ffffff',
+                    border: '1px solid #E3EAF3',
                     borderRadius: 8,
                     fontSize: 12,
+                    color: '#172033',
                   }}
                   formatter={(value) => [`${value}%`, 'Win rate']}
                 />
-                <Bar dataKey="winRate" fill="#34d399" radius={[0, 6, 6, 0]} />
+                <Bar dataKey="winRate" fill="#22A06B" radius={[0, 6, 6, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -467,7 +469,7 @@ export function MetaDashboard() {
           {snapshot.decks.slice(0, 9).map((deck) => (
             <article
               key={deck.id}
-              className="rounded-xl border border-border/70 bg-white/[0.03] p-4 transition-colors hover:border-primary/35 hover:bg-white/[0.05]"
+              className="rounded-xl border border-border/70 bg-slate-50 p-4 transition-colors hover:border-primary/35 hover:bg-slate-50"
             >
               <div className="mb-3 flex items-start justify-between gap-2">
                 <div>
@@ -480,9 +482,9 @@ export function MetaDashboard() {
                   <p
                     className={`text-sm font-bold tabular-nums ${
                       deck.winRate >= 52
-                        ? 'text-emerald-300'
+                        ? 'text-emerald-600'
                         : deck.winRate <= 48
-                          ? 'text-rose-300'
+                          ? 'text-rose-600'
                           : ''
                     }`}
                   >
@@ -521,10 +523,10 @@ export function MetaDashboard() {
           <div className="h-56 min-w-[560px]">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={archetypeData} margin={{ top: 8, right: 16, left: -20, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.08)" />
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(15,23,42,0.08)" />
                 <XAxis
                   dataKey="name"
-                  tick={{ fill: 'rgba(255,255,255,0.6)', fontSize: 10 }}
+                  tick={{ fill: '#6B7280', fontSize: 10 }}
                   axisLine={false}
                   tickLine={false}
                   interval={0}
@@ -533,33 +535,34 @@ export function MetaDashboard() {
                   height={54}
                 />
                 <YAxis
-                  tick={{ fill: 'rgba(255,255,255,0.55)', fontSize: 11 }}
+                  tick={{ fill: '#6B7280', fontSize: 11 }}
                   axisLine={false}
                   tickLine={false}
                 />
                 <ReTooltip
                   contentStyle={{
-                    background: '#141a2e',
-                    border: '1px solid rgba(255,255,255,0.12)',
+                    background: '#ffffff',
+                    border: '1px solid #E3EAF3',
                     borderRadius: 8,
                     fontSize: 12,
+                    color: '#172033',
                   }}
                 />
                 <Line
                   type="monotone"
                   dataKey="winRate"
                   name="Win rate"
-                  stroke="#facc15"
+                  stroke="#F5B942"
                   strokeWidth={2}
-                  dot={{ r: 4, fill: '#facc15' }}
+                  dot={{ r: 4, fill: '#F5B942' }}
                 />
                 <Line
                   type="monotone"
                   dataKey="value"
                   name="Share %"
-                  stroke="#22d3ee"
+                  stroke="#2F80ED"
                   strokeWidth={2}
-                  dot={{ r: 4, fill: '#22d3ee' }}
+                  dot={{ r: 4, fill: '#2F80ED' }}
                 />
               </LineChart>
             </ResponsiveContainer>
@@ -569,7 +572,7 @@ export function MetaDashboard() {
           {snapshot.archetypes.map((entry, index) => (
             <span
               key={entry.key}
-              className="flex items-center gap-2 rounded-full border border-border bg-white/[0.03] px-3 py-1 text-xs"
+              className="flex items-center gap-2 rounded-full border border-border bg-slate-50 px-3 py-1 text-xs"
             >
               <span
                 className="size-2 rounded-full"

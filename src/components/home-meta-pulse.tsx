@@ -29,7 +29,7 @@ export function HomeMetaPulse() {
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-5 py-4">
         <div>
           <h2 className="flex items-center gap-2 panel-title">
-            <Flame className="size-4 text-orange-400" />
+            <Flame className="size-4 text-orange-600" />
             Meta today
           </h2>
           <p className="text-xs text-muted-foreground">
@@ -55,7 +55,7 @@ export function HomeMetaPulse() {
           {snapshot?.decks.slice(0, 4).map((deck) => (
             <div
               key={deck.id}
-              className="flex items-center gap-3 rounded-xl border border-border bg-white/[0.03] p-3"
+              className="flex items-center gap-3 rounded-xl border border-border bg-slate-50 p-3"
             >
               <div className="flex -space-x-2">
                 {deck.cards.slice(0, 4).map((key) => (
@@ -73,9 +73,9 @@ export function HomeMetaPulse() {
               <span
                 className={`text-sm font-bold tabular-nums ${
                   deck.winRate >= 52
-                    ? 'text-emerald-300'
+                    ? 'text-emerald-600'
                     : deck.winRate <= 48
-                      ? 'text-rose-300'
+                      ? 'text-rose-600'
                       : ''
                 }`}
               >
@@ -85,8 +85,8 @@ export function HomeMetaPulse() {
           ))}
           {!snapshot && (
             <>
-              <div className="h-16 animate-pulse rounded-xl bg-white/[0.03]" />
-              <div className="h-16 animate-pulse rounded-xl bg-white/[0.03]" />
+              <div className="h-16 animate-pulse rounded-xl bg-slate-50" />
+              <div className="h-16 animate-pulse rounded-xl bg-slate-50" />
             </>
           )}
         </div>
@@ -99,14 +99,14 @@ export function HomeMetaPulse() {
             {snapshot?.trending.slice(0, 4).map((entry) => (
               <div
                 key={entry.key}
-                className="flex items-center gap-2 rounded-xl border border-border bg-white/[0.03] p-3"
+                className="flex items-center gap-2 rounded-xl border border-border bg-slate-50 p-3"
               >
                 <CardTile cardKey={entry.key} size="xs" showElixir={false} />
                 <div className="min-w-0">
                   <p className="truncate text-xs font-semibold">{entry.label}</p>
                   <p
                     className={`flex items-center gap-1 text-[11px] font-bold ${
-                      entry.delta >= 0 ? 'text-emerald-300' : 'text-rose-300'
+                      entry.delta >= 0 ? 'text-emerald-600' : 'text-rose-600'
                     }`}
                   >
                     {entry.delta >= 0 ? (
@@ -122,14 +122,14 @@ export function HomeMetaPulse() {
             ))}
             {!snapshot && (
               <>
-                <div className="h-16 animate-pulse rounded-xl bg-white/[0.03]" />
-                <div className="h-16 animate-pulse rounded-xl bg-white/[0.03]" />
+                <div className="h-16 animate-pulse rounded-xl bg-slate-50" />
+                <div className="h-16 animate-pulse rounded-xl bg-slate-50" />
               </>
             )}
           </div>
 
           {snapshot && (
-            <div className="rounded-xl border border-border bg-white/[0.03] p-3">
+            <div className="rounded-xl border border-border bg-slate-50 p-3">
               <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
                 Most played card
               </p>

@@ -117,7 +117,7 @@ type PredictionState = { key: string; data: PredictionData | null }
 
 function ModelCard({ model }: { model: PredictionModelData }) {
   return (
-    <p className="mt-4 rounded-lg border border-border bg-white/[0.03] px-3 py-2 text-[11px] leading-relaxed text-muted-foreground">
+    <p className="mt-4 rounded-lg border border-border bg-slate-50 px-3 py-2 text-[11px] leading-relaxed text-muted-foreground">
       Model card — trained on {model.decidedBattles} decided battles ({model.wins}W–
       {model.losses}L), {model.folds}-fold cross-validated accuracy {model.accuracy}% against a{' '}
       {model.baselineAccuracy}% win-rate baseline, AUC {model.auc.toFixed(3)}, log loss{' '}
@@ -162,7 +162,7 @@ function PredictionPanel({ deck, opponentDeck }: { deck: string[]; opponentDeck:
     <section className="panel p-5">
       <div className="mb-1 flex flex-wrap items-baseline justify-between gap-3">
         <h3 className="panel-title">Pre-match prediction</h3>
-        <p className="text-[10px] uppercase tracking-wide text-cyan-300/70">
+        <p className="text-[10px] uppercase tracking-wide text-cyan-700/70">
           Gradient-boosted trees + exact SHAP
         </p>
       </div>
@@ -182,24 +182,24 @@ function PredictionPanel({ deck, opponentDeck }: { deck: string[]; opponentDeck:
         </p>
       ) : !prediction ? (
         <div className="space-y-3" aria-busy="true">
-          <div className="h-10 animate-pulse rounded-lg bg-white/[0.03]" />
-          <div className="h-16 animate-pulse rounded-lg bg-white/[0.03]" />
+          <div className="h-10 animate-pulse rounded-lg bg-slate-50" />
+          <div className="h-16 animate-pulse rounded-lg bg-slate-50" />
         </div>
       ) : prediction.status === 'ok' ? (
         <>
           <div className="flex items-end gap-3">
-            <p className="text-4xl font-black tabular-nums text-cyan-300">
+            <p className="text-4xl font-black tabular-nums text-cyan-700">
               {prediction.probability}%
             </p>
             <p className="pb-1.5 text-xs text-muted-foreground">predicted chance to win</p>
           </div>
-          <div className="relative mt-3 h-2 overflow-hidden rounded-full bg-white/10">
+          <div className="relative mt-3 h-2 overflow-hidden rounded-full bg-slate-100">
             <div
               className="h-full rounded-full bg-gradient-to-r from-cyan-400 to-emerald-400"
               style={{ width: `${Math.max(2, Math.min(100, prediction.probability))}%` }}
             />
             <div
-              className="absolute inset-y-0 w-px bg-white/70"
+              className="absolute inset-y-0 w-px bg-slate-600"
               style={{ left: `${prediction.baseline}%` }}
               title="Model baseline"
             />
@@ -219,16 +219,16 @@ function PredictionPanel({ deck, opponentDeck }: { deck: string[]; opponentDeck:
               .map((entry) => (
                 <li
                   key={entry.feature.key}
-                  className="rounded-lg border border-border bg-white/[0.03] px-3 py-2"
+                  className="rounded-lg border border-border bg-slate-50 px-3 py-2"
                 >
                   <div className="flex items-baseline justify-between gap-3">
                     <span className="text-xs font-medium">{entry.feature.label}</span>
                     <span
                       className={`shrink-0 text-xs font-bold tabular-nums ${
                         entry.points > 0
-                          ? 'text-emerald-300'
+                          ? 'text-emerald-600'
                           : entry.points < 0
-                            ? 'text-rose-300'
+                            ? 'text-rose-600'
                             : 'text-muted-foreground'
                       }`}
                     >
@@ -250,13 +250,13 @@ function PredictionPanel({ deck, opponentDeck }: { deck: string[]; opponentDeck:
         </>
       ) : prediction.status === 'no-signal' ? (
         <>
-          <p className="text-sm font-semibold text-amber-300">No usable signal yet</p>
+          <p className="text-sm font-semibold text-amber-600">No usable signal yet</p>
           <p className="mt-1 text-xs text-muted-foreground">{prediction.reason}</p>
           <ModelCard model={prediction.model} />
         </>
       ) : prediction.status === 'too-small' ? (
         <>
-          <p className="text-sm font-semibold text-amber-300">Sample too small</p>
+          <p className="text-sm font-semibold text-amber-600">Sample too small</p>
           <p className="mt-1 text-xs text-muted-foreground">{prediction.reason}</p>
         </>
       ) : (
@@ -277,12 +277,12 @@ export function averageElixir(deck: string[]): number {
 }
 
 const axisTone = (score: number) =>
-  score < 4 ? 'bg-rose-400' : score < 6.5 ? 'bg-amber-400' : 'bg-emerald-400'
+  score < 4 ? 'bg-rose-500' : score < 6.5 ? 'bg-amber-400' : 'bg-emerald-500'
 
 const SEVERITY_TEXT: Record<DiagnosisFindingData['severity'], string> = {
-  critical: 'text-rose-300',
-  warning: 'text-amber-300',
-  good: 'text-emerald-300',
+  critical: 'text-rose-600',
+  warning: 'text-amber-600',
+  good: 'text-emerald-600',
   neutral: 'text-muted-foreground',
 }
 
@@ -366,7 +366,7 @@ function ScoreBar({ label, score }: { label: string; score: number | null }) {
       <span className="w-7 shrink-0 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
         {label}
       </span>
-      <span className="h-2 flex-1 overflow-hidden rounded-full bg-white/10">
+      <span className="h-2 flex-1 overflow-hidden rounded-full bg-slate-100">
         <span
           className={`block h-full rounded-full ${axisTone(score)}`}
           style={{ width: `${score * 10}%` }}
@@ -391,7 +391,7 @@ function SidePanel({
   metrics: SideMetricsData | undefined
 }) {
   return (
-    <div className="rounded-xl border border-border bg-white/[0.03] p-4">
+    <div className="rounded-xl border border-border bg-slate-50 p-4">
       <div className="mb-3 flex items-start justify-between gap-2">
         <div className="min-w-0">
           <p className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
@@ -462,7 +462,7 @@ export function BattleDetail({ battle, status, onBack }: BattleDetailProps) {
           Back
         </Button>
         <div className="min-w-0 flex-1">
-          <p className="text-[11px] uppercase tracking-[0.2em] text-cyan-300/80">
+          <p className="text-[11px] uppercase tracking-[0.2em] text-cyan-700/80">
             Battle intelligence
           </p>
           <h1 className="truncate text-xl font-semibold tracking-tight">
@@ -482,7 +482,7 @@ export function BattleDetail({ battle, status, onBack }: BattleDetailProps) {
 
       <div className="space-y-5 px-4 pb-6">
         {status === 'error' && !diagnosis && (
-          <p className="text-sm text-rose-300">
+          <p className="text-sm text-rose-600">
             Stored battles are unavailable for this player yet. Sync the profile once and
             try again.
           </p>
@@ -492,7 +492,7 @@ export function BattleDetail({ battle, status, onBack }: BattleDetailProps) {
         <section className="panel p-5">
           <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-wide text-emerald-300/80">
+              <p className="text-xs font-semibold uppercase tracking-wide text-emerald-600/80">
                 Battle summary
               </p>
               <p className="mt-1 text-sm text-muted-foreground">
@@ -509,10 +509,10 @@ export function BattleDetail({ battle, status, onBack }: BattleDetailProps) {
               <span
                 className={`grid size-10 place-items-center rounded-lg text-sm font-bold ${
                   battle.result === 'win'
-                    ? 'bg-emerald-500/20 text-emerald-300'
+                    ? 'bg-emerald-500/10 text-emerald-600'
                     : battle.result === 'loss'
-                      ? 'bg-rose-500/20 text-rose-300'
-                      : 'bg-white/10 text-muted-foreground'
+                      ? 'bg-rose-500/10 text-rose-600'
+                      : 'bg-slate-100 text-muted-foreground'
                 }`}
               >
                 {battle.crowns.us}–{battle.crowns.them}
@@ -532,13 +532,13 @@ export function BattleDetail({ battle, status, onBack }: BattleDetailProps) {
           </div>
 
           <dl className="grid grid-cols-2 gap-2 @xl:grid-cols-4">
-            <div className="rounded-lg border border-border bg-white/[0.03] px-3 py-2">
+            <div className="rounded-lg border border-border bg-slate-50 px-3 py-2">
               <dt className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
                 Result
               </dt>
               <dd className="text-sm font-semibold uppercase">{battle.result}</dd>
             </div>
-            <div className="rounded-lg border border-border bg-white/[0.03] px-3 py-2">
+            <div className="rounded-lg border border-border bg-slate-50 px-3 py-2">
               <dt className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
                 Crowns
               </dt>
@@ -546,7 +546,7 @@ export function BattleDetail({ battle, status, onBack }: BattleDetailProps) {
                 {battle.crowns.us}–{battle.crowns.them}
               </dd>
             </div>
-            <div className="rounded-lg border border-border bg-white/[0.03] px-3 py-2">
+            <div className="rounded-lg border border-border bg-slate-50 px-3 py-2">
               <dt className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
                 Arena
               </dt>
@@ -554,7 +554,7 @@ export function BattleDetail({ battle, status, onBack }: BattleDetailProps) {
                 {battle.arena ? modeLabel(battle.arena) : '—'}
               </dd>
             </div>
-            <div className="rounded-lg border border-border bg-white/[0.03] px-3 py-2">
+            <div className="rounded-lg border border-border bg-slate-50 px-3 py-2">
               <dt className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
                 Mode
               </dt>
@@ -597,7 +597,7 @@ export function BattleDetail({ battle, status, onBack }: BattleDetailProps) {
               metrics={diagnosis?.sides?.you}
             />
             <div className="hidden items-center justify-center @3xl:flex">
-              <span className="grid size-9 place-items-center rounded-full border border-border bg-white/[0.03] text-muted-foreground">
+              <span className="grid size-9 place-items-center rounded-full border border-border bg-slate-50 text-muted-foreground">
                 <Swords className="size-4" />
               </span>
             </div>
@@ -639,7 +639,7 @@ export function BattleDetail({ battle, status, onBack }: BattleDetailProps) {
             pending ? (
               <div className="space-y-3" aria-busy="true">
                 {[0, 1, 2, 3].map((index) => (
-                  <div key={index} className="h-10 animate-pulse rounded-lg bg-white/[0.03]" />
+                  <div key={index} className="h-10 animate-pulse rounded-lg bg-slate-50" />
                 ))}
               </div>
             ) : (
@@ -689,7 +689,7 @@ export function BattleDetail({ battle, status, onBack }: BattleDetailProps) {
             pending ? (
               <div className="space-y-3" aria-busy="true">
                 {[0, 1, 2].map((index) => (
-                  <div key={index} className="h-14 animate-pulse rounded-lg bg-white/[0.03]" />
+                  <div key={index} className="h-14 animate-pulse rounded-lg bg-slate-50" />
                 ))}
               </div>
             ) : (
@@ -701,7 +701,7 @@ export function BattleDetail({ battle, status, onBack }: BattleDetailProps) {
                 {diagnosis.findings.map((finding) => (
                   <li
                     key={finding.rank}
-                    className="rounded-lg border border-border bg-white/[0.03] p-3"
+                    className="rounded-lg border border-border bg-slate-50 p-3"
                   >
                     <div className="flex items-start gap-3">
                       <span className="mt-0.5 w-6 shrink-0 text-xs font-bold tabular-nums text-muted-foreground">
@@ -733,13 +733,13 @@ export function BattleDetail({ battle, status, onBack }: BattleDetailProps) {
                 {diagnosis.evidence.map((item) => (
                   <li
                     key={item.label + item.value}
-                    className="rounded-lg border border-border bg-white/[0.03] px-3 py-2"
+                    className="rounded-lg border border-border bg-slate-50 px-3 py-2"
                   >
                     <div className="flex flex-wrap items-baseline justify-between gap-2">
                       <span className="section-title">
                         {item.label}
                       </span>
-                      <code className="text-[10px] text-emerald-300/70">{item.source}</code>
+                      <code className="text-[10px] text-emerald-600/70">{item.source}</code>
                     </div>
                     <p className="mt-0.5 text-sm">{item.value}</p>
                   </li>

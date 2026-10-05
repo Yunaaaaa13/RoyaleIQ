@@ -49,7 +49,7 @@ export function CardTile({
   const tile = (
     <div
       className={`group relative mx-auto ${frame.box} shrink-0 ${frame.radius} ${
-        selected ? 'ring-2 ring-yellow-300 ring-offset-2 ring-offset-background' : ''
+        selected ? 'ring-2 ring-amber-500 ring-offset-2 ring-offset-background' : ''
       } ${disabled ? 'opacity-35' : ''} ${
         interactive ? 'cursor-pointer transition hover:-translate-y-0.5 hover:scale-105' : ''
       }`}
@@ -80,7 +80,7 @@ export function CardTile({
         className={`relative ${frame.radius} h-full w-full object-contain`}
       />
       {showElixir && (
-        <span className="absolute -bottom-1.5 -left-1.5 grid size-5 place-items-center rounded-full border border-white/30 bg-gradient-to-b from-indigo-400 to-indigo-700 text-[10px] font-bold text-white shadow">
+        <span className="absolute -bottom-1.5 -left-1.5 grid size-5 place-items-center rounded-full border border-white/60 bg-gradient-to-b from-blue-500 to-blue-700 text-[10px] font-bold text-white shadow">
           {card.elixir}
         </span>
       )}

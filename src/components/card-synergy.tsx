@@ -50,7 +50,7 @@ export function CardSynergy({ snapshot }: { snapshot: MetaSnapshot }) {
   return (
     <section className="panel p-5">
       <h3 className="mb-1 flex items-center gap-2 panel-title">
-        <GitMerge className="size-4 text-amber-300" />
+        <GitMerge className="size-4 text-amber-600" />
         Card synergy
       </h3>
       <p className="mb-4 text-xs text-muted-foreground">
@@ -64,7 +64,7 @@ export function CardSynergy({ snapshot }: { snapshot: MetaSnapshot }) {
         {/* min-w-0: without it the nowrap card-name text sets the grid track's
             min-content and the row bleeds past the panel below ~380px. */}
         <div className="min-w-0">
-          <h4 className="mb-1 text-xs font-semibold uppercase tracking-wide text-cyan-300/80">
+          <h4 className="mb-1 text-xs font-semibold uppercase tracking-wide text-cyan-700/80">
             Cards that travel together
           </h4>
           <p className="mb-3 text-[11px] text-muted-foreground">
@@ -77,7 +77,7 @@ export function CardSynergy({ snapshot }: { snapshot: MetaSnapshot }) {
               {packages.map((pair) => (
                 <li
                   key={`${pair.a}-${pair.b}`}
-                  className="flex items-center justify-between gap-3 rounded-lg border border-border bg-white/[0.03] px-3 py-2"
+                  className="flex items-center justify-between gap-3 rounded-lg border border-border bg-slate-50 px-3 py-2"
                 >
                   <span className="flex min-w-0 items-center gap-2">
                     <CardTile cardKey={pair.a} size="xs" showElixir={false} />
@@ -88,7 +88,7 @@ export function CardSynergy({ snapshot }: { snapshot: MetaSnapshot }) {
                     </span>
                   </span>
                   <span className="shrink-0 text-right">
-                    <span className="block text-xs font-bold tabular-nums text-cyan-300">
+                    <span className="block text-xs font-bold tabular-nums text-cyan-700">
                       {pair.lift}×
                     </span>
                     <span className="block text-[10px] tabular-nums text-muted-foreground">
@@ -107,7 +107,7 @@ export function CardSynergy({ snapshot }: { snapshot: MetaSnapshot }) {
         </div>
 
         <div className="min-w-0">
-          <h4 className="mb-1 text-xs font-semibold uppercase tracking-wide text-emerald-300/80">
+          <h4 className="mb-1 text-xs font-semibold uppercase tracking-wide text-emerald-600/80">
             Winning together
           </h4>
           <p className="mb-3 text-[11px] text-muted-foreground">
@@ -118,8 +118,8 @@ export function CardSynergy({ snapshot }: { snapshot: MetaSnapshot }) {
           {hasResults ? (
             <div className="space-y-3">
               {[
-                { title: 'Ahead of its cards', rows: measured.best, tone: 'text-emerald-300' },
-                { title: 'Behind its cards', rows: measured.worst, tone: 'text-rose-300' },
+                { title: 'Ahead of its cards', rows: measured.best, tone: 'text-emerald-600' },
+                { title: 'Behind its cards', rows: measured.worst, tone: 'text-rose-600' },
               ].map(
                 (group) =>
                   group.rows.length > 0 && (
@@ -131,7 +131,7 @@ export function CardSynergy({ snapshot }: { snapshot: MetaSnapshot }) {
                         {group.rows.map((pair) => (
                           <li
                             key={`${pair.a}-${pair.b}`}
-                            className="rounded-lg border border-border bg-white/[0.03] px-3 py-2"
+                            className="rounded-lg border border-border bg-slate-50 px-3 py-2"
                           >
                             <div className="flex items-center justify-between gap-3">
                               <span className="flex min-w-0 items-center gap-2">
@@ -170,7 +170,7 @@ export function CardSynergy({ snapshot }: { snapshot: MetaSnapshot }) {
       </div>
 
       {hasResults && (
-        <p className="mt-4 rounded-lg border border-border bg-white/[0.03] px-3 py-2 text-[11px] leading-relaxed text-muted-foreground">
+        <p className="mt-4 rounded-lg border border-border bg-slate-50 px-3 py-2 text-[11px] leading-relaxed text-muted-foreground">
           These are battles, not a controlled test: the deck around the pair, the archetype and
           who played it are all still inside the number. Read a gap as a lead worth checking,
           not a verdict on the cards.

@@ -119,7 +119,7 @@ export function DeckDetail({ cards }: { cards: string[] }) {
                 snapshot?.evolvable?.includes(key) ? (
                   <span
                     title="Observed played in evolved form in this sample"
-                    className="absolute -bottom-1 -right-1 rounded bg-emerald-400 px-1 text-[7px] font-black text-emerald-950 shadow"
+                    className="absolute -bottom-1 -right-1 rounded bg-emerald-500 px-1 text-[7px] font-black text-emerald-950 shadow"
                   >
                     EVO
                   </span>

@@ -96,7 +96,7 @@ export function CoachPanel({
           </Badge>
         </div>
 
-        <div className="mb-3 flex flex-wrap items-center gap-2 rounded-lg border border-border/70 bg-black/20 px-3 py-2">
+        <div className="mb-3 flex flex-wrap items-center gap-2 rounded-lg border border-border/70 bg-slate-100 px-3 py-2">
           <UserRound className="size-3.5 shrink-0 text-muted-foreground" />
           <Input
             value={tag}
@@ -146,7 +146,7 @@ export function CoachPanel({
         </div>
 
         {showPicker && (
-          <div className="mt-4 rounded-xl border border-border/70 bg-black/20 p-3">
+          <div className="mt-4 rounded-xl border border-border/70 bg-slate-100 p-3">
             <div className="mb-2 flex items-center justify-between">
               <p className="text-xs font-medium text-muted-foreground">
                 Opponent deck (optional, for matchup advice)
@@ -176,7 +176,7 @@ export function CoachPanel({
         )}
 
         {error && (
-          <Alert className="mt-4 border-rose-400/30 bg-rose-400/10">
+          <Alert className="mt-4 border-rose-500/30 bg-rose-500/10">
             <AlertTitle>Could not run</AlertTitle>
             <AlertDescription>{error}</AlertDescription>
           </Alert>
@@ -189,7 +189,7 @@ export function CoachPanel({
             <Badge
               variant="outline"
               className={
-                result.grounding?.record ? 'border-emerald-400/40 text-emerald-300' : ''
+                result.grounding?.record ? 'border-emerald-500/40 text-emerald-600' : ''
               }
             >
               {result.grounding?.record
@@ -208,7 +208,7 @@ export function CoachPanel({
           </div>
 
           {!result.llmConfigured && (
-            <Alert className="border-yellow-400/30 bg-yellow-400/10">
+            <Alert className="border-amber-500/30 bg-amber-500/10">
               <AlertTitle>Running on the local rule engine</AlertTitle>
               <AlertDescription>
                 Set <code className="font-mono">OPENAI_API_KEY</code> in{' '}
@@ -240,7 +240,7 @@ export function CoachPanel({
                     <li
                       key={entry.title}
                       className={cn(
-                        'flex gap-2.5 rounded-lg border border-border/70 border-l-2 bg-white/[0.03] p-3',
+                        'flex gap-2.5 rounded-lg border border-border/70 border-l-2 bg-slate-50 p-3',
                         entry.severity === 'good'
                           ? 'border-l-emerald-400'
                           : entry.severity === 'critical'
@@ -268,9 +268,9 @@ export function CoachPanel({
                       {result.coach.changes.map((change) => (
                         <li
                           key={`${change.from}-${change.to}`}
-                          className="flex items-center gap-3 rounded-lg border border-border/70 bg-white/[0.03] p-3"
+                          className="flex items-center gap-3 rounded-lg border border-border/70 bg-slate-50 p-3"
                         >
-                          <span className="rounded-md bg-white/[0.03] px-2 py-1 text-sm font-semibold">
+                          <span className="rounded-md bg-slate-50 px-2 py-1 text-sm font-semibold">
                             {change.from}
                           </span>
                           <span className="text-primary">→</span>
@@ -326,7 +326,7 @@ export function CoachPanel({
                     <p className="mt-1.5 text-2xl font-bold tracking-tight tabular-nums">
                       {value as number}%
                     </p>
-                    <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-white/10">
+                    <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-slate-100">
                       <div
                         className="h-full rounded-full bg-primary transition-all duration-700"
                         style={{ width: `${value as number}%` }}
@@ -341,7 +341,7 @@ export function CoachPanel({
                   <ul className="flex flex-wrap gap-1.5">
                     {result.headToHead.threats.map((threat) => (
                       <li key={threat}>
-                        <Badge variant="outline" className="border-rose-400/40 text-rose-300">
+                        <Badge variant="outline" className="border-rose-400/40 text-rose-600">
                           {threat}
                         </Badge>
                       </li>

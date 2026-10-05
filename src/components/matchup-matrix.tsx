@@ -37,7 +37,9 @@ const modeLabel = (key: string) => MODE_LABEL[key] ?? key
 
 function cellStyle(winRate: number, games: number) {
   const strength = Math.max(-1, Math.min(1, (winRate - 50) / 35))
-  const alpha = 0.1 + Math.abs(strength) * 0.6
+  // Light theme: keep heat-map cells as soft tints so the dark text stays
+  // readable — alpha tops out around 45%, not the 70% a dark UI allowed.
+  const alpha = 0.08 + Math.abs(strength) * 0.37
   return {
     backgroundColor:
       strength >= 0 ? `rgba(16,185,129,${alpha})` : `rgba(244,63,94,${alpha})`,
@@ -51,7 +53,7 @@ function EdgeRow({ edge, tone }: { edge: Edge; tone: 'best' | 'worst' }) {
     <li className="flex items-center gap-3 border-b border-border/60 py-2 last:border-0">
       <span
         className={`w-12 shrink-0 text-right font-mono text-sm font-semibold ${
-          tone === 'best' ? 'text-emerald-300' : 'text-rose-300'
+          tone === 'best' ? 'text-emerald-600' : 'text-rose-600'
         }`}
       >
         {edge.winRate}%
@@ -64,7 +66,7 @@ function EdgeRow({ edge, tone }: { edge: Edge; tone: 'best' | 'worst' }) {
       <span className="shrink-0 font-mono text-[10px] text-muted-foreground">
         n={edge.games}
         {delta !== null && Math.abs(delta) >= 6 ? (
-          <span className={delta > 0 ? 'text-emerald-400' : 'text-rose-400'}>
+          <span className={delta > 0 ? 'text-emerald-600' : 'text-rose-600'}>
             {' '}
             ({delta > 0 ? '+' : ''}
             {delta})
@@ -141,7 +143,7 @@ export function MatchupMatrix() {
     <div className="space-y-4">
       <section className="panel p-4">
         <div className="flex flex-col gap-3 lg:flex-row lg:items-end">
-          <div className="flex items-center gap-1 rounded-lg bg-black/30 p-1">
+          <div className="flex items-center gap-1 rounded-lg bg-slate-100 p-1">
             {(
               [
                 { value: 'global', label: 'Everyone stored', icon: Users },
@@ -156,7 +158,7 @@ export function MatchupMatrix() {
                   type="button"
                   onClick={() => setScope(item.value)}
                   className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition ${
-                    active ? 'bg-white/10 text-foreground' : 'text-muted-foreground hover:text-foreground'
+                    active ? 'bg-slate-100 text-foreground' : 'text-muted-foreground hover:text-foreground'
                   }`}
                 >
                   <Icon className="size-3.5" />
@@ -299,7 +301,7 @@ export function MatchupMatrix() {
                             <span className="block font-mono text-[11px] font-semibold leading-tight">
                               {cell.winRate}%
                             </span>
-                            <span className="block font-mono text-[9px] leading-tight text-white/55">
+                            <span className="block font-mono text-[9px] leading-tight text-foreground/60">
                               n={cell.games}
                             </span>
                           </td>
@@ -321,7 +323,7 @@ export function MatchupMatrix() {
                 {scope === 'player' ? 'you came out behind' : 'row archetype came out behind'}
               </span>
               <span className="flex items-center gap-1.5">
-                <span className="inline-block size-2.5 rounded-sm bg-white/15" /> under 3 games, treat as a hint
+                <span className="inline-block size-2.5 rounded-sm bg-slate-200" /> under 3 games, treat as a hint
               </span>
               <span className="ml-auto">hover a cell for W/L/D and the model projection</span>
             </div>
@@ -330,7 +332,7 @@ export function MatchupMatrix() {
           <aside className="space-y-4">
             <section className="panel p-4">
               <div className="mb-2 flex items-center gap-2">
-                <RefreshCw className="size-3.5 text-emerald-300" />
+                <RefreshCw className="size-3.5 text-emerald-600" />
                 <h2 className="text-sm font-semibold">
                   {scope === 'player' ? 'You handle these best' : 'Strongest pairings'}
                 </h2>
@@ -350,7 +352,7 @@ export function MatchupMatrix() {
 
             <section className="panel p-4">
               <div className="mb-2 flex items-center gap-2">
-                <Swords className="size-3.5 text-rose-300" />
+                <Swords className="size-3.5 text-rose-600" />
                 <h2 className="text-sm font-semibold">
                   {scope === 'player' ? 'These keep beating you' : 'Weakest pairings'}
                 </h2>

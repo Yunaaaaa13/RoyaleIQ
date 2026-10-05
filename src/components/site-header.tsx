@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { Fragment, useState } from 'react'
-import { Crown, Search, Swords } from 'lucide-react'
+import { ChevronRight, Crown, Search, Swords, Trophy, UserRound } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { NAV_GROUPS, isNavActive, navLabelFor } from '@/components/nav-config'
@@ -65,11 +65,11 @@ export function SiteHeader() {
   }
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border/80 bg-background/80 backdrop-blur-xl">
+    <header className="sticky top-0 z-50 border-b border-border bg-background/90 backdrop-blur-xl">
       <div className="mx-auto flex h-14 max-w-7xl items-center gap-3 px-4 sm:gap-4 sm:px-6">
         {/* The sidebar carries the lockup from lg up; this is its below-lg stand-in. */}
         <Link href="/" className="group flex shrink-0 items-center gap-2 lg:hidden">
-          <span className="grid size-8 place-items-center rounded-lg bg-gradient-to-br from-blue-400 to-indigo-600 text-white shadow-lg shadow-blue-600/25 transition group-hover:scale-105">
+          <span className="grid size-8 place-items-center rounded-lg bg-primary text-white shadow-sm transition group-hover:scale-105">
             <Crown className="size-4" strokeWidth={2.5} />
           </span>
           <span className="flex flex-col leading-none">
@@ -78,15 +78,16 @@ export function SiteHeader() {
             </span>
             {/* The subline is the widest part of the lockup; dropping it below
                 `sm` is what buys the tag field its 130px on a 360px screen. */}
-            <span className="hidden text-[9px] uppercase tracking-[0.18em] text-muted-foreground sm:block">
-              Deck Intelligence
+            <span className="hidden text-[9px] uppercase tracking-[0.16em] text-muted-foreground sm:block">
+              Clash Royale Analytics
             </span>
           </span>
         </Link>
 
-        {/* Desktop context: where the search box sits relative to the rail. */}
-        <p className="hidden min-w-0 items-baseline gap-2 lg:flex">
+        {/* Desktop context: breadcrumb left, chrome right. */}
+        <p className="hidden min-w-0 items-baseline gap-1.5 lg:flex">
           <span className="eyebrow truncate">{navLabelFor(pathname)}</span>
+          <ChevronRight aria-hidden className="size-3 shrink-0 text-muted-foreground/60" />
           <span className="truncate text-xs text-muted-foreground">RoyaleIQ analytics</span>
         </p>
 
@@ -103,12 +104,12 @@ export function SiteHeader() {
               onKeyDown={(event) => {
                 if (event.key === 'Escape') setHistoryOpen(false)
               }}
-              placeholder="#TAG OR CARD"
+              placeholder="Search tag or card…"
               aria-label="Player tag or card name"
-              className="h-9 w-full rounded-full border-border/80 bg-black/25 pl-9 font-mono text-xs uppercase sm:w-44 lg:w-64"
+              className="h-9 w-full rounded-lg border-border bg-card pl-9 font-mono text-xs normal-case sm:w-48 lg:w-64"
             />
             {showHistory && (
-              <div className="absolute left-0 right-0 top-full z-50 mt-2 overflow-hidden rounded-xl border border-border/80 bg-popover/95 p-1 shadow-2xl backdrop-blur-xl">
+              <div className="absolute left-0 right-0 top-full z-50 mt-2 overflow-hidden rounded-lg border border-border bg-card p-1 shadow-lg">
                 <p className="section-title px-2 py-1.5 text-[10px]">Recent players</p>
                 {matches.map((item) => (
                   <button
@@ -116,13 +117,13 @@ export function SiteHeader() {
                     type="button"
                     onMouseDown={(event) => event.preventDefault()}
                     onClick={() => openRecent(item)}
-                    className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-left text-xs transition hover:bg-primary/15"
+                    className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-xs transition hover:bg-accent"
                   >
                     <span className="min-w-0 truncate font-medium">{item.name}</span>
                     <span className="font-mono text-[10px] text-muted-foreground">
                       {item.tag}
                     </span>
-                    <span className="ml-auto shrink-0 font-mono text-[10px] text-primary/90">
+                    <span className="ml-auto shrink-0 font-mono text-[10px] text-primary">
                       {item.trophies.toLocaleString()}
                     </span>
                   </button>
@@ -134,16 +135,39 @@ export function SiteHeader() {
             type="submit"
             size="sm"
             aria-label="Analyze a player tag or open a card"
-            className="h-9 shrink-0 gap-1.5 rounded-full px-4 font-semibold"
+            className="h-9 shrink-0 gap-1.5 rounded-lg px-4 font-semibold"
           >
             <Swords className="size-4" />
             <span className="hidden sm:inline">Analyze</span>
           </Button>
         </form>
+
+        {/* Season / trophy context chips + profile. */}
+        <div className="hidden items-center gap-2 md:flex">
+          <span className="hidden items-center gap-1.5 rounded-lg border border-border bg-card px-2.5 py-1.5 text-xs text-muted-foreground lg:flex">
+            <span className="size-1.5 rounded-full bg-primary" aria-hidden />
+            Season 64
+          </span>
+          <span className="hidden items-center gap-1.5 rounded-lg border border-border bg-card px-2.5 py-1.5 text-xs text-muted-foreground xl:flex">
+            <Trophy className="size-3.5 text-amber-500" aria-hidden />
+            Ladder
+          </span>
+          <Button
+            asChild
+            variant="outline"
+            size="sm"
+            className="h-8 gap-1.5 rounded-lg"
+          >
+            <Link href="/profile">
+              <UserRound className="size-3.5" />
+              Profile
+            </Link>
+          </Button>
+        </div>
       </div>
 
       {/* Grouped link strip: the below-lg face of the sidebar. */}
-      <nav className="scroll-thin flex items-center gap-1 overflow-x-auto border-t border-border/60 px-4 py-1.5 lg:hidden">
+      <nav className="scroll-thin flex items-center gap-1 overflow-x-auto border-t border-border px-4 py-1.5 lg:hidden">
         {NAV_GROUPS.map((group, groupIndex) => (
           <Fragment key={group.label}>
             {groupIndex > 0 && (
@@ -155,10 +179,10 @@ export function SiteHeader() {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors ${
+                  className={`flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors ${
                     active
-                      ? 'bg-primary/15 text-foreground'
-                      : 'text-muted-foreground hover:bg-white/[0.03] hover:text-foreground'
+                      ? 'bg-accent text-accent-foreground'
+                      : 'text-muted-foreground hover:bg-slate-100 hover:text-foreground'
                   }`}
                 >
                   <item.icon

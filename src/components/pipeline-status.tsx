@@ -18,16 +18,16 @@ import type { CheckStatus, StatusResponse } from '@/lib/status'
 type Status = 'loading' | 'ready' | 'error'
 
 const DOT: Record<CheckStatus, string> = {
-  ok: 'bg-emerald-400 shadow-emerald-400/50',
+  ok: 'bg-emerald-500 shadow-emerald-400/50',
   warn: 'bg-amber-400 shadow-amber-400/50',
-  error: 'bg-rose-400 shadow-rose-400/50',
-  off: 'bg-white/25 shadow-white/10',
+  error: 'bg-rose-500 shadow-rose-400/50',
+  off: 'bg-slate-300 shadow-slate-300/60',
 }
 
 const TEXT: Record<CheckStatus, string> = {
-  ok: 'text-emerald-300',
-  warn: 'text-amber-300',
-  error: 'text-rose-300',
+  ok: 'text-emerald-600',
+  warn: 'text-amber-600',
+  error: 'text-rose-600',
   off: 'text-muted-foreground',
 }
 
@@ -64,8 +64,8 @@ function Stage({
   detail: string
 }) {
   return (
-    <div className="flex min-w-0 items-start gap-3 rounded-lg border border-border bg-black/20 px-3 py-2.5">
-      <Icon className="mt-0.5 size-4 shrink-0 text-yellow-300/80" />
+    <div className="flex min-w-0 items-start gap-3 rounded-lg border border-border bg-slate-100 px-3 py-2.5">
+      <Icon className="mt-0.5 size-4 shrink-0 text-amber-600/80" />
       <div className="min-w-0">
         <p className="truncate text-xs font-semibold">{label}</p>
         <p className="truncate font-mono text-[10px] text-muted-foreground">{detail}</p>
@@ -146,8 +146,8 @@ export function PipelineStatus() {
           </Button>
         </div>
         {status === 'error' && (
-          <div className="mb-3 flex flex-wrap items-center gap-3 rounded-lg border border-rose-400/30 bg-rose-400/10 px-3 py-2">
-            <p className="text-xs text-rose-200">
+          <div className="mb-3 flex flex-wrap items-center gap-3 rounded-lg border border-rose-500/30 bg-rose-500/10 px-3 py-2">
+            <p className="text-xs text-rose-600">
               {error || 'Could not refresh the pipeline status.'}
             </p>
             <Button
@@ -252,7 +252,7 @@ export function PipelineStatus() {
                       <td className="px-3 py-2">
                         <span className="font-mono">{age(player.ageSeconds)} ago</span>
                         <span
-                          className={`ml-2 text-[10px] ${player.stale ? 'text-amber-300' : 'text-emerald-300'}`}
+                          className={`ml-2 text-[10px] ${player.stale ? 'text-amber-600' : 'text-emerald-600'}`}
                         >
                           {player.stale ? 'stale' : 'fresh'}
                         </span>
@@ -286,7 +286,7 @@ export function PipelineStatus() {
                     <span>{name}</span>
                     <span className="font-mono text-muted-foreground">{value}</span>
                   </div>
-                  <div className="mt-1 h-1 overflow-hidden rounded-full bg-white/[0.03]">
+                  <div className="mt-1 h-1 overflow-hidden rounded-full bg-slate-50">
                     <div
                       className="h-full rounded-full bg-gradient-to-r from-yellow-400/70 to-amber-500/70"
                       style={{ width: `${Math.max(3, (value / maxCount) * 100)}%` }}
