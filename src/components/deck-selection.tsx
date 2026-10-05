@@ -11,15 +11,16 @@ import { Button } from '@/components/ui/button'
 import { analyzeDeck, type DeckAnalysis } from '@/lib/analysis'
 import { getCard } from '@/lib/cards'
 
+/** Hog 2.6 — the sample deck behind "Try Example", a mainstream meta pick. */
 export const SAMPLE = [
-  'x-bow',
-  'tesla',
-  'archers',
-  'knight',
-  'fireball',
-  'the-log',
+  'hog-rider',
+  'musketeer',
+  'cannon',
   'skeletons',
   'ice-spirit',
+  'the-log',
+  'ice-golem',
+  'fireball',
 ]
 
 export function parseDeck(value: string | null): string[] {

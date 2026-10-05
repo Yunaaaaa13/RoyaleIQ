@@ -5,21 +5,18 @@ import type { CardStat, DeckStat, MetaSnapshot } from './battle'
 import { deckLabel } from './battle'
 import { BIG_SPELLS, SMALL_SPELLS, type CardRole } from './card-meta'
 import { combatOf, getCard } from './cards'
-import { META_DECKS } from './meta-decks'
 
 /**
  * Meta-deck recommendation engine.
  *
- * Pipeline: selected cards -> candidate decks (every observed meta deck, every
- * curated library deck, completions that keep the selection and borrow a
- * donor's shell, plus one role-driven fill) -> one score from real values ->
- * ranked list.
+ * Pipeline: selected cards -> candidate decks (every observed meta deck, plus
+ * completions that keep the selection and borrow a donor's shell, plus one
+ * role-driven fill) -> one score from real snapshot values -> ranked list.
  *
  * Every input is existing data: deck win rate / usage / battles from the
- * meta snapshot, the curated meta-deck library, card records, card roles from
- * the catalogue, and archetype detection from `archetypes.ts`. Unobserved
- * decks never display a win rate — their performance factor is derived from
- * card records and labelled as such.
+ * meta snapshot, card records, card roles from the catalogue, and archetype
+ * detection from `archetypes.ts`. Unobserved decks never display a win rate —
+ * their performance factor is derived from card records and labelled as such.
  */
 
 export const MIN_SELECTED_CARDS = 4
@@ -52,10 +49,9 @@ export const SCORE_BASIS =
   `${SCORE_WEIGHTS.synergy}% card-pair synergy inside the meta decks, ` +
   `${SCORE_WEIGHTS.archetype}% archetype fit, ${SCORE_WEIGHTS.usage}% usage, ` +
   `${SCORE_WEIGHTS.elixir}% elixir fit. Heuristic ranking aid built from the current ` +
-  'meta snapshot and the curated meta-deck library — not a prediction. ' +
-  'Unobserved builds show no win rate.'
+  'meta snapshot — not a prediction. Unobserved builds show no win rate.'
 
-export type CandidateSource = 'meta' | 'library' | 'completed'
+export type CandidateSource = 'meta' | 'completed'
 
 export interface RecommendationParts {
   match: number
@@ -74,7 +70,7 @@ export interface Recommendation {
   archetype: string
   archetypeLabel: string
   cards: string[]
-  /** 'meta' = observed in the sample; 'library' = curated meta-deck library; 'completed' = built around the selection. */
+  /** 'meta' = observed in the sample; 'completed' = built around the selection. */
   source: CandidateSource
   battles: number
   /** Percent of sampled battles, or null when the exact build was not observed. */
@@ -179,7 +175,7 @@ function fillValue(key: string, ctx: Context): number {
  */
 function completeFromSelection(
   selected: string[],
-  donor: { cards: string[] },
+  donor: DeckStat,
   ctx: Context,
 ): string[] {
   const target = 8 - selected.length
@@ -265,7 +261,6 @@ function buildReasons(input: {
   total: number
   meta: DeckStat | null
   observed: boolean
-  source: CandidateSource
   cardMean: number | null
   covered: string[]
   gaps: string[]
@@ -297,8 +292,6 @@ function buildReasons(input: {
   } else {
     reasons.push('Not enough recorded battles to read its performance')
   }
-  if (input.source === 'library')
-    reasons.push('Curated meta-deck library entry — not observed in this sample')
   if (input.covered.length)
     reasons.push(`Covers ${input.covered.join(', ')}`)
   if (input.gaps.length) reasons.push(`Still missing ${input.gaps.join(', ')}`)
@@ -354,7 +347,7 @@ export function recommendDecks(
   selectedInput: string[],
   snapshot: MetaSnapshot | null | undefined,
 ): Recommendation[] {
-  if (!snapshot) return []
+  if (!snapshot?.decks?.length) return []
   const selected = Array.from(
     new Set(selectedInput.filter((key) => getCard(key))),
   ).slice(0, 8)
@@ -364,24 +357,13 @@ export function recommendDecks(
   const selSet = new Set(selected)
   const cardStats = new Map(snapshot.cards.map((card) => [card.key, card]))
 
-  // Synergy counts card pairs that co-occur in the sampled meta decks and in
-  // the curated library, so an unobserved build is not penalised for the
-  // sample's gaps.
   const pairSet = new Set<string>()
-  const addPairs = (cards: readonly string[]) => {
-    const sorted = [...cards].sort()
-    for (let i = 0; i < sorted.length; i += 1) {
-      for (let j = i + 1; j < sorted.length; j += 1) pairSet.add(pairId(sorted[i], sorted[j]))
+  for (const deck of metaDecks) {
+    const cards = [...deck.cards].sort()
+    for (let i = 0; i < cards.length; i += 1) {
+      for (let j = i + 1; j < cards.length; j += 1) pairSet.add(pairId(cards[i], cards[j]))
     }
   }
-  for (const deck of metaDecks) addPairs(deck.cards)
-  for (const cards of META_DECKS) addPairs(cards)
-
-  const elixirOf = (cards: readonly string[]): number =>
-    cards.reduce((sum, key) => sum + (getCard(key)?.elixir ?? 0), 0) / Math.max(1, cards.length)
-  const medianElixir = metaDecks.length
-    ? median(metaDecks.map((deck) => deck.avgElixir))
-    : median(META_DECKS.map((cards) => elixirOf(cards)))
 
   const selSpells = selected.filter((key) => getCard(key)?.type === 'Spell').length
   const selChampions = selected.filter((key) => getCard(key)?.rarity === 'Champion').length
@@ -390,7 +372,7 @@ export function recommendDecks(
     selSet,
     cardStats,
     pairSet,
-    medianElixir,
+    medianElixir: median(metaDecks.map((deck) => deck.avgElixir)),
     selArch: detectArchetype(selected),
     needed: missingRoles(selected),
     selSpells,
@@ -407,17 +389,10 @@ export function recommendDecks(
   // Every observed meta deck, high compatibility or not.
   for (const deck of metaDecks) add(deck.cards, 'meta', deck)
 
-  // Every curated library deck — coverage beyond what the sample happened to
-  // record. Deduped against observed decks by the sorted-id key above.
-  for (const cards of META_DECKS) add([...cards], 'library', null)
-
   // Completions: keep the selection, borrow the shell of the decks that fit it.
-  const overlapOf = (deck: { cards: string[] }) =>
+  const overlapOf = (deck: DeckStat) =>
     deck.cards.reduce((total, key) => total + (selSet.has(key) ? 1 : 0), 0)
-  const donors: { cards: string[]; usage: number }[] = [
-    ...metaDecks.map((deck) => ({ cards: deck.cards, usage: deck.usage })),
-    ...META_DECKS.map((cards) => ({ cards: [...cards], usage: 0 })),
-  ]
+  const donors = [...metaDecks]
     .sort((a, b) => overlapOf(b) - overlapOf(a) || b.usage - a.usage)
     .slice(0, 12)
   for (const donor of donors) {
@@ -553,7 +528,6 @@ export function recommendDecks(
         total: selected.length,
         meta: draft.meta,
         observed: draft.meta !== null,
-        source: draft.source,
         cardMean,
         covered,
         gaps,

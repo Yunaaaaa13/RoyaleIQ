@@ -50,6 +50,11 @@ export interface DeckStat {
   avgElixir: number
   /** Cards observed evolved in battles with this signature, most frequent first. */
   evoKeys?: string[]
+  /**
+   * Percentage-point change of this deck's usage share between the two halves
+   * of the sample (by battle time). Absent when the sample spans a single half.
+   */
+  trend?: number
 }
 
 export interface ArchetypeStat {
@@ -58,6 +63,11 @@ export interface ArchetypeStat {
   share: number
   battles: number
   winRate: number
+  /** Side-deck share in the first half of the sample. Absent for one-half samples. */
+  firstHalf?: number
+  secondHalf?: number
+  /** `secondHalf` minus `firstHalf`, in percentage points. */
+  trend?: number
 }
 
 /**
@@ -174,6 +184,24 @@ export function aggregateMeta(
   let elixirTotal = 0
   let elixirDecks = 0
 
+  // Time split of the sample, the same halves the card trend uses, so deck and
+  // archetype trends share one definition of "early" and "late".
+  const sorted = [...battles].sort(
+    (a, b) => new Date(a.time).getTime() - new Date(b.time).getTime(),
+  )
+  const half = Math.floor(sorted.length / 2)
+  const early = new Set(sorted.slice(0, half).map((battle) => battle.id))
+  const earlyCount = Math.max(1, half)
+  const lateCount = Math.max(1, sorted.length - half)
+  /** Only meaningful once battles fall on both sides of the split. */
+  const halvesReady = half > 0 && sorted.length - half > 0
+  const earlyDeckUsage = new Map<string, number>()
+  const lateDeckUsage = new Map<string, number>()
+  const earlyArchUsage = new Map<string, number>()
+  const lateArchUsage = new Map<string, number>()
+  let earlySides = 0
+  let lateSides = 0
+
   for (const battle of battles) {
     if (battle.result !== 'draw' && battle.deck.length === 8) {
       teamDecks += 1
@@ -226,6 +254,14 @@ export function aggregateMeta(
       archBucket.battles += 1
       if (outcome === 'win') archBucket.wins += 1
       archetypeBattles.set(archetypeKey, archBucket)
+
+      const isEarly = early.has(battle.id)
+      const deckHalf = isEarly ? earlyDeckUsage : lateDeckUsage
+      deckHalf.set(signature, (deckHalf.get(signature) ?? 0) + 1)
+      const archHalf = isEarly ? earlyArchUsage : lateArchUsage
+      archHalf.set(archetypeKey, (archHalf.get(archetypeKey) ?? 0) + 1)
+      if (isEarly) earlySides += 1
+      else lateSides += 1
 
       const avg =
         deck.reduce((sum, key) => sum + (getCard(key)?.elixir ?? 0), 0) / 8
@@ -286,6 +322,14 @@ export function aggregateMeta(
                 .map(([key]) => key),
             }
           : {}),
+        ...(halvesReady
+          ? {
+              trend: round1(
+                ((lateDeckUsage.get(signature) ?? 0) / lateCount) * 100 -
+                  ((earlyDeckUsage.get(signature) ?? 0) / earlyCount) * 100,
+              ),
+            }
+          : {}),
       }
     })
     .filter((deck) => deck.battles >= 1)
@@ -296,21 +340,27 @@ export function aggregateMeta(
     const slots =
       Array.from(archetypeBattles.values()).reduce((sum, stat) => sum + stat.battles, 0) || 1
     return Array.from(archetypeBattles.entries())
-      .map(([key, stat]) => ({
-        key,
-        label: archetypeLabel(key),
-        battles: stat.battles,
-        share: round1((stat.battles / slots) * 100),
-        winRate: round1((stat.wins / (stat.battles || 1)) * 100),
-      }))
+      .map(([key, stat]) => {
+        const firstHalf = ((earlyArchUsage.get(key) ?? 0) / Math.max(1, earlySides)) * 100
+        const secondHalf = ((lateArchUsage.get(key) ?? 0) / Math.max(1, lateSides)) * 100
+        return {
+          key,
+          label: archetypeLabel(key),
+          battles: stat.battles,
+          share: round1((stat.battles / slots) * 100),
+          winRate: round1((stat.wins / (stat.battles || 1)) * 100),
+          ...(halvesReady && earlySides > 0 && lateSides > 0
+            ? {
+                firstHalf: round1(firstHalf),
+                secondHalf: round1(secondHalf),
+                trend: round1(secondHalf - firstHalf),
+              }
+            : {}),
+        }
+      })
       .sort((a, b) => b.share - a.share)
   })()
 
-  const sorted = [...battles].sort(
-    (a, b) => new Date(a.time).getTime() - new Date(b.time).getTime(),
-  )
-  const half = Math.floor(sorted.length / 2)
-  const early = new Set(sorted.slice(0, half).map((battle) => battle.id))
   const earlyUsage = new Map<string, number>()
   const lateUsage = new Map<string, number>()
   for (const battle of sorted) {
@@ -319,8 +369,6 @@ export function aggregateMeta(
       target.set(key, (target.get(key) ?? 0) + 1)
     }
   }
-  const earlyCount = Math.max(1, half)
-  const lateCount = Math.max(1, sorted.length - half)
   const trending = Array.from(cardBattles.keys())
     .map((key) => {
       const firstHalf = ((earlyUsage.get(key) ?? 0) / earlyCount) * 100
@@ -377,7 +425,10 @@ export function aggregateMeta(
     // card that did appear as "not in this sample". The catalogue is ~130
     // entries, so the array cannot grow past that.
     cards,
-    decks: labelledDecks.slice(0, 30),
+    // The explorer publishes the full long tail of observed compositions, not
+    // just a leaderboard podium: the cap guards against a pathological corpus,
+    // not against depth. 200 comfortably covers the current sample.
+    decks: labelledDecks.slice(0, 200),
     archetypes,
     trending,
     topWinRate,

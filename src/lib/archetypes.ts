@@ -478,6 +478,11 @@ export function archetypeLabel(key: string): string {
   return getArchetype(key)?.label ?? (key === 'hybrid' ? 'Hybrid / Off-Meta' : key)
 }
 
+/** One-line description for a known archetype key; empty for unknown keys. */
+export function archetypeBlurb(key: string): string {
+  return getArchetype(key)?.blurb ?? (key === 'hybrid' ? HYBRID.blurb : '')
+}
+
 export function matchupMatrix(
   from: string,
   deck: string[],
