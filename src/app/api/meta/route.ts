@@ -1,11 +1,14 @@
+import { after } from 'next/server'
 import { fetchLiveMeta, hasApiToken, primeMetaCache } from '@/lib/cr-api'
 import { demoMeta } from '@/lib/demo'
 import type { MetaSnapshot } from '@/lib/battle'
 import { jsonResponse } from '@/lib/json'
-import { refreshMetaInBackground, staleMetaNotice } from '@/lib/meta-refresh'
+import { startMetaRefresh, staleMetaNotice } from '@/lib/meta-refresh'
 import { META_TTL_MS, persistMetaSnapshot, readLatestMetaSnapshot } from '@/lib/sync'
 
 export const dynamic = 'force-dynamic'
+/** The rebuild walks the whole player pool; give `after()` room to finish it. */
+export const maxDuration = 300
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
@@ -37,7 +40,8 @@ export async function GET(request: Request) {
   //    very value it is meant to replace.
   const older = await readLatestMetaSnapshot(Number.MAX_SAFE_INTEGER)
   if (older) {
-    refreshMetaInBackground()
+    // Handed to `after()` so the rebuild survives the response being flushed.
+    after(() => startMetaRefresh())
     return jsonResponse(request, { ...older, notice: staleMetaNotice(older.generatedAt) })
   }
 

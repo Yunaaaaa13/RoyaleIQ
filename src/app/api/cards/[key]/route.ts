@@ -5,15 +5,18 @@ import { findCard } from '@/lib/cards'
 import { fetchLiveMeta, hasApiToken } from '@/lib/cr-api'
 import { demoMeta } from '@/lib/demo'
 import { jsonResponse } from '@/lib/json'
-import { refreshMetaInBackground, staleMetaNotice } from '@/lib/meta-refresh'
+import { startMetaRefresh, staleMetaNotice } from '@/lib/meta-refresh'
 import {
   META_TTL_MS,
   persistMetaSnapshot,
   readLatestMetaSnapshot,
   readMetaSnapshotHistory,
 } from '@/lib/sync'
+import { after } from 'next/server'
 
 export const dynamic = 'force-dynamic'
+/** The rebuild walks the whole player pool; give `after()` room to finish it. */
+export const maxDuration = 300
 
 const LIVE_TOKEN_NOTICE =
   'Live meta is off. Set CLASH_ROYALE_API_TOKEN in .env.local to aggregate real ladder battles.'
@@ -40,7 +43,8 @@ async function resolveMeta(): Promise<{ snapshot: MetaSnapshot; notice?: string 
   // behind a full round of Clash Royale API calls.
   const older = await readLatestMetaSnapshot(Number.MAX_SAFE_INTEGER)
   if (older) {
-    refreshMetaInBackground()
+    // Handed to `after()` so the rebuild survives the response being flushed.
+    after(() => startMetaRefresh())
     return { snapshot: older, notice: staleMetaNotice(older.generatedAt) }
   }
 

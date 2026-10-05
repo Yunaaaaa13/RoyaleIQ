@@ -25,10 +25,14 @@ function state(): RefreshState {
  * lets the reader answer from the stored row instead, and the first caller
  * starts the work while everyone behind it joins that same promise rather than
  * launching a second round of API calls.
+ *
+ * The promise is meant to be handed to Next's `after()` (which becomes
+ * `waitUntil` on Vercel): a fire-and-forget promise dies with the serverless
+ * invocation once the response is flushed, so the rebuild would never persist.
  */
-export function refreshMetaInBackground(): void {
+export function startMetaRefresh(): Promise<void> {
   const current = state()
-  if (current.running) return
+  if (current.running) return current.running
   current.running = (async () => {
     try {
       // `force` matters: a snapshot primed into the in-process cache would
@@ -43,6 +47,7 @@ export function refreshMetaInBackground(): void {
       current.running = null
     }
   })()
+  return current.running
 }
 
 /** Honest wording for a payload served from an aggregate that has aged out. */
