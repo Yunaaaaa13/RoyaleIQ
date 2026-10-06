@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import { motion } from 'motion/react'
 import {
   CartesianGrid,
   Line,
@@ -15,6 +16,7 @@ import {
 import { Bot, Crown, Database, Loader2, Search, Star, Trophy, Users } from 'lucide-react'
 import { averageElixir, DeckStrip } from '@/components/battle-detail'
 import { BarList, StatTile } from '@/components/metrics'
+import { Reveal } from '@/components/reveal'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -22,6 +24,7 @@ import { Input } from '@/components/ui/input'
 import type { ArchetypeRecord, PlayerStats } from '@/lib/player'
 import type { CrPlayer } from '@/lib/cr-api'
 import { archetypeLabel, detectArchetype } from '@/lib/archetypes'
+import { CHART_MOTION, DURATION, EASE_OUT, fadeUp, staggerParent } from '@/lib/motion'
 import {
   clearRecent,
   pushRecent,
@@ -367,19 +370,34 @@ export function PlayerPanel({
       )}
 
       {!payload && !error && !loading && (
-        <section className="panel grid place-items-center gap-3 px-6 py-14 text-center">
-          <span className="grid size-12 place-items-center rounded-2xl bg-slate-50 text-amber-600">
+        <motion.section
+          className="panel grid place-items-center gap-3 px-6 py-14 text-center"
+          initial="hidden"
+          animate="show"
+          variants={staggerParent}
+        >
+          <motion.span
+            className="grid size-12 place-items-center rounded-2xl bg-slate-50 text-amber-600"
+            initial={{ opacity: 0, scale: 0.96 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: DURATION.component, ease: EASE_OUT }}
+          >
             <Search className="size-5" />
-          </span>
-          <h2 className="text-lg font-semibold">Search a player tag to begin</h2>
-          <p className="max-w-lg text-sm leading-relaxed text-muted-foreground">
+          </motion.span>
+          <motion.h2 variants={fadeUp} className="text-lg font-semibold">
+            Search a player tag to begin
+          </motion.h2>
+          <motion.p
+            variants={fadeUp}
+            className="max-w-lg text-sm leading-relaxed text-muted-foreground"
+          >
             RoyaleIQ does not run on a demo account. Enter a real Clash Royale
             player tag — for example{' '}
             <span className="font-mono text-foreground">#G9CP9VUJR</span> — and the
             name, trophies, battle history and per-match diagnosis load straight from
             the official API.
-          </p>
-        </section>
+          </motion.p>
+        </motion.section>
       )}
 
       {loading && !payload && (
@@ -515,6 +533,7 @@ export function PlayerPanel({
                       stroke="#F5B942"
                       strokeWidth={2.5}
                       dot={{ r: 4, fill: '#F5B942' }}
+                      {...CHART_MOTION}
                     />
                   </LineChart>
                 </ResponsiveContainer>
@@ -549,7 +568,8 @@ export function PlayerPanel({
               </div>
             </section>
 
-            <section className="panel p-5">
+            <Reveal delay={0.05}>
+              <section className="panel h-full p-5">
               <h3 className="mb-4 panel-title">
                 Most used cards
               </h3>
@@ -563,11 +583,13 @@ export function PlayerPanel({
                   </p>
                 </div>
               )}
-            </section>
+              </section>
+            </Reveal>
           </div>
 
           <div className="grid gap-4 lg:grid-cols-3">
-            <section className="panel p-5">
+            <Reveal delay={0.04}>
+              <section className="panel h-full p-5">
               <h3 className="mb-4 panel-title">
                 Your archetypes
               </h3>
@@ -576,9 +598,11 @@ export function PlayerPanel({
                   <ArchetypeRow key={record.key} record={record} />
                 ))}
               </ul>
-            </section>
+              </section>
+            </Reveal>
 
-            <section className="panel p-5">
+            <Reveal delay={0.08}>
+              <section className="panel h-full p-5">
               <h3 className="mb-4 panel-title">
                 Matchup analysis
               </h3>
@@ -597,9 +621,11 @@ export function PlayerPanel({
                   No battles stored for this player yet.
                 </p>
               )}
-            </section>
+              </section>
+            </Reveal>
 
-            <section className="panel p-5">
+            <Reveal delay={0.12}>
+              <section className="panel h-full p-5">
               <h3 className="mb-4 panel-title">
                 Recent battles
               </h3>
@@ -608,9 +634,26 @@ export function PlayerPanel({
                 full dashboard: two-sided matchup breakdown, air defence, spell coverage,
                 cycle, pre-match prediction and the evidence behind each score.
               </p>
-              <ul className="space-y-2">
+              <motion.ul
+                className="space-y-2"
+                initial="hidden"
+                animate="show"
+                variants={{
+                  ...staggerParent,
+                  show: {
+                    transition: {
+                      staggerChildren: Math.min(0.04, 0.45 / Math.max(1, recent.length)),
+                      delayChildren: 0.04,
+                    },
+                  },
+                }}
+              >
                 {recent.map(({ battle, opponent, when }) => (
-                  <li key={battle.id}>
+                  <motion.li
+                    key={battle.id}
+                    variants={fadeUp}
+                    className="group/row"
+                  >
                     <Link
                       href={`/battle?tag=${encodeURIComponent(urlTag)}&t=${encodeURIComponent(battle.time)}`}
                       className="block w-full rounded-xl border border-border bg-slate-50 px-3 py-3 text-left text-sm transition-colors hover:border-slate-300 hover:bg-slate-100"
@@ -652,15 +695,16 @@ export function PlayerPanel({
                           <DeckStrip cards={battle.opponentDeck} label="Opp" />
                         </span>
                     </Link>
-                  </li>
+                  </motion.li>
                 ))}
                 {!recent.length && (
                   <li className="py-6 text-center text-sm text-muted-foreground">
                     No battles stored for this player yet.
                   </li>
                 )}
-              </ul>
-            </section>
+              </motion.ul>
+              </section>
+            </Reveal>
           </div>
         </>
       )}

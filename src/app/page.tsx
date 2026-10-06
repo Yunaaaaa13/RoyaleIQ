@@ -29,8 +29,11 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
+import { motion } from 'motion/react'
 import { CardTile } from '@/components/card-tile'
 import { StatTile } from '@/components/metrics'
+import { PageTransition } from '@/components/page-transition'
+import { Reveal } from '@/components/reveal'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -44,6 +47,7 @@ import {
 import { ALL_CARDS, getCard } from '@/lib/cards'
 import { ARCHETYPES } from '@/lib/archetypes'
 import type { MetaSnapshot } from '@/lib/battle'
+import { CHART_MOTION, rowReveal, staggerParent } from '@/lib/motion'
 
 const DISTRIBUTION_COLORS = [
   '#2F80ED',
@@ -195,7 +199,7 @@ export default function DashboardPage() {
 
   if (error) {
     return (
-      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
+      <PageTransition className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
         <Alert className="border-rose-500/30 bg-rose-500/5">
           <AlertTitle>Meta unavailable</AlertTitle>
           <AlertDescription className="flex items-center gap-3">
@@ -205,12 +209,12 @@ export default function DashboardPage() {
             </Button>
           </AlertDescription>
         </Alert>
-      </div>
+      </PageTransition>
     )
   }
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-6 pb-4 sm:px-6">
+    <PageTransition className="mx-auto max-w-7xl px-4 py-6 pb-4 sm:px-6">
       {/* Compact analytical header — no marketing hero. */}
       <header className="mb-6 flex flex-col gap-4">
         <div className="flex flex-wrap items-end justify-between gap-3">
@@ -316,7 +320,8 @@ export default function DashboardPage() {
 
           {/* Row 1: Meta Deck Rankings (dominant) + Meta Trend */}
           <div className="grid gap-4 lg:grid-cols-12">
-            <section className="panel p-5 lg:col-span-7">
+            <Reveal className="lg:col-span-7">
+              <section className="panel h-full p-5">
               <div className="panel-head">
                 <div className="min-w-0">
                   <h2 className="text-[18px] font-semibold tracking-tight text-foreground">Meta deck rankings</h2>
@@ -345,9 +350,13 @@ export default function DashboardPage() {
                       <th className="text-right">Trend</th>
                     </tr>
                   </thead>
-                  <tbody>
+                  <motion.tbody
+                    initial="hidden"
+                    animate="show"
+                    variants={staggerParent}
+                  >
                     {snapshot.decks.slice(0, 8).map((deck, index) => (
-                      <tr key={deck.id}>
+                      <motion.tr key={deck.id} variants={rowReveal} className="group/row">
                         <td className="text-center">
                           <span
                             className={`text-xs font-bold tabular-nums ${
@@ -387,14 +396,16 @@ export default function DashboardPage() {
                         <td className="text-right">
                           <TrendChip delta={Math.round((deck.winRate - deckBaseline) * 10) / 10} />
                         </td>
-                      </tr>
+                      </motion.tr>
                     ))}
-                  </tbody>
+                  </motion.tbody>
                 </table>
               </div>
-            </section>
+              </section>
+            </Reveal>
 
-            <section className="panel p-5 lg:col-span-5">
+            <Reveal className="lg:col-span-5">
+              <section className="panel h-full p-5">
               <div className="panel-head">
                 <div className="min-w-0">
                   <h2 className="text-[18px] font-semibold tracking-tight text-foreground">Meta trend</h2>
@@ -440,6 +451,7 @@ export default function DashboardPage() {
                         stroke="#8FB8EC"
                         strokeWidth={2}
                         dot={{ r: 3, fill: '#8FB8EC' }}
+                        {...CHART_MOTION}
                       />
                       <Line
                         type="monotone"
@@ -448,6 +460,7 @@ export default function DashboardPage() {
                         stroke="#2F80ED"
                         strokeWidth={2}
                         dot={{ r: 3, fill: '#2F80ED' }}
+                        {...CHART_MOTION}
                       />
                     </LineChart>
                   </ResponsiveContainer>
@@ -457,12 +470,14 @@ export default function DashboardPage() {
                   Not enough history in the sample to show trends yet.
                 </p>
               )}
-            </section>
+              </section>
+            </Reveal>
           </div>
 
           {/* Row 2: Top Performing Cards + Card Distribution */}
           <div className="grid gap-4 lg:grid-cols-12">
-            <section className="panel p-5 lg:col-span-7">
+            <Reveal className="lg:col-span-7">
+              <section className="panel h-full p-5">
               <div className="panel-head">
                 <div className="min-w-0">
                   <h2 className="text-[18px] font-semibold tracking-tight text-foreground">Top performing cards</h2>
@@ -478,9 +493,18 @@ export default function DashboardPage() {
                   <ArrowRight className="size-3.5" />
                 </Link>
               </div>
-              <ul className="divide-y divide-border/60">
+              <motion.ul
+                className="divide-y divide-border/60"
+                initial="hidden"
+                animate="show"
+                variants={staggerParent}
+              >
                 {snapshot.topWinRate.slice(0, 8).map((card, index) => (
-                  <li key={card.key} className="flex items-center gap-3 py-2.5 first:pt-0 last:pb-0">
+                  <motion.li
+                    key={card.key}
+                    variants={rowReveal}
+                    className="group/row flex items-center gap-3 py-2.5 first:pt-0 last:pb-0"
+                  >
                     <span className="w-5 shrink-0 text-center text-xs font-bold tabular-nums text-muted-foreground">
                       {index + 1}
                     </span>
@@ -500,12 +524,14 @@ export default function DashboardPage() {
                     <span className="w-16 text-right">
                       <TrendChip delta={trendByKey.get(card.key)} />
                     </span>
-                  </li>
+                  </motion.li>
                 ))}
-              </ul>
-            </section>
+              </motion.ul>
+              </section>
+            </Reveal>
 
-            <section className="panel p-5 lg:col-span-5">
+            <Reveal className="lg:col-span-5">
+              <section className="panel h-full p-5">
               <div className="panel-head">
                 <div className="min-w-0">
                   <h2 className="text-[18px] font-semibold tracking-tight text-foreground">Card distribution</h2>
@@ -525,6 +551,7 @@ export default function DashboardPage() {
                       outerRadius={88}
                       paddingAngle={2}
                       stroke="#E3EAF3"
+                      {...CHART_MOTION}
                     >
                       {distributionData.map((entry) => (
                         <Cell key={entry.name} fill={entry.fill} />
@@ -538,12 +565,14 @@ export default function DashboardPage() {
                   </PieChart>
                 </ResponsiveContainer>
               </div>
-            </section>
+              </section>
+            </Reveal>
           </div>
 
           {/* AI insight: analyst annotation attached to the data, not a chatbot. */}
           {insight && (
-            <section className="panel p-5">
+            <Reveal delay={0.08} y={8}>
+              <section className="panel border-l-2 border-l-primary/50 p-5">
               <div className="panel-head">
                 <div className="flex items-center gap-2">
                   <Sparkles className="size-4 text-primary" aria-hidden />
@@ -603,9 +632,10 @@ export default function DashboardPage() {
                       </Link>
                     </Button>
                   </div>
+                  </div>
                 </div>
-              </div>
-            </section>
+              </section>
+            </Reveal>
           )}
 
           {/* Source context footer strip */}
@@ -624,6 +654,6 @@ export default function DashboardPage() {
           </div>
         </div>
       )}
-    </div>
+    </PageTransition>
   )
 }

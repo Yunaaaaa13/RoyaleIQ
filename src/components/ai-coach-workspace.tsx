@@ -2,10 +2,17 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { motion } from 'motion/react'
 import { FlaskConical, LayoutTemplate } from 'lucide-react'
 import { CoachPanel } from '@/components/coach-panel'
 import { DeckSelection, SAMPLE, useDeckParams } from '@/components/deck-selection'
 import { Button } from '@/components/ui/button'
+import { DURATION, EASE_OUT, fadeUp, staggerParent } from '@/lib/motion'
+
+const ICON_ENTRANCE = {
+  hidden: { opacity: 0, scale: 0.96 },
+  show: { opacity: 1, scale: 1, transition: { duration: DURATION.component, ease: EASE_OUT } },
+} as const
 
 /**
  * AI Recommendation: the coach's own home. The deck is chosen right here —
@@ -30,14 +37,23 @@ export function AiCoachWorkspace() {
           setTag={setTag}
         />
       ) : (
-        <section className="panel flex flex-col items-center gap-3 p-10 text-center">
-          <span className="text-3xl">🤖</span>
-          <h2 className="text-lg font-semibold">The coach needs a deck first</h2>
-          <p className="max-w-md text-sm text-muted-foreground">
+        <motion.section
+          className="panel flex flex-col items-center gap-3 p-10 text-center"
+          initial="hidden"
+          animate="show"
+          variants={staggerParent}
+        >
+          <motion.span variants={ICON_ENTRANCE} className="text-3xl">
+            🤖
+          </motion.span>
+          <motion.h2 variants={fadeUp} className="text-lg font-semibold">
+            The coach needs a deck first
+          </motion.h2>
+          <motion.p variants={fadeUp} className="max-w-md text-sm text-muted-foreground">
             Pick at least 4 cards above and the coach appears below — ask it
             anything, from a hard matchup to what your win condition is missing.
-          </p>
-          <div className="flex flex-wrap justify-center gap-2">
+          </motion.p>
+          <motion.div variants={fadeUp} className="flex flex-wrap justify-center gap-2">
             <Button variant="outline" className="gap-2" onClick={() => setDeck(SAMPLE)}>
               <LayoutTemplate className="size-4" />
               Try Example
@@ -48,8 +64,8 @@ export function AiCoachWorkspace() {
                 Open in Deck Recommendation
               </Link>
             </Button>
-          </div>
-        </section>
+          </motion.div>
+        </motion.section>
       )}
     </div>
   )

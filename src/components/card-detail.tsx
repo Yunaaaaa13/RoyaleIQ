@@ -11,11 +11,14 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
+import { motion } from 'motion/react'
 import { AlertTriangle, ArrowRight, Sparkles, Target } from 'lucide-react'
 import { CardTile } from '@/components/card-tile'
 import { StatTile } from '@/components/metrics'
+import { FadeIn } from '@/components/reveal'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
+import { CHART_MOTION, fadeUp, staggerParent } from '@/lib/motion'
 import type { CardIntel, RecommendedDeck } from '@/lib/card-intel'
 import { cn, relativeAge } from '@/lib/utils'
 
@@ -141,7 +144,12 @@ export function CardDetail({ cardKey }: { cardKey: string }) {
       <section className="panel p-5">
         <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.5fr)]">
           <div className="min-w-0 space-y-4">
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-2">
+            <motion.div
+              className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-2"
+              initial="hidden"
+              animate="show"
+              variants={staggerParent}
+            >
               <StatTile
                 label="Usage rate"
                 value={overview ? `${overview.usage}%` : '—'}
@@ -183,9 +191,12 @@ export function CardDetail({ cardKey }: { cardKey: string }) {
                 sub={sample ? `${sample.players} players · ${relativeAge(sample.generatedAt)}` : 'unavailable'}
                 accent="cyan"
               />
-            </div>
+            </motion.div>
 
-            <div className="rounded-xl border border-border bg-slate-50 p-4">
+            <FadeIn
+              className="rounded-xl border border-border bg-slate-50 p-4"
+              delay={0.08}
+            >
               <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
                 <h3 className="section-title">
                   Usage trend
@@ -232,6 +243,7 @@ export function CardDetail({ cardKey }: { cardKey: string }) {
                         stroke="#F5B942"
                         strokeWidth={2}
                         dot={false}
+                        {...CHART_MOTION}
                       />
                       <Line
                         type="monotone"
@@ -240,6 +252,7 @@ export function CardDetail({ cardKey }: { cardKey: string }) {
                         stroke="#2F80ED"
                         strokeWidth={2}
                         dot={false}
+                        {...CHART_MOTION}
                       />
                     </LineChart>
                   </ResponsiveContainer>
@@ -251,7 +264,7 @@ export function CardDetail({ cardKey }: { cardKey: string }) {
                   {sample ? ` · sample of ${sample.battles} battles` : ''}
                 </p>
               )}
-            </div>
+            </FadeIn>
           </div>
 
           <div className="min-w-0 space-y-3">
@@ -272,7 +285,10 @@ export function CardDetail({ cardKey }: { cardKey: string }) {
             </div>
 
             {insight && (
-              <div className="rounded-xl border border-yellow-300/20 bg-amber-500/5 p-4">
+              <FadeIn
+                className="rounded-xl border border-yellow-300/20 bg-amber-500/5 border-l-2 border-l-primary/50 p-4"
+                delay={0.19}
+              >
                 <div className="mb-2 flex items-center gap-2">
                   <Sparkles className="size-4 text-amber-600" />
                   <h3 className="text-sm font-semibold">AI intelligence</h3>
@@ -291,7 +307,7 @@ export function CardDetail({ cardKey }: { cardKey: string }) {
                 <p className="mt-3 text-[10px] leading-snug text-muted-foreground">
                   Written from the numbers above by fixed rules - no model call, no invented figures.
                 </p>
-              </div>
+              </FadeIn>
             )}
           </div>
         </div>
@@ -315,9 +331,18 @@ export function CardDetail({ cardKey }: { cardKey: string }) {
             sample yet. The card itself may still be common - check the usage tile above.
           </p>
         ) : (
-          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+          <motion.div
+            className="grid gap-3 md:grid-cols-2 xl:grid-cols-3"
+            initial="hidden"
+            animate="show"
+            variants={staggerParent}
+          >
             {decks.decks.map((deck) => (
-              <article key={deck.id} className="rounded-xl border border-border bg-slate-50 p-4">
+              <motion.article
+                key={deck.id}
+                variants={fadeUp}
+                className="group/cell rounded-xl border border-border bg-slate-50 p-4"
+              >
                 <div className="mb-3 flex items-start justify-between gap-3">
                   <div className="min-w-0">
                     <p className="text-[11px] text-muted-foreground">#{deck.rank}</p>
@@ -345,9 +370,9 @@ export function CardDetail({ cardKey }: { cardKey: string }) {
                     <ArrowRight className="size-3.5" />
                   </Link>
                 </Button>
-              </article>
+              </motion.article>
             ))}
-          </div>
+          </motion.div>
         )}
 
         {decks.hidden > 0 && (
@@ -359,7 +384,7 @@ export function CardDetail({ cardKey }: { cardKey: string }) {
       </section>
 
       <div className="grid gap-4 lg:grid-cols-2">
-        <section className="panel p-5">
+        <FadeIn className="panel p-5" delay={0.12}>
           <div className="mb-1 flex items-baseline justify-between gap-2">
             <h3 className="panel-title">Synergy analysis</h3>
             <span className="text-xs text-muted-foreground">{synergy.pairs.length} pairs</span>
@@ -452,9 +477,9 @@ export function CardDetail({ cardKey }: { cardKey: string }) {
               </div>
             </>
           )}
-        </section>
+        </FadeIn>
 
-        <section className="panel p-5">
+        <FadeIn className="panel p-5" delay={0.16}>
           <div className="mb-1 flex items-center gap-2">
             <Target className="size-4 text-cyan-700" />
             <h3 className="panel-title">Counter analysis</h3>
@@ -528,7 +553,7 @@ export function CardDetail({ cardKey }: { cardKey: string }) {
               </AlertDescription>
             </Alert>
           )}
-        </section>
+        </FadeIn>
       </div>
     </div>
   )

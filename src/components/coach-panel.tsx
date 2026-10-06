@@ -5,6 +5,7 @@ import { Bot, ChevronDown, Loader2, MessageSquareQuote, Sparkles, UserRound } fr
 import { CardPicker } from '@/components/card-picker'
 import { CardTile } from '@/components/card-tile'
 import { SeverityIcon } from '@/components/metrics'
+import { FadeIn } from '@/components/reveal'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -185,6 +186,7 @@ export function CoachPanel({
 
       {result && (
         <>
+          <FadeIn y={8}>
           <div className="panel flex flex-wrap items-center gap-2 px-4 py-3 text-[11px] text-muted-foreground">
             <Badge
               variant="outline"
@@ -206,8 +208,10 @@ export function CoachPanel({
               <span className="min-w-0 flex-1">{result.grounding.note}</span>
             ) : null}
           </div>
+          </FadeIn>
 
           {!result.llmConfigured && (
+            <FadeIn y={8} delay={0.04}>
             <Alert className="border-amber-500/30 bg-amber-500/10">
               <AlertTitle>Running on the local rule engine</AlertTitle>
               <AlertDescription>
@@ -216,9 +220,11 @@ export function CoachPanel({
                 reasoning. The rule engine is deterministic and always available.
               </AlertDescription>
             </Alert>
+            </FadeIn>
           )}
 
-          <section className="panel p-5">
+          <FadeIn y={8} delay={0.08}>
+          <section className="panel border-l-2 border-l-primary/50 p-5">
             <div className="panel-head">
               <div className="flex items-center gap-2">
                 <MessageSquareQuote className="size-4 text-primary" />
@@ -297,8 +303,10 @@ export function CoachPanel({
               </div>
             </div>
           </section>
+          </FadeIn>
 
           {result.headToHead && (
+            <FadeIn y={8} delay={0.12}>
             <section className="panel p-5">
               <div className="panel-head">
                 <div>
@@ -358,6 +366,7 @@ export function CoachPanel({
                 </div>
               </div>
             </section>
+            </FadeIn>
           )}
         </>
       )}

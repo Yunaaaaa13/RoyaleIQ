@@ -143,10 +143,16 @@
     @apply mb-4 flex flex-wrap items-start justify-between gap-2 border-b border-border pb-3;
   }
 
-  /* KPI surface: flat white card, hairline border, quiet label. */
+  /* KPI surface: flat white card, hairline border, quiet label.
+     Hover deepens the border/shadow (lift is handled per-component so it
+     cooperates with entrance transforms). */
   .kpi {
-    @apply rounded-xl border border-border bg-card p-4 transition-colors;
+    @apply rounded-xl border border-border bg-card p-4 transition-[box-shadow,border-color] duration-200 ease-out;
     box-shadow: 0 1px 2px rgb(23 32 51 / 4%);
+  }
+  .kpi:hover {
+    border-color: rgb(47 128 237 / 22%);
+    box-shadow: 0 8px 20px -10px rgb(23 32 51 / 28%);
   }
 
   /* Readable gold accent for the RoyaleIQ mark. */

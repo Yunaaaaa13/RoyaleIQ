@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Suspense } from 'react'
 import { connection } from 'next/server'
 import { BattlePage } from '@/components/battle-page'
+import { PageTransition } from '@/components/page-transition'
 
 export const metadata: Metadata = {
   title: 'Battle Dashboard',
@@ -28,10 +29,10 @@ export default async function BattleRoute() {
   return (
     // The enter animation moved into `BattlePage`: the slide-out has to run on
     // the same element that slid in, and only the client can start it.
-    <div className="mx-auto max-w-5xl px-4 py-6 sm:px-6">
+    <PageTransition className="mx-auto max-w-5xl px-4 py-6 sm:px-6">
       <Suspense fallback={<BattleFallback />}>
         <BattlePage />
       </Suspense>
-    </div>
+    </PageTransition>
   )
 }

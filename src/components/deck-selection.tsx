@@ -1,8 +1,9 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { Dispatch, ReactNode, SetStateAction } from 'react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import { AnimatePresence, motion, useAnimationControls } from 'motion/react'
 import { Check, ClipboardCopy, Eraser, LayoutTemplate, X } from 'lucide-react'
 import { CardPicker } from '@/components/card-picker'
 import { CardTile } from '@/components/card-tile'
@@ -10,6 +11,7 @@ import { ScoreBar, StatTile } from '@/components/metrics'
 import { Button } from '@/components/ui/button'
 import { analyzeDeck, type DeckAnalysis } from '@/lib/analysis'
 import { getCard } from '@/lib/cards'
+import { DURATION, EASE_OUT } from '@/lib/motion'
 
 /** Hog 2.6 — the sample deck behind "Try Example", a mainstream meta pick. */
 export const SAMPLE = [
@@ -75,49 +77,89 @@ export function DeckSlots({
   evolvable?: string[]
 }) {
   const slots = Array.from({ length: 8 }, (_unused, index) => deck[index])
+  const controls = useAnimationControls()
+  const prevCount = useRef(deck.length)
+
+  useEffect(() => {
+    if (prevCount.current !== 8 && deck.length === 8) {
+      void controls.start({
+        scale: [1, 1.012, 1],
+        transition: { duration: 0.45, ease: EASE_OUT },
+      })
+    }
+    prevCount.current = deck.length
+  }, [controls, deck.length])
+
   return (
-    <div className="grid grid-cols-4 gap-2 sm:grid-cols-8">
+    <motion.div className="grid grid-cols-4 gap-2 sm:grid-cols-8" animate={controls}>
       {slots.map((key, index) => (
         <div
-          key={`${key ?? 'empty'}-${index}`}
-          className={`group relative grid aspect-[3/4] place-items-center rounded-xl border border-dashed ${
+          key={index}
+          className={`group group/cell relative grid aspect-[3/4] place-items-center rounded-xl border border-dashed transition-colors duration-150 ${
             key ? 'border-solid border-slate-200 bg-slate-50' : 'border-slate-200'
           }`}
         >
-          {key ? (
-            <>
-              <CardTile
-                cardKey={key}
-                size="md"
-                showElixir={false}
-                overlay={
-                  evolvable?.includes(key) ? (
-                    <span
-                      title="Observed played in evolved form in this sample"
-                      className="absolute -bottom-1 -right-1 rounded bg-emerald-500 px-1 text-[8px] font-black text-emerald-950 shadow"
-                    >
-                      EVO
-                    </span>
-                  ) : undefined
-                }
-              />
-              {onRemove && (
-                <button
-                  type="button"
-                  onClick={() => onRemove(key)}
-                  aria-label={`Remove ${getCard(key)?.name}`}
-                  className="absolute -right-1.5 -top-1.5 grid size-5 place-items-center rounded-full border border-slate-200 bg-rose-500/90 text-white opacity-0 transition hover:scale-110 focus-visible:opacity-100 group-hover:opacity-100 sm:opacity-100"
-                >
-                  <X className="size-3" />
-                </button>
-              )}
-            </>
-          ) : (
-            <span className="text-2xl text-slate-300">{index + 1}</span>
-          )}
+          <AnimatePresence initial={false}>
+            {key ? (
+              <motion.div
+                key={key}
+                className="absolute inset-0 grid place-items-center"
+                initial={{ opacity: 0, scale: 1.06 }}
+                animate={{
+                  opacity: 1,
+                  scale: 1,
+                  transition: { duration: 0.35, ease: EASE_OUT },
+                }}
+                exit={{
+                  opacity: 0,
+                  scale: 0.94,
+                  transition: { duration: 0.25, ease: EASE_OUT },
+                }}
+              >
+                <CardTile
+                  cardKey={key}
+                  size="md"
+                  showElixir={false}
+                  overlay={
+                    evolvable?.includes(key) ? (
+                      <span
+                        title="Observed played in evolved form in this sample"
+                        className="absolute -bottom-1 -right-1 rounded bg-emerald-500 px-1 text-[8px] font-black text-emerald-950 shadow"
+                      >
+                        EVO
+                      </span>
+                    ) : undefined
+                  }
+                />
+                {onRemove && (
+                  <button
+                    type="button"
+                    onClick={() => onRemove(key)}
+                    aria-label={`Remove ${getCard(key)?.name}`}
+                    className="absolute -right-1.5 -top-1.5 grid size-5 place-items-center rounded-full border border-slate-200 bg-rose-500/90 text-white opacity-0 transition hover:scale-110 focus-visible:opacity-100 group-hover:opacity-100 sm:opacity-100"
+                  >
+                    <X className="size-3" />
+                  </button>
+                )}
+              </motion.div>
+            ) : (
+              <motion.span
+                key={`empty-${index}`}
+                className="text-2xl text-slate-300"
+                initial={{ opacity: 0 }}
+                animate={{
+                  opacity: 1,
+                  transition: { duration: DURATION.micro, ease: EASE_OUT, delay: 0.1 },
+                }}
+                exit={{ opacity: 0, transition: { duration: DURATION.micro, ease: EASE_OUT } }}
+              >
+                {index + 1}
+              </motion.span>
+            )}
+          </AnimatePresence>
         </div>
       ))}
-    </div>
+    </motion.div>
   )
 }
 

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Suspense } from 'react'
 import { PipelineStatus } from '@/components/pipeline-status'
+import { PageTransition } from '@/components/page-transition'
 
 export const metadata: Metadata = {
   title: 'Data Pipeline',
@@ -23,7 +24,7 @@ function StatusFallback() {
 
 export default function DataPage() {
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
+    <PageTransition className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
       <header className="mb-6 flex flex-col gap-2 border-b border-border/70 pb-5">
         <p className="eyebrow">Data Pipeline</p>
         <h1 className="page-title">Where does every number come from?</h1>
@@ -37,6 +38,6 @@ export default function DataPage() {
       <Suspense fallback={<StatusFallback />}>
         <PipelineStatus />
       </Suspense>
-    </div>
+    </PageTransition>
   )
 }

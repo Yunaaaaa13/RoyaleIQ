@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Check, Pencil, UserRoundCheck, X } from 'lucide-react'
 import { PlayerPanel } from '@/components/player-panel'
+import { FadeIn } from '@/components/reveal'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useMyTag, writeMyTag } from '@/lib/my-profile'
@@ -39,7 +40,8 @@ export function MyProfile() {
 
   if (!myTag || editing) {
     return (
-      <section className="panel mx-auto flex w-full max-w-lg flex-col gap-4 p-6">
+      <FadeIn>
+        <section className="panel mx-auto flex w-full max-w-lg flex-col gap-4 p-6">
         <div className="text-center">
           <span className="mx-auto grid size-12 place-items-center rounded-2xl bg-primary/15">
             <UserRoundCheck className="size-5 text-primary" />
@@ -84,13 +86,15 @@ export function MyProfile() {
             {problem}
           </p>
         )}
-      </section>
+        </section>
+      </FadeIn>
     )
   }
 
   return (
     <div className="space-y-4">
-      <div className="panel flex flex-wrap items-center gap-3 p-4">
+      <FadeIn>
+        <div className="panel flex flex-wrap items-center gap-3 p-4">
         <span className="grid size-9 shrink-0 place-items-center rounded-full bg-primary/15">
           <UserRoundCheck className="size-4 text-primary" />
         </span>
@@ -112,7 +116,8 @@ export function MyProfile() {
           <Pencil className="size-3.5" />
           Change tag
         </Button>
-      </div>
+        </div>
+      </FadeIn>
       <PlayerPanel defaultTag={myTag} hideSearch />
     </div>
   )

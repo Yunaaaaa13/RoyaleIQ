@@ -14,13 +14,18 @@ import {
   TrendingDown,
   TrendingUp,
 } from 'lucide-react'
+import { motion } from 'motion/react'
 import { CardTile } from '@/components/card-tile'
+import { FadeIn, Reveal } from '@/components/reveal'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { StatTile } from '@/components/metrics'
 import type { DeckStat, MetaSnapshot } from '@/lib/battle'
 import { getCard } from '@/lib/cards'
 import { archetypeInsight, buildExplorerGroups, type ArchetypeGroup } from '@/lib/explorer'
+import { DURATION, EASE_OUT, fadeUp, rowReveal, staggerParent } from '@/lib/motion'
+
+const ENTRANCE = { duration: DURATION.component, ease: EASE_OUT }
 
 function TrendChip({ delta }: { delta: number | null | undefined }) {
   if (delta === null || delta === undefined) {
@@ -100,8 +105,9 @@ function ArchetypeCard({
 }) {
   const top = group.variants.slice(0, 3)
   return (
-    <button
+    <motion.button
       type="button"
+      variants={fadeUp}
       onClick={() => onOpen(group.key)}
       className="panel group flex flex-col gap-3 p-4 text-left transition hover:border-primary/40 focus-visible:border-primary/60"
     >
@@ -143,7 +149,7 @@ function ArchetypeCard({
         Open archetype
         <ArrowRight className="size-3.5" />
       </span>
-    </button>
+    </motion.button>
   )
 }
 
@@ -180,11 +186,16 @@ function ExplorerBoard({
         {snapshot.notice && <p className="mt-1 text-[11px] text-amber-600/90">{snapshot.notice}</p>}
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+      <motion.div
+        className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3"
+        initial="hidden"
+        animate="show"
+        variants={staggerParent}
+      >
         {groups.map((group) => (
           <ArchetypeCard key={group.key} group={group} onOpen={onOpen} />
         ))}
-      </div>
+      </motion.div>
     </section>
   )
 }
@@ -235,7 +246,7 @@ function GroupDetail({
 
   return (
     <section className="space-y-4">
-      <div className="panel p-4 sm:p-5">
+      <FadeIn delay={0} className="panel p-4 sm:p-5">
         <button
           type="button"
           onClick={onBack}
@@ -257,7 +268,10 @@ function GroupDetail({
           </div>
         </div>
 
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+        <FadeIn
+          delay={0.05}
+          className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6"
+        >
           <StatTile
             label="Usage rate"
             value={`${group.share}%`}
@@ -291,10 +305,13 @@ function GroupDetail({
             value={group.avgElixir}
             sub="battle-weighted"
           />
-        </div>
+        </FadeIn>
 
         {hasHalves && (
-          <div className="mt-4 rounded-xl border border-border bg-slate-50 p-3">
+          <FadeIn
+            delay={0.1}
+            className="mt-4 rounded-xl border border-border bg-slate-50 p-3"
+          >
             <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
               Share of the meta between sample halves
             </p>
@@ -319,12 +336,12 @@ function GroupDetail({
                 </div>
               ))}
             </div>
-          </div>
+          </FadeIn>
         )}
-      </div>
+      </FadeIn>
 
       {/* AI insight: an annotation built from the numbers above, never beyond them. */}
-      <div className="panel p-4 sm:p-5">
+      <Reveal y={8} delay={0.06} className="panel border-l-2 border-l-primary/50 p-4 sm:p-5">
         <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-2">
             <Sparkles className="size-4 text-primary" aria-hidden />
@@ -350,10 +367,10 @@ function GroupDetail({
           Every figure above is read from this sample&apos;s battles and the matchup matrix — an
           explanation of the data, not a prediction.
         </p>
-      </div>
+      </Reveal>
 
       {/* Popular variants table */}
-      <div className="panel p-4 sm:p-5">
+      <FadeIn delay={0.12} className="panel p-4 sm:p-5">
         <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
           <div className="flex flex-wrap items-center gap-2">
             <Layers className="size-4 text-primary" />
@@ -400,9 +417,18 @@ function GroupDetail({
                 <th aria-label="Actions" />
               </tr>
             </thead>
-            <tbody>
+            <motion.tbody
+              initial="hidden"
+              animate="show"
+              variants={staggerParent}
+            >
               {sorted.map((deck, index) => (
-                <tr key={deck.id}>
+                <motion.tr
+                  key={deck.id}
+                  variants={rowReveal}
+                  layout
+                  className="group/row"
+                >
                   <td className="tabular-nums text-muted-foreground">{index + 1}</td>
                   <td className="min-w-[240px]">
                     <div className="flex flex-wrap items-center gap-1.5">
@@ -434,15 +460,15 @@ function GroupDetail({
                       </Button>
                     </div>
                   </td>
-                </tr>
+                </motion.tr>
               ))}
-            </tbody>
+            </motion.tbody>
           </table>
         </div>
-      </div>
+      </FadeIn>
 
       {/* Two leaderboards: best performing + most used */}
-      <div className="grid gap-4 md:grid-cols-2">
+      <FadeIn delay={0.16} className="grid gap-4 md:grid-cols-2">
         {[
           { title: 'Best performing', hint: 'min. 3 battles', rows: bestPerforming, stat: 'win' },
           { title: 'Most used', hint: 'by sample usage', rows: mostUsed, stat: 'usage' },
@@ -480,7 +506,7 @@ function GroupDetail({
             </ol>
           </div>
         ))}
-      </div>
+      </FadeIn>
     </section>
   )
 }
@@ -529,17 +555,43 @@ export function MetaExplorer({
   if (!snapshot) {
     return (
       <section className="panel flex flex-col items-center gap-3 p-10 text-center">
-        <Radar className="size-8 text-rose-600/70" />
-        <h3 className="text-lg font-semibold">Meta data unavailable</h3>
-        <p className="max-w-md text-sm text-muted-foreground">
+        <motion.span
+          initial={{ opacity: 0, scale: 0.96 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={ENTRANCE}
+          className="flex"
+        >
+          <Radar className="size-8 text-rose-600/70" />
+        </motion.span>
+        <motion.h3
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ ...ENTRANCE, delay: 0.05 }}
+          className="text-lg font-semibold"
+        >
+          Meta data unavailable
+        </motion.h3>
+        <motion.p
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ ...ENTRANCE, delay: 0.1 }}
+          className="max-w-md text-sm text-muted-foreground"
+        >
           The explorer only shows measured battles. Retry the load — no numbers are
           displayed because none are available.
-        </p>
+        </motion.p>
         {onReload && (
-          <Button variant="outline" className="gap-2" onClick={onReload}>
-            <RefreshCw className="size-4" />
-            Retry
-          </Button>
+          <motion.span
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ ...ENTRANCE, delay: 0.15 }}
+            className="inline-flex"
+          >
+            <Button variant="outline" className="gap-2" onClick={onReload}>
+              <RefreshCw className="size-4" />
+              Retry
+            </Button>
+          </motion.span>
         )}
       </section>
     )
@@ -548,12 +600,31 @@ export function MetaExplorer({
   if (!groups.length) {
     return (
       <section className="panel flex flex-col items-center gap-3 p-10 text-center">
-        <Radar className="size-8 text-primary/60" />
-        <h3 className="text-lg font-semibold">No complete decks in this sample yet</h3>
-        <p className="max-w-md text-sm text-muted-foreground">
+        <motion.span
+          initial={{ opacity: 0, scale: 0.96 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={ENTRANCE}
+          className="flex"
+        >
+          <Radar className="size-8 text-primary/60" />
+        </motion.span>
+        <motion.h3
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ ...ENTRANCE, delay: 0.05 }}
+          className="text-lg font-semibold"
+        >
+          No complete decks in this sample yet
+        </motion.h3>
+        <motion.p
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ ...ENTRANCE, delay: 0.1 }}
+          className="max-w-md text-sm text-muted-foreground"
+        >
           The snapshot holds {snapshot.battles} battles but no complete 8-card deck
           signatures to group into archetypes.
-        </p>
+        </motion.p>
       </section>
     )
   }

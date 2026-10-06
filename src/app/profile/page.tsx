@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Suspense } from 'react'
 import { MyProfile } from '@/components/my-profile'
+import { PageTransition } from '@/components/page-transition'
 
 export const metadata: Metadata = {
   title: 'My Profile',
@@ -23,7 +24,7 @@ function ProfileFallback() {
 
 export default function ProfilePage() {
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
+    <PageTransition className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
       <header className="mb-6 flex flex-col gap-2 border-b border-border/70 pb-5">
         <p className="eyebrow">My Profile</p>
         <h1 className="page-title">Your account, not someone else&apos;s</h1>
@@ -36,6 +37,6 @@ export default function ProfilePage() {
       <Suspense fallback={<ProfileFallback />}>
         <MyProfile />
       </Suspense>
-    </div>
+    </PageTransition>
   )
 }

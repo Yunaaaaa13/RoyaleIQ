@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation'
 import { ArrowLeft } from 'lucide-react'
 import { CardDetail } from '@/components/card-detail'
 import { CardTile } from '@/components/card-tile'
+import { PageTransition } from '@/components/page-transition'
 import { Badge } from '@/components/ui/badge'
 import { combatOf, findCard } from '@/lib/cards'
 import { ROLE_LABEL } from '@/lib/card-meta'
@@ -33,7 +34,7 @@ export default async function CardPage({ params }: CardPageProps) {
   const combat = combatOf(card.key)
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
+    <PageTransition className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
       <Link
         href="/cards"
         className="mb-5 inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground transition hover:text-foreground"
@@ -64,6 +65,6 @@ export default async function CardPage({ params }: CardPageProps) {
       </header>
 
       <CardDetail cardKey={card.key} />
-    </div>
+    </PageTransition>
   )
 }

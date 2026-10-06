@@ -1,6 +1,11 @@
+'use client'
+
 import type { ReactNode } from 'react'
 import { AlertTriangle, CheckCircle2, ShieldAlert } from 'lucide-react'
+import { motion } from 'motion/react'
 import { cn } from '@/lib/utils'
+import { DURATION, EASE_OUT } from '@/lib/motion'
+import { useCountUp } from '@/lib/use-count-up'
 
 const TONE: Record<string, string> = {
   gold: 'bg-amber-500',
@@ -61,6 +66,7 @@ export function StatTile({
   accent?: 'gold' | 'rose' | 'green' | 'cyan'
   icon?: ReactNode
 }) {
+  const display = useCountUp(value)
   const accentClass = accent
     ? {
         gold: 'text-amber-600',
@@ -71,12 +77,27 @@ export function StatTile({
     : 'text-foreground'
 
   return (
-    <div className="kpi">
+    <motion.div
+      className="kpi"
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      whileHover={{ y: -2, transition: { duration: DURATION.micro, ease: EASE_OUT } }}
+      transition={{ duration: DURATION.component, ease: EASE_OUT }}
+    >
       <div className="flex items-start justify-between gap-2">
         <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
           {label}
         </p>
-        {icon && <span className="text-primary/70">{icon}</span>}
+        {icon && (
+          <motion.span
+            className="text-primary/70"
+            initial={{ opacity: 0, scale: 0.92 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: DURATION.component, ease: EASE_OUT, delay: 0.12 }}
+          >
+            {icon}
+          </motion.span>
+        )}
       </div>
       <p
         className={cn(
@@ -84,10 +105,10 @@ export function StatTile({
           accentClass,
         )}
       >
-        {value}
+        {display}
       </p>
       {sub && <p className="mt-1.5 text-[11px] leading-snug text-muted-foreground">{sub}</p>}
-    </div>
+    </motion.div>
   )
 }
 

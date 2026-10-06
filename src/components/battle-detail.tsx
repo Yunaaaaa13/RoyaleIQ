@@ -1,12 +1,15 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { motion } from 'motion/react'
 import { ArrowLeft, Swords } from 'lucide-react'
 import { CardTile } from '@/components/card-tile'
+import { FadeIn } from '@/components/reveal'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { getCard } from '@/lib/cards'
 import { archetypeLabel, detectArchetype } from '@/lib/archetypes'
+import { fadeUp, staggerParent } from '@/lib/motion'
 
 // ---------------------------------------------------------------------------
 // Wire types (mirrored from /api/battles)
@@ -312,16 +315,18 @@ export function DeckStrip({
           {label}
         </span>
       )}
-      <span className="flex flex-wrap gap-1">
+      <motion.span
+        className="flex flex-wrap gap-1"
+        initial="hidden"
+        animate="show"
+        variants={staggerParent}
+      >
         {cards.map((key, index) => (
-          <CardTile
-            key={`${key}-${index}`}
-            cardKey={key}
-            size={size}
-            showElixir={false}
-          />
+          <motion.span key={`${key}-${index}`} variants={fadeUp}>
+            <CardTile cardKey={key} size={size} showElixir={false} />
+          </motion.span>
         ))}
-      </span>
+      </motion.span>
     </span>
   )
 }
@@ -489,6 +494,7 @@ export function BattleDetail({ battle, status, onBack }: BattleDetailProps) {
         )}
 
         {/* A - summary ------------------------------------------------ */}
+        <FadeIn>
         <section className="panel p-5">
           <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
             <div>
@@ -575,8 +581,10 @@ export function BattleDetail({ battle, status, onBack }: BattleDetailProps) {
             describe how the two decks were built, not how the match was played.
           </p>
         </section>
+        </FadeIn>
 
         {/* B - deck vs deck ------------------------------------------- */}
+        <FadeIn delay={0.04}>
         <section className="panel p-5">
           <h3 className="mb-1 panel-title">
             Deck vs deck
@@ -610,10 +618,14 @@ export function BattleDetail({ battle, status, onBack }: BattleDetailProps) {
             />
           </div>
         </section>
+        </FadeIn>
 
-        <PredictionPanel deck={battle.deck} opponentDeck={battle.opponentDeck} />
+        <FadeIn delay={0.08}>
+          <PredictionPanel deck={battle.deck} opponentDeck={battle.opponentDeck} />
+        </FadeIn>
 
         {/* C - matchup analysis --------------------------------------- */}
+        <FadeIn delay={0.12}>
         <section className="panel p-5">
           <div className="mb-1 flex flex-wrap items-baseline justify-between gap-3">
             <h3 className="panel-title">
@@ -678,8 +690,10 @@ export function BattleDetail({ battle, status, onBack }: BattleDetailProps) {
             </p>
           )}
         </section>
+        </FadeIn>
 
         {/* D - diagnosis ---------------------------------------------- */}
+        <FadeIn delay={0.16}>
         <section className="panel p-5">
           <h3 className="mb-4 panel-title">
             RoyaleIQ diagnosis
@@ -697,10 +711,27 @@ export function BattleDetail({ battle, status, onBack }: BattleDetailProps) {
             )
           ) : (
             <>
-              <ol className="space-y-3">
+              <motion.ol
+                className="space-y-3"
+                initial="hidden"
+                animate="show"
+                variants={{
+                  ...staggerParent,
+                  show: {
+                    transition: {
+                      staggerChildren: Math.min(
+                        0.04,
+                        0.4 / Math.max(1, diagnosis.findings.length),
+                      ),
+                      delayChildren: 0.04,
+                    },
+                  },
+                }}
+              >
                 {diagnosis.findings.map((finding) => (
-                  <li
+                  <motion.li
                     key={finding.rank}
+                    variants={fadeUp}
                     className="rounded-lg border border-border bg-slate-50 p-3"
                   >
                     <div className="flex items-start gap-3">
@@ -718,9 +749,9 @@ export function BattleDetail({ battle, status, onBack }: BattleDetailProps) {
                         </p>
                       </div>
                     </div>
-                  </li>
+                  </motion.li>
                 ))}
-              </ol>
+              </motion.ol>
 
               <h4 className="mb-2 mt-6 panel-title">
                 Evidence
@@ -748,6 +779,7 @@ export function BattleDetail({ battle, status, onBack }: BattleDetailProps) {
             </>
           )}
         </section>
+        </FadeIn>
       </div>
     </div>
   )

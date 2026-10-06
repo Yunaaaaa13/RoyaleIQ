@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Suspense } from 'react'
 import { SearchConsole } from '@/components/search-console'
+import { PageTransition } from '@/components/page-transition'
 
 export const metadata: Metadata = {
   title: 'Search',
@@ -20,7 +21,7 @@ function SearchFallback() {
 
 export default function SearchPage() {
   return (
-    <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6">
+    <PageTransition className="mx-auto max-w-5xl px-4 py-8 sm:px-6">
       <header className="mb-6 flex flex-col gap-2 border-b border-border/70 pb-5">
         <p className="eyebrow">Universal Search</p>
         <h1 className="page-title">What are you looking for?</h1>
@@ -32,6 +33,6 @@ export default function SearchPage() {
       <Suspense fallback={<SearchFallback />}>
         <SearchConsole />
       </Suspense>
-    </div>
+    </PageTransition>
   )
 }

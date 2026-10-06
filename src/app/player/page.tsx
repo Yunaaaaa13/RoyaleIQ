@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Suspense } from 'react'
 import { connection } from 'next/server'
 import { PlayerPanel } from '@/components/player-panel'
+import { PageTransition } from '@/components/page-transition'
 
 export const metadata: Metadata = {
   title: 'Player Tracker',
@@ -29,7 +30,7 @@ export default async function PlayerPage() {
   await connection()
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
+    <PageTransition className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
       <header className="mb-6 flex flex-col gap-2 border-b border-border/70 pb-5">
         <p className="eyebrow">Player Tracker</p>
         <h1 className="page-title">Your results, not your memory</h1>
@@ -41,6 +42,6 @@ export default async function PlayerPage() {
       <Suspense fallback={<PlayerFallback />}>
         <PlayerPanel />
       </Suspense>
-    </div>
+    </PageTransition>
   )
 }

@@ -3,11 +3,14 @@
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { Fragment, useState } from 'react'
+import { AnimatePresence, motion } from 'motion/react'
 import { ChevronRight, Crown, Search, Swords, Trophy, UserRound } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { NAV_GROUPS, isNavActive, navLabelFor } from '@/components/nav-config'
 import { ALL_CARDS, findCard } from '@/lib/cards'
+import { DURATION, EASE_OUT } from '@/lib/motion'
+import { isClientBooted } from '@/components/page-transition'
 import { useRecentPlayers, type RecentPlayer } from '@/lib/recent-players'
 import { normalizeTag } from '@/lib/tags'
 
@@ -86,7 +89,15 @@ export function SiteHeader() {
 
         {/* Desktop context: breadcrumb left, chrome right. */}
         <p className="hidden min-w-0 items-baseline gap-1.5 lg:flex">
-          <span className="eyebrow truncate">{navLabelFor(pathname)}</span>
+          <motion.span
+            key={pathname}
+            initial={isClientBooted() ? { opacity: 0, y: 4 } : false}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: DURATION.micro, ease: EASE_OUT }}
+            className="eyebrow truncate"
+          >
+            {navLabelFor(pathname)}
+          </motion.span>
           <ChevronRight aria-hidden className="size-3 shrink-0 text-muted-foreground/60" />
           <span className="truncate text-xs text-muted-foreground">RoyaleIQ analytics</span>
         </p>
@@ -108,28 +119,37 @@ export function SiteHeader() {
               aria-label="Player tag or card name"
               className="h-9 w-full rounded-lg border-border bg-card pl-9 font-mono text-xs normal-case sm:w-48 lg:w-64"
             />
-            {showHistory && (
-              <div className="absolute left-0 right-0 top-full z-50 mt-2 overflow-hidden rounded-lg border border-border bg-card p-1 shadow-lg">
-                <p className="section-title px-2 py-1.5 text-[10px]">Recent players</p>
-                {matches.map((item) => (
-                  <button
-                    key={item.tag}
-                    type="button"
-                    onMouseDown={(event) => event.preventDefault()}
-                    onClick={() => openRecent(item)}
-                    className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-xs transition hover:bg-accent"
-                  >
-                    <span className="min-w-0 truncate font-medium">{item.name}</span>
-                    <span className="font-mono text-[10px] text-muted-foreground">
-                      {item.tag}
-                    </span>
-                    <span className="ml-auto shrink-0 font-mono text-[10px] text-primary">
-                      {item.trophies.toLocaleString()}
-                    </span>
-                  </button>
-                ))}
-              </div>
-            )}
+            <AnimatePresence>
+              {showHistory && (
+                <motion.div
+                  key="history"
+                  initial={{ opacity: 0, y: -4, scale: 0.98 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -4, scale: 0.98 }}
+                  transition={{ duration: DURATION.micro, ease: EASE_OUT }}
+                  className="absolute left-0 right-0 top-full z-50 mt-2 origin-top overflow-hidden rounded-lg border border-border bg-card p-1 shadow-lg"
+                >
+                  <p className="section-title px-2 py-1.5 text-[10px]">Recent players</p>
+                  {matches.map((item) => (
+                    <button
+                      key={item.tag}
+                      type="button"
+                      onMouseDown={(event) => event.preventDefault()}
+                      onClick={() => openRecent(item)}
+                      className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-xs transition-colors duration-150 hover:bg-accent"
+                    >
+                      <span className="min-w-0 truncate font-medium">{item.name}</span>
+                      <span className="font-mono text-[10px] text-muted-foreground">
+                        {item.tag}
+                      </span>
+                      <span className="ml-auto shrink-0 font-mono text-[10px] text-primary">
+                        {item.trophies.toLocaleString()}
+                      </span>
+                    </button>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
           <Button
             type="submit"
@@ -186,7 +206,7 @@ export function SiteHeader() {
                   }`}
                 >
                   <item.icon
-                    className={`size-3.5 ${active ? 'text-primary' : 'text-muted-foreground'}`}
+                    className={`size-3.5 transition-colors duration-150 ${active ? 'text-primary' : 'text-muted-foreground'}`}
                   />
                   {item.label}
                 </Link>

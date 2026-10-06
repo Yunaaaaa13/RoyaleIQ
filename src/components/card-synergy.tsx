@@ -1,8 +1,10 @@
 'use client'
 
 import { useMemo } from 'react'
+import type { ReactNode } from 'react'
 import { GitMerge } from 'lucide-react'
 import { CardTile } from '@/components/card-tile'
+import { Reveal } from '@/components/reveal'
 import { getCard } from '@/lib/cards'
 import type { MetaSnapshot } from '@/lib/battle'
 import {
@@ -13,8 +15,14 @@ import {
   MIN_RESULT_BATTLES,
   MIN_RESULT_DECKS,
 } from '@/lib/synergy'
+import { useCountUp } from '@/lib/use-count-up'
 
 const nameOf = (key: string) => getCard(key)?.name ?? key
+
+function CountValue({ value, className }: { value: ReactNode; className?: string }) {
+  const display = useCountUp(value)
+  return <span className={className}>{display}</span>
+}
 
 export function CardSynergy({ snapshot }: { snapshot: MetaSnapshot }) {
   const pairs = snapshot.synergies
@@ -48,7 +56,7 @@ export function CardSynergy({ snapshot }: { snapshot: MetaSnapshot }) {
   const hasResults = measured.best.length > 0 || measured.worst.length > 0
 
   return (
-    <section className="panel p-5">
+    <Reveal className="panel p-5">
       <h3 className="mb-1 flex items-center gap-2 panel-title">
         <GitMerge className="size-4 text-amber-600" />
         Card synergy
@@ -89,10 +97,10 @@ export function CardSynergy({ snapshot }: { snapshot: MetaSnapshot }) {
                   </span>
                   <span className="shrink-0 text-right">
                     <span className="block text-xs font-bold tabular-nums text-cyan-700">
-                      {pair.lift}×
+                      <CountValue value={`${pair.lift}`} />×
                     </span>
                     <span className="block text-[10px] tabular-nums text-muted-foreground">
-                      {pair.battles} battles
+                      <CountValue value={`${pair.battles}`} /> battles
                     </span>
                   </span>
                 </li>
@@ -144,7 +152,7 @@ export function CardSynergy({ snapshot }: { snapshot: MetaSnapshot }) {
                               </span>
                               <span className={`shrink-0 text-xs font-bold tabular-nums ${group.tone}`}>
                                 {pair.delta > 0 ? '+' : ''}
-                                {pair.delta}
+                                <CountValue value={`${pair.delta}`} />
                               </span>
                             </div>
                             <p className="mt-0.5 text-[10px] tabular-nums text-muted-foreground">
@@ -176,6 +184,6 @@ export function CardSynergy({ snapshot }: { snapshot: MetaSnapshot }) {
           not a verdict on the cards.
         </p>
       )}
-    </section>
+    </Reveal>
   )
 }

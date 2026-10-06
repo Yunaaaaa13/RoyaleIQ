@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
+import { AnimatePresence, motion } from 'motion/react'
 import { Search } from 'lucide-react'
 import { CardTile } from '@/components/card-tile'
 import { Input } from '@/components/ui/input'
@@ -15,6 +16,9 @@ import {
 } from '@/components/ui/select'
 import type { CardStat, MetaSnapshot } from '@/lib/battle'
 import { cn, relativeAge } from '@/lib/utils'
+import { DURATION, EASE_OUT } from '@/lib/motion'
+
+const MotionLink = motion.create(Link)
 
 interface CatalogCard {
   key: string
@@ -219,53 +223,72 @@ export function CardCatalog() {
 
       {catalog && rows.length === 0 && (
         <section className="panel grid place-items-center gap-2 p-12 text-center">
-          <p className="text-sm font-semibold">No card matches that filter</p>
-          <p className="text-xs text-muted-foreground">
+          <motion.p
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: DURATION.component, ease: EASE_OUT }}
+            className="text-sm font-semibold"
+          >
+            No card matches that filter
+          </motion.p>
+          <motion.p
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: DURATION.component, ease: EASE_OUT, delay: 0.05 }}
+            className="text-xs text-muted-foreground"
+          >
             Try a shorter name, or reset the rarity and type filters.
-          </p>
+          </motion.p>
         </section>
       )}
 
       {rows.length > 0 && (
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-          {rows.map((card) => {
-            const stat = stats.get(card.key)
-            return (
-              <Link
-                key={card.key}
-                href={`/cards/${card.key}`}
-                className={cn(
-                  'group rounded-xl border border-border bg-slate-50 p-3 transition',
-                  'hover:border-amber-500/40 hover:bg-slate-100 focus-visible:outline-none',
-                  'focus-visible:ring-2 focus-visible:ring-amber-500/60',
-                )}
-              >
-                {/* Stacked instead of side by side: at 360px a two-column cell
-                    leaves the name under 70px, which truncates most card names. */}
-                <CardTile cardKey={card.key} size="sm" showElixir={false} />
-                <div className="mt-2 min-w-0">
-                  <p className="truncate text-sm font-semibold group-hover:text-foreground">
-                    {card.name}
-                  </p>
-                  <p className="truncate text-[11px] text-muted-foreground">
-                    {card.rarity} · {card.elixir} · {card.type}
-                  </p>
-                </div>
-                <div className="mt-3 flex items-center justify-between text-xs">
-                  {stat ? (
-                    <>
-                      <span className="tabular-nums text-muted-foreground">{stat.usage}% usage</span>
-                      <span className={cn('font-semibold tabular-nums', winTone(stat.winRate))}>
-                        {stat.winRate}% WR
-                      </span>
-                    </>
-                  ) : (
-                    <span className="text-muted-foreground">not in this sample</span>
+          <AnimatePresence>
+            {rows.map((card) => {
+              const stat = stats.get(card.key)
+              return (
+                <MotionLink
+                  key={card.key}
+                  href={`/cards/${card.key}`}
+                  layout
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: DURATION.component, ease: EASE_OUT }}
+                  className={cn(
+                    'group group/cell rounded-xl border border-border bg-slate-50 p-3 transition',
+                    'hover:border-amber-500/40 hover:bg-slate-100 focus-visible:outline-none',
+                    'focus-visible:ring-2 focus-visible:ring-amber-500/60',
                   )}
-                </div>
-              </Link>
-            )
-          })}
+                >
+                  {/* Stacked instead of side by side: at 360px a two-column cell
+                      leaves the name under 70px, which truncates most card names. */}
+                  <CardTile cardKey={card.key} size="sm" showElixir={false} />
+                  <div className="mt-2 min-w-0">
+                    <p className="truncate text-sm font-semibold group-hover:text-foreground">
+                      {card.name}
+                    </p>
+                    <p className="truncate text-[11px] text-muted-foreground">
+                      {card.rarity} · {card.elixir} · {card.type}
+                    </p>
+                  </div>
+                  <div className="mt-3 flex items-center justify-between text-xs">
+                    {stat ? (
+                      <>
+                        <span className="tabular-nums text-muted-foreground">{stat.usage}% usage</span>
+                        <span className={cn('font-semibold tabular-nums', winTone(stat.winRate))}>
+                          {stat.winRate}% WR
+                        </span>
+                      </>
+                    ) : (
+                      <span className="text-muted-foreground">not in this sample</span>
+                    )}
+                  </div>
+                </MotionLink>
+              )
+            })}
+          </AnimatePresence>
         </div>
       )}
     </div>

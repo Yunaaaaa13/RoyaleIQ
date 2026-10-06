@@ -5,6 +5,7 @@ import { Bot, FlaskConical, Pencil, Save, X } from 'lucide-react'
 import { CardTile } from '@/components/card-tile'
 import { DiagnosisPanel } from '@/components/deck-panels'
 import { DeckStats, analyzeIfReady } from '@/components/deck-selection'
+import { FadeIn } from '@/components/reveal'
 import { Button } from '@/components/ui/button'
 import { deckLabel } from '@/lib/battle'
 import { deckId, removeSavedDeck, saveDeck, useSavedDecks } from '@/lib/saved-decks'
@@ -54,7 +55,7 @@ export function DeckDetail({ cards }: { cards: string[] }) {
   return (
     <div className="space-y-6">
       <section className="panel p-5">
-        <div className="flex flex-wrap items-start justify-between gap-3">
+        <FadeIn className="flex flex-wrap items-start justify-between gap-3">
           <div className="min-w-0">
             <p className="eyebrow">Deck</p>
             <h2 className="text-xl font-bold tracking-tight">
@@ -106,9 +107,9 @@ export function DeckDetail({ cards }: { cards: string[] }) {
               </Link>
             </Button>
           </div>
-        </div>
+        </FadeIn>
 
-        <div className="mt-4 flex flex-wrap gap-1.5">
+        <FadeIn delay={0.05} className="mt-4 flex flex-wrap gap-1.5">
           {cards.map((key) => (
             <CardTile
               key={key}
@@ -127,13 +128,19 @@ export function DeckDetail({ cards }: { cards: string[] }) {
               }
             />
           ))}
-        </div>
+        </FadeIn>
 
-        {analysis && <DeckStats analysis={analysis} />}
+        {analysis && (
+          <FadeIn delay={0.1}>
+            <DeckStats analysis={analysis} />
+          </FadeIn>
+        )}
       </section>
 
       {analysis ? (
-        <DiagnosisPanel analysis={analysis} meta={snapshot} />
+        <FadeIn delay={0.15}>
+          <DiagnosisPanel analysis={analysis} meta={snapshot} />
+        </FadeIn>
       ) : (
         <section className="panel p-8 text-center text-sm text-muted-foreground">
           Pick a few more cards to unlock the full diagnosis.

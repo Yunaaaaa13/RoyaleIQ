@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { DeckDetail } from '@/components/deck-detail'
+import { PageTransition } from '@/components/page-transition'
 import { deckLabel } from '@/lib/battle'
 import { getCard } from '@/lib/cards'
 
@@ -37,7 +38,7 @@ export default async function DeckPage({ params }: DeckPageProps) {
   const cards = parseId(id)
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6">
+    <PageTransition className="mx-auto max-w-5xl px-4 py-8 sm:px-6">
       <header className="mb-6 flex flex-col gap-2 border-b border-border/70 pb-5">
         <p className="eyebrow">Saved Deck</p>
         <h1 className="page-title">One deck, every angle</h1>
@@ -47,6 +48,6 @@ export default async function DeckPage({ params }: DeckPageProps) {
         </p>
       </header>
       <DeckDetail cards={cards} />
-    </div>
+    </PageTransition>
   )
 }

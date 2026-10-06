@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { ArrowLeft } from 'lucide-react'
 import { BattleDetail, type BattleSummary } from '@/components/battle-detail'
+import { FadeIn } from '@/components/reveal'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import type { PlayerStats } from '@/lib/player'
@@ -43,16 +44,18 @@ function Notice({
   onAction: () => void
 }) {
   return (
-    <Alert className="border-amber-400/30 bg-amber-400/10">
-      <AlertTitle>{title}</AlertTitle>
-      <AlertDescription className="space-y-3">
-        <p>{body}</p>
-        <Button variant="outline" size="sm" className="gap-1.5" onClick={onAction}>
-          <ArrowLeft className="size-4" />
-          {action}
-        </Button>
-      </AlertDescription>
-    </Alert>
+    <FadeIn>
+      <Alert className="border-amber-400/30 bg-amber-400/10">
+        <AlertTitle>{title}</AlertTitle>
+        <AlertDescription className="space-y-3">
+          <p>{body}</p>
+          <Button variant="outline" size="sm" className="gap-1.5" onClick={onAction}>
+            <ArrowLeft className="size-4" />
+            {action}
+          </Button>
+        </AlertDescription>
+      </Alert>
+    </FadeIn>
   )
 }
 

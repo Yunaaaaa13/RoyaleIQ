@@ -11,13 +11,22 @@ import {
   YAxis,
 } from 'recharts'
 import { ArrowRight, Sparkles, Swords, TrendingDown, TrendingUp } from 'lucide-react'
+import { motion } from 'motion/react'
+import type { Variants } from 'motion/react'
 import { CardTile } from '@/components/card-tile'
 import { ScoreBar, SeverityIcon, StatTile } from '@/components/metrics'
+import { Reveal } from '@/components/reveal'
 import { Badge } from '@/components/ui/badge'
 import type { DeckAnalysis } from '@/lib/analysis'
 import type { MetaSnapshot } from '@/lib/battle'
 import { getCard } from '@/lib/cards'
 import { deckStructure } from '@/lib/deck-structure'
+import { CHART_MOTION, fadeUp } from '@/lib/motion'
+
+const matchupStagger: Variants = {
+  hidden: {},
+  show: { transition: { delayChildren: (index: number) => Math.min(index * 0.04, 0.45) } },
+}
 
 type Tone = 'gold' | 'violet' | 'cyan' | 'green' | 'rose'
 
@@ -62,7 +71,8 @@ export function DiagnosisPanel({
 
   return (
     <div className="space-y-6">
-      <div className="grid gap-4 lg:grid-cols-3">
+      <Reveal>
+        <div className="grid gap-4 lg:grid-cols-3">
         <div className="panel flex items-center gap-4 p-4 lg:col-span-1">
           <div className="grid size-16 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-yellow-300 to-amber-600 text-2xl font-black text-black">
             {grade}
@@ -110,15 +120,19 @@ export function DiagnosisPanel({
             />
           ))}
         </div>
-      </div>
+        </div>
+      </Reveal>
 
-      <div className="grid gap-4 sm:grid-cols-3">
-        <StatTile label="Critical" value={critical} accent={critical ? 'rose' : 'green'} />
-        <StatTile label="Warnings" value={warnings} accent={warnings ? 'gold' : 'green'} />
-        <StatTile label="Strengths" value={positives} accent="green" />
-      </div>
+      <Reveal delay={0.05}>
+        <div className="grid gap-4 sm:grid-cols-3">
+          <StatTile label="Critical" value={critical} accent={critical ? 'rose' : 'green'} />
+          <StatTile label="Warnings" value={warnings} accent={warnings ? 'gold' : 'green'} />
+          <StatTile label="Strengths" value={positives} accent="green" />
+        </div>
+      </Reveal>
 
-      <section className="panel p-5">
+      <Reveal delay={0.1}>
+        <section className="panel p-5">
         <h3 className="mb-1 flex items-center gap-2 panel-title">
           Role coverage
           <Badge variant="secondary" className="text-[10px]">
@@ -163,9 +177,11 @@ export function DiagnosisPanel({
             ⚠ Missing or thin: {structure.gaps.join(', ')}
           </p>
         )}
-      </section>
+        </section>
+      </Reveal>
 
-      <div className="grid gap-4 lg:grid-cols-2">
+      <Reveal delay={0.15}>
+        <div className="grid gap-4 lg:grid-cols-2">
         <section className="panel p-5">
           <h3 className="mb-3 flex items-center gap-2 panel-title">
             Deck diagnosis
@@ -263,7 +279,7 @@ export function DiagnosisPanel({
                   formatter={(value, name) => [value, String(name ?? 'cards')]}
                   labelFormatter={(label) => `${label} elixir`}
                 />
-                <Bar dataKey="count" radius={[6, 6, 0, 0]}>
+                <Bar dataKey="count" radius={[6, 6, 0, 0]} {...CHART_MOTION}>
                   {analysis.costCurve.map((entry) => (
                     <Cell
                       key={entry.elixir}
@@ -297,9 +313,11 @@ export function DiagnosisPanel({
             ))}
           </div>
         </section>
-      </div>
+        </div>
+      </Reveal>
 
-      <section className="panel p-5">
+      <Reveal delay={0.2}>
+        <section className="panel p-5">
         <h3 className="mb-1 flex items-center gap-2 panel-title">
           <Sparkles className="size-4 text-amber-600" />
           Recommended changes
@@ -317,7 +335,7 @@ export function DiagnosisPanel({
             {analysis.swaps.map((swap) => (
               <article
                 key={`${swap.from}-${swap.to}`}
-                className="rounded-xl border border-border bg-slate-50 p-4"
+                className="group/cell rounded-xl border border-border bg-slate-50 p-4"
               >
                 <div className="flex items-center justify-center gap-3">
                   <CardTile cardKey={swap.from} size="sm" showName />
@@ -345,7 +363,8 @@ export function DiagnosisPanel({
             ))}
           </div>
         )}
-      </section>
+        </section>
+      </Reveal>
     </div>
   )
 }
@@ -356,20 +375,28 @@ export function MatchupPanel({ analysis }: { analysis: DeckAnalysis }) {
 
   return (
     <div className="space-y-4">
-      <div className="grid gap-3 sm:grid-cols-3">
-        <StatTile label="Favoured matchups" value={favored} accent="green" />
-        <StatTile label="Even" value={analysis.matchups.length - favored - unfavored} />
-        <StatTile label="Unfavourable" value={unfavored} accent="rose" />
-      </div>
+      <Reveal delay={0.05}>
+        <div className="grid gap-3 sm:grid-cols-3">
+          <StatTile label="Favoured matchups" value={favored} accent="green" />
+          <StatTile label="Even" value={analysis.matchups.length - favored - unfavored} />
+          <StatTile label="Unfavourable" value={unfavored} accent="rose" />
+        </div>
+      </Reveal>
 
-      <section className="panel p-5">
+      <Reveal delay={0.1}>
+        <section className="panel p-5">
         <h3 className="mb-4 flex items-center gap-2 panel-title">
           <Swords className="size-4 text-cyan-700" />
           Projected win rate by archetype
         </h3>
-        <div className="space-y-3">
+        <motion.div
+          className="space-y-3"
+          initial="hidden"
+          animate="show"
+          variants={matchupStagger}
+        >
           {analysis.matchups.map((line) => (
-            <div key={line.key} className="space-y-1">
+            <motion.div key={line.key} variants={fadeUp} className="space-y-1">
               <div className="flex items-center justify-between text-xs">
                 <span className="flex items-center gap-2 font-medium">
                   {line.verdict === 'favored' && (
@@ -404,10 +431,11 @@ export function MatchupPanel({ analysis }: { analysis: DeckAnalysis }) {
                   style={{ width: `${line.score}%` }}
                 />
               </div>
-            </div>
+            </motion.div>
           ))}
-        </div>
-      </section>
+        </motion.div>
+        </section>
+      </Reveal>
     </div>
   )
 }

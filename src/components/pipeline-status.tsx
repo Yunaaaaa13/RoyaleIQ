@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useState } from 'react'
+import { motion } from 'motion/react'
 import {
   BrainCircuit,
   ChevronDown,
@@ -11,8 +12,11 @@ import {
   RefreshCw,
   Server,
 } from 'lucide-react'
+import { Reveal } from '@/components/reveal'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { fadeUp, rowReveal, staggerParent } from '@/lib/motion'
+import { useCountUp } from '@/lib/use-count-up'
 import type { CheckStatus, StatusResponse } from '@/lib/status'
 
 type Status = 'loading' | 'ready' | 'error'
@@ -52,6 +56,11 @@ function Dot({ status }: { status: CheckStatus }) {
       aria-hidden
     />
   )
+}
+
+function Count({ value }: { value: number }) {
+  const display = useCountUp(value)
+  return <>{display}</>
 }
 
 function Stage({
@@ -160,9 +169,22 @@ export function PipelineStatus() {
             </Button>
           </div>
         )}
-        <ul className="grid gap-3 lg:grid-cols-2">
+        <motion.ul
+          className="grid gap-3 lg:grid-cols-2"
+          initial="hidden"
+          animate="show"
+          variants={{
+            ...staggerParent,
+            show: {
+              transition: {
+                staggerChildren: Math.min(0.04, 0.4 / Math.max(1, data.checks.length)),
+                delayChildren: 0.04,
+              },
+            },
+          }}
+        >
           {data.checks.map((check) => (
-            <li key={check.key} className="flex gap-3">
+            <motion.li key={check.key} variants={fadeUp} className="flex gap-3">
               <Dot status={check.status} />
               <div className="min-w-0">
                 <p className="text-xs font-semibold">
@@ -171,12 +193,13 @@ export function PipelineStatus() {
                 </p>
                 <p className="text-xs leading-relaxed text-muted-foreground">{check.detail}</p>
               </div>
-            </li>
+            </motion.li>
           ))}
-        </ul>
+        </motion.ul>
       </section>
 
-      <section className="panel p-4">
+      <Reveal>
+        <section className="panel p-4">
         <h2 className="mb-3 text-sm font-semibold">How a request travels</h2>
         <div className="flex flex-col md:flex-row md:items-stretch md:gap-2">
           <Stage icon={Monitor} label="Browser" detail="no secrets, no API calls" />
@@ -215,9 +238,10 @@ export function PipelineStatus() {
             />
           </div>
         </div>
-      </section>
+        </section>
+      </Reveal>
 
-      <div className="grid gap-4 xl:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]">
+      <Reveal className="grid gap-4 xl:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]">
         <section className="panel overflow-hidden">
           <div className="border-b border-border px-4 py-3">
             <h2 className="text-sm font-semibold">Sync ledger</h2>
@@ -237,9 +261,25 @@ export function PipelineStatus() {
                     <th className="px-3 py-2 font-semibold">Trophies</th>
                   </tr>
                 </thead>
-                <tbody>
+                <motion.tbody
+                  initial="hidden"
+                  animate="show"
+                  variants={{
+                    ...staggerParent,
+                    show: {
+                      transition: {
+                        staggerChildren: Math.min(0.04, 0.4 / Math.max(1, data.sync.players.length)),
+                        delayChildren: 0.04,
+                      },
+                    },
+                  }}
+                >
                   {data.sync.players.map((player) => (
-                    <tr key={player.tag} className="border-t border-border/60">
+                    <motion.tr
+                      key={player.tag}
+                      variants={rowReveal}
+                      className="group/row border-t border-border/60"
+                    >
                       <td className="px-4 py-2">
                         <span className="block font-medium">{player.name}</span>
                         <span className="block font-mono text-[10px] text-muted-foreground">
@@ -258,9 +298,9 @@ export function PipelineStatus() {
                         </span>
                       </td>
                       <td className="px-3 py-2 font-mono">{player.trophies}</td>
-                    </tr>
+                    </motion.tr>
                   ))}
-                </tbody>
+                </motion.tbody>
               </table>
             </div>
           ) : (
@@ -284,7 +324,9 @@ export function PipelineStatus() {
                 <li key={name}>
                   <div className="flex items-baseline justify-between text-xs">
                     <span>{name}</span>
-                    <span className="font-mono text-muted-foreground">{value}</span>
+                    <span className="font-mono text-muted-foreground">
+                      <Count value={value} />
+                    </span>
                   </div>
                   <div className="mt-1 h-1 overflow-hidden rounded-full bg-slate-50">
                     <div
@@ -304,11 +346,15 @@ export function PipelineStatus() {
           <div className="mt-4 space-y-2 border-t border-border pt-3 text-xs">
             <div className="flex justify-between gap-3">
               <span className="text-muted-foreground">In-memory response cache</span>
-              <span className="font-mono">{data.clashRoyaleApi.cache.memoryEntries} entries</span>
+              <span className="font-mono">
+                <Count value={data.clashRoyaleApi.cache.memoryEntries} /> entries
+              </span>
             </div>
             <div className="flex justify-between gap-3">
               <span className="text-muted-foreground">Persistent response cache</span>
-              <span className="font-mono">{data.clashRoyaleApi.cache.dbEntries} entries</span>
+              <span className="font-mono">
+                <Count value={data.clashRoyaleApi.cache.dbEntries} /> entries
+              </span>
             </div>
             <div className="flex justify-between gap-3">
               <span className="text-muted-foreground">Calls this minute</span>
@@ -328,7 +374,7 @@ export function PipelineStatus() {
             </div>
           </div>
         </section>
-      </div>
+      </Reveal>
     </div>
   )
 }

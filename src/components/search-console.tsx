@@ -3,10 +3,13 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
+import { motion } from 'motion/react'
 import { ArrowRight, Layers, LayoutGrid, Search, UserRound } from 'lucide-react'
 import { CardTile } from '@/components/card-tile'
+import { FadeIn } from '@/components/reveal'
 import { Input } from '@/components/ui/input'
 import { ALL_CARDS, cardLabel } from '@/lib/cards'
+import { fadeUp, staggerParent } from '@/lib/motion'
 import { useRecentPlayers } from '@/lib/recent-players'
 import { isLikelyTag, normalizeTag } from '@/lib/tags'
 import type { CardStat, DeckStat, MetaSnapshot } from '@/lib/battle'
@@ -55,7 +58,7 @@ function DeckCard({ deck }: { deck: DeckStat }) {
   return (
     <Link
       href={`/deck-lab?deck=${encodeURIComponent(deck.cards.join(','))}`}
-      className="group block rounded-xl border border-border/70 bg-slate-50 p-4 transition-colors hover:border-primary/40 hover:bg-slate-50"
+      className="group block h-full rounded-xl border border-border/70 bg-slate-50 p-4 transition-colors hover:border-primary/40 hover:bg-slate-50"
     >
       <div className="mb-3 flex items-start justify-between gap-2">
         <div className="min-w-0">
@@ -291,23 +294,25 @@ export function SearchConsole() {
       </section>
 
       {tagQuery && (
-        <Link
-          href={`/player?tag=${encodeURIComponent(tagQuery)}`}
-          className="panel group flex items-center gap-3 p-4 transition-colors hover:border-primary/40"
-        >
-          <span className="grid size-10 shrink-0 place-items-center rounded-full bg-primary/15">
-            <UserRound className="size-5 text-primary" />
-          </span>
-          <span className="min-w-0 flex-1">
-            <span className="block truncate text-sm font-semibold group-hover:text-primary">
-              Open the profile for {tagQuery}
+        <FadeIn>
+          <Link
+            href={`/player?tag=${encodeURIComponent(tagQuery)}`}
+            className="panel group flex items-center gap-3 p-4 transition-colors hover:border-primary/40"
+          >
+            <span className="grid size-10 shrink-0 place-items-center rounded-full bg-primary/15">
+              <UserRound className="size-5 text-primary" />
             </span>
-            <span className="block truncate text-xs text-muted-foreground">
-              Win rate, archetype performance and full battle history.
+            <span className="min-w-0 flex-1">
+              <span className="block truncate text-sm font-semibold group-hover:text-primary">
+                Open the profile for {tagQuery}
+              </span>
+              <span className="block truncate text-xs text-muted-foreground">
+                Win rate, archetype performance and full battle history.
+              </span>
             </span>
-          </span>
-          <ArrowRight className="size-4 shrink-0 text-primary" />
-        </Link>
+            <ArrowRight className="size-4 shrink-0 text-primary" />
+          </Link>
+        </FadeIn>
       )}
 
       {!raw && (
@@ -342,16 +347,30 @@ export function SearchConsole() {
       )}
 
       {raw && cardHits.length > 0 && (
+        <FadeIn>
         <section className="panel p-4 sm:p-5">
           <SectionHead icon={LayoutGrid} title="Cards" count={cardHits.length} />
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+          <motion.div
+            className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4"
+            initial="hidden"
+            animate="show"
+            variants={{
+              ...staggerParent,
+              show: {
+                transition: {
+                  staggerChildren: Math.min(0.04, 0.4 / Math.max(1, cardHits.length)),
+                  delayChildren: 0.04,
+                },
+              },
+            }}
+          >
             {cardHits.map((card) => {
               const stat: CardStat | undefined = stats.get(card.key)
               return (
+                <motion.div key={card.key} variants={fadeUp} className="h-full">
                 <Link
-                  key={card.key}
                   href={`/cards/${card.key}`}
-                  className="group rounded-xl border border-border bg-slate-50 p-3 transition hover:border-amber-500/40 hover:bg-slate-100"
+                  className="group h-full rounded-xl border border-border bg-slate-50 p-3 transition hover:border-amber-500/40 hover:bg-slate-100"
                 >
                   <CardTile cardKey={card.key} size="sm" showElixir={false} />
                   <div className="mt-2 min-w-0">
@@ -373,43 +392,70 @@ export function SearchConsole() {
                     </div>
                   )}
                 </Link>
+                </motion.div>
               )
             })}
-          </div>
+          </motion.div>
         </section>
+        </FadeIn>
       )}
 
       {raw && deckHits.length > 0 && (
+        <FadeIn delay={0.04}>
         <section className="panel p-4 sm:p-5">
           <SectionHead icon={Layers} title="Decks" count={deckHits.length} />
-          <div className="grid gap-3 md:grid-cols-2">
+          <motion.div
+            className="grid gap-3 md:grid-cols-2"
+            initial="hidden"
+            animate="show"
+            variants={staggerParent}
+          >
             {deckHits.map((deck) => (
-              <DeckCard key={deck.id} deck={deck} />
+              <motion.div key={deck.id} variants={fadeUp}>
+                <DeckCard deck={deck} />
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </section>
+        </FadeIn>
       )}
 
       {raw && playerHits.length > 0 && (
+        <FadeIn delay={0.08}>
         <section className="panel p-4 sm:p-5">
           <SectionHead icon={UserRound} title="Players" count={playerHits.length} />
-          <div className="grid gap-2">
+          <motion.div
+            className="grid gap-2"
+            initial="hidden"
+            animate="show"
+            variants={staggerParent}
+          >
             {playerHits.map((player) => (
-              <PlayerRow key={player.tag} player={player} />
+              <motion.div key={player.tag} variants={fadeUp}>
+                <PlayerRow player={player} />
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </section>
+        </FadeIn>
       )}
 
       {raw && totalHits === 0 && metaState !== 'loading' && (
-        <section className="panel grid place-items-center gap-2 p-12 text-center">
-          <p className="text-sm font-semibold">Nothing matches &ldquo;{raw}&rdquo;</p>
-          <p className="max-w-md text-xs text-muted-foreground">
+        <motion.section
+          className="panel grid place-items-center gap-2 p-12 text-center"
+          initial="hidden"
+          animate="show"
+          variants={staggerParent}
+        >
+          <motion.p variants={fadeUp} className="text-sm font-semibold">
+            Nothing matches &ldquo;{raw}&rdquo;
+          </motion.p>
+          <motion.p variants={fadeUp} className="max-w-md text-xs text-muted-foreground">
             Try a card name like <span className="text-foreground">knight</span>, a deck
             archetype like <span className="text-foreground">cycle</span>, or a full player
             tag like <span className="font-mono text-foreground">#2PP</span>.
-          </p>
-        </section>
+          </motion.p>
+        </motion.section>
       )}
     </div>
   )

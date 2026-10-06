@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
+import { motion, AnimatePresence } from 'motion/react'
 import { ArrowRight, RefreshCw, Swords, Target } from 'lucide-react'
 import { CardTile } from '@/components/card-tile'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
@@ -9,6 +10,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import type { CardMatchupGates, CardMatchupSection, CardMatchupsResult } from '@/lib/card-matchups'
 import type { MatchupEdge } from '@/lib/matchups'
+import { rowReveal, staggerParent } from '@/lib/motion'
 import { cn } from '@/lib/utils'
 
 type Status = 'idle' | 'loading' | 'ready' | 'error'
@@ -57,44 +59,51 @@ function PairingTable({
             <th className="py-2 pl-2 text-right font-semibold">Win rate</th>
           </tr>
         </thead>
-        <tbody>
-          {section.cols.map((key) => {
-            const cell = byKey.get(key)
-            if (!cell) return null
-            const show = cell.games >= gates.cellGames
-            return (
-              <tr key={key} className="border-b border-border/60 last:border-0">
-                <td className="py-2 pr-3">
-                  <span className="flex items-center gap-2">
-                    {withCards && <CardTile cardKey={key} size="xs" showElixir={false} />}
-                    <span className="min-w-0 truncate text-xs sm:text-sm">
-                      {section.labels[key] ?? key}
+        <motion.tbody initial="hidden" animate="show" variants={staggerParent}>
+          <AnimatePresence>
+            {section.cols.map((key) => {
+              const cell = byKey.get(key)
+              if (!cell) return null
+              const show = cell.games >= gates.cellGames
+              return (
+                <motion.tr
+                  key={key}
+                  layout
+                  variants={rowReveal}
+                  className="group/row border-b border-border/60 last:border-0"
+                >
+                  <td className="py-2 pr-3">
+                    <span className="flex items-center gap-2">
+                      {withCards && <CardTile cardKey={key} size="xs" showElixir={false} />}
+                      <span className="min-w-0 truncate text-xs sm:text-sm">
+                        {section.labels[key] ?? key}
+                      </span>
                     </span>
-                  </span>
-                </td>
-                <td className="px-2 py-2 text-right font-mono text-xs tabular-nums text-muted-foreground">
-                  {cell.games}
-                </td>
-                <td className="px-2 py-2 text-right font-mono text-xs tabular-nums text-muted-foreground">
-                  {cell.wins}-{cell.losses}-{cell.draws}
-                </td>
-                <td className="py-2 pl-2 text-right">
-                  <span
-                    className={cn(
-                      'font-mono text-sm font-semibold tabular-nums',
-                      rateTone(cell.winRate, show),
-                    )}
-                  >
-                    {show ? `${cell.winRate}%` : '—'}
-                  </span>
-                  <span className="block font-mono text-[10px] leading-tight text-muted-foreground">
-                    {show ? `n=${cell.games}` : `n=${cell.games} · under ${gates.cellGames}`}
-                  </span>
-                </td>
-              </tr>
-            )
-          })}
-        </tbody>
+                  </td>
+                  <td className="px-2 py-2 text-right font-mono text-xs tabular-nums text-muted-foreground">
+                    {cell.games}
+                  </td>
+                  <td className="px-2 py-2 text-right font-mono text-xs tabular-nums text-muted-foreground">
+                    {cell.wins}-{cell.losses}-{cell.draws}
+                  </td>
+                  <td className="py-2 pl-2 text-right">
+                    <span
+                      className={cn(
+                        'font-mono text-sm font-semibold tabular-nums',
+                        rateTone(cell.winRate, show),
+                      )}
+                    >
+                      {show ? `${cell.winRate}%` : '—'}
+                    </span>
+                    <span className="block font-mono text-[10px] leading-tight text-muted-foreground">
+                      {show ? `n=${cell.games}` : `n=${cell.games} · under ${gates.cellGames}`}
+                    </span>
+                  </td>
+                </motion.tr>
+              )
+            })}
+          </AnimatePresence>
+        </motion.tbody>
       </table>
     </div>
   )

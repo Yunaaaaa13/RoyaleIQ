@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
+import { motion } from 'motion/react'
 import { RefreshCw, Swords, Users } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -14,6 +15,8 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { normalizeTag } from '@/lib/tags'
+import { rowReveal, staggerParent } from '@/lib/motion'
+import { useCountUp } from '@/lib/use-count-up'
 import type { MatchupCell, MatchupEdge, MatchupsResponse } from '@/lib/matchups'
 
 type Status = 'idle' | 'loading' | 'ready' | 'error'
@@ -49,6 +52,8 @@ function cellStyle(winRate: number, games: number) {
 
 function EdgeRow({ edge, tone }: { edge: Edge; tone: 'best' | 'worst' }) {
   const delta = edge.projected === null ? null : Math.round(edge.winRate - edge.projected)
+  const winRate = useCountUp(edge.winRate)
+  const games = useCountUp(edge.games)
   return (
     <li className="flex items-center gap-3 border-b border-border/60 py-2 last:border-0">
       <span
@@ -56,7 +61,7 @@ function EdgeRow({ edge, tone }: { edge: Edge; tone: 'best' | 'worst' }) {
           tone === 'best' ? 'text-emerald-600' : 'text-rose-600'
         }`}
       >
-        {edge.winRate}%
+        {winRate}%
       </span>
       <span className="min-w-0 flex-1 truncate text-xs">
         <span className="font-medium">{edge.fromLabel}</span>
@@ -64,7 +69,7 @@ function EdgeRow({ edge, tone }: { edge: Edge; tone: 'best' | 'worst' }) {
         <span className="text-muted-foreground">{edge.toLabel}</span>
       </span>
       <span className="shrink-0 font-mono text-[10px] text-muted-foreground">
-        n={edge.games}
+        n={games}
         {delta !== null && Math.abs(delta) >= 6 ? (
           <span className={delta > 0 ? 'text-emerald-600' : 'text-rose-600'}>
             {' '}
@@ -86,6 +91,7 @@ export function MatchupMatrix() {
   const [data, setData] = useState<MatchupsResponse | null>(null)
   const [status, setStatus] = useState<Status>('idle')
   const [error, setError] = useState('')
+  const [hovered, setHovered] = useState<{ row: string; col: string } | null>(null)
   // Held in a ref so a manual retry is cancelled by the next reload and on
   // unmount, instead of outliving it and overwriting newer results.
   const controllerRef = useRef<AbortController | null>(null)
@@ -138,6 +144,10 @@ export function MatchupMatrix() {
     for (const cell of data?.cells ?? []) map.set(`${cell.from}\u0000${cell.to}`, cell)
     return map
   }, [data])
+
+  const battleCount = useCountUp(data?.battles ?? 0)
+  const rowCount = useCountUp(data?.rows.length ?? 0)
+  const colCount = useCountUp(data?.cols.length ?? 0)
 
   return (
     <div className="space-y-4">
@@ -237,12 +247,12 @@ export function MatchupMatrix() {
                   : 'Archetype played into the archetype faced'}
               </p>
               <p className="text-xs text-muted-foreground">
-                {data.battles} battle{data.battles === 1 ? '' : 's'} ·{' '}
-                {data.rows.length} × {data.cols.length} pairings
+                {battleCount} battle{data.battles === 1 ? '' : 's'} ·{' '}
+                {rowCount} × {colCount} pairings
               </p>
             </div>
 
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto" onMouseLeave={() => setHovered(null)}>
               <table className="w-full border-collapse text-xs">
                 <thead>
                   <tr>
@@ -252,7 +262,9 @@ export function MatchupMatrix() {
                     {data.cols.map((key) => (
                       <th
                         key={key}
-                        className="min-w-16 px-2 py-2 text-center align-bottom text-[10px] font-semibold uppercase tracking-wider text-muted-foreground"
+                        className={`min-w-16 px-2 py-2 text-center align-bottom text-[10px] font-semibold uppercase tracking-wider text-muted-foreground transition-colors ${
+                          hovered?.col === key ? 'bg-slate-100' : ''
+                        }`}
                       >
                         <span className="block">{labelFor(key)}</span>
                         <span className="block font-mono text-[9px] font-normal normal-case tracking-normal opacity-60">
@@ -262,10 +274,30 @@ export function MatchupMatrix() {
                     ))}
                   </tr>
                 </thead>
-                <tbody>
+                <motion.tbody
+                  initial="hidden"
+                  animate="show"
+                  variants={{
+                    ...staggerParent,
+                    show: {
+                      transition: {
+                        staggerChildren: Math.min(0.04, 0.4 / Math.max(1, data.rows.length)),
+                        delayChildren: 0.04,
+                      },
+                    },
+                  }}
+                >
                   {data.rows.map((from) => (
-                    <tr key={from} className="border-t border-border/60">
-                      <th className="sticky left-0 z-10 w-40 bg-card px-3 py-2 text-left align-middle text-xs font-medium">
+                    <motion.tr
+                      key={from}
+                      variants={rowReveal}
+                      className="border-t border-border/60"
+                    >
+                      <th
+                        className={`sticky left-0 z-10 w-40 px-3 py-2 text-left align-middle text-xs font-medium transition-colors ${
+                          hovered?.row === from ? 'bg-slate-100' : 'bg-card'
+                        }`}
+                      >
                         <span className="block">{labelFor(from)}</span>
                         <span className="block font-mono text-[9px] font-normal text-muted-foreground">
                           n={data.rowTotals?.[from] ?? 0}
@@ -275,11 +307,17 @@ export function MatchupMatrix() {
                         const cell = cellsByKey.get(`${from}\u0000${to}`)
                         if (!cell) {
                           return (
-                            <td key={to} className="px-2 py-2 text-center text-muted-foreground/30">
+                            <td
+                              key={to}
+                              onMouseEnter={() => setHovered({ row: from, col: to })}
+                              className="px-2 py-2 text-center text-muted-foreground/30"
+                            >
                               ·
                             </td>
                           )
                         }
+                        const colActive = hovered?.col === to
+                        const focused = hovered?.row === from && colActive
                         const delta =
                           cell.projected === null ? null : Math.round(cell.winRate - cell.projected)
                         const projection =
@@ -291,7 +329,14 @@ export function MatchupMatrix() {
                         return (
                           <td
                             key={to}
-                            className="px-1 py-1 text-center"
+                            onMouseEnter={() => setHovered({ row: from, col: to })}
+                            className={`px-1 py-1 text-center transition-colors${
+                              focused
+                                ? ' outline-2 -outline-offset-2 outline-primary/50'
+                                : colActive
+                                  ? ' outline-1 -outline-offset-2 outline-primary/25'
+                                  : ''
+                            }`}
                             style={cellStyle(cell.winRate, cell.games)}
                             title={[
                               `${cell.wins}W - ${cell.losses}L - ${cell.draws}D over ${cell.games} game${cell.games === 1 ? '' : 's'}`,
@@ -307,9 +352,9 @@ export function MatchupMatrix() {
                           </td>
                         )
                       })}
-                    </tr>
+                    </motion.tr>
                   ))}
-                </tbody>
+                </motion.tbody>
               </table>
             </div>
 
@@ -380,7 +425,7 @@ export function MatchupMatrix() {
                 happened, so a positive number means the row beat the expectation.
               </p>
               <div className="mt-3 flex flex-wrap gap-1.5">
-                <Badge variant="outline">{data.battles} samples</Badge>
+                <Badge variant="outline">{battleCount} samples</Badge>
                 <Badge variant="outline">draws = 0.5 win</Badge>
               </div>
             </section>

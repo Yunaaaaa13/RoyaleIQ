@@ -17,12 +17,14 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
+import { AnimatePresence, motion } from 'motion/react'
 import { Database, RefreshCw, Search, TrendingDown, TrendingUp } from 'lucide-react'
 import { CardTile } from '@/components/card-tile'
 import { CardSynergy } from '@/components/card-synergy'
 import { DeckFamilies } from '@/components/deck-families'
 import { MetaMatrix } from '@/components/meta-matrix'
 import { BarList, StatTile } from '@/components/metrics'
+import { Reveal } from '@/components/reveal'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -35,6 +37,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import type { MetaSnapshot } from '@/lib/battle'
+import { CHART_MOTION, fadeUp, rowReveal, staggerParent } from '@/lib/motion'
 
 const PIE_COLORS = [
   '#2F80ED',
@@ -196,394 +199,433 @@ export function MetaDashboard() {
         />
       </div>
 
-      <MetaMatrix snapshot={snapshot} />
+      <Reveal className="space-y-5">
+        <MetaMatrix snapshot={snapshot} />
+      </Reveal>
 
       <div className="grid gap-4 lg:grid-cols-5">
-        <section className="panel p-5 lg:col-span-3">
-          <div className="panel-head">
-            <h3 className="panel-title">Top cards by usage</h3>
-            <span className="text-[11px] text-muted-foreground">share of the sample</span>
-          </div>
-          <BarList items={usageLeaders} />
-        </section>
+        <Reveal className="lg:col-span-3">
+          <section className="panel h-full p-5">
+            <div className="panel-head">
+              <h3 className="panel-title">Top cards by usage</h3>
+              <span className="text-[11px] text-muted-foreground">share of the sample</span>
+            </div>
+            <BarList items={usageLeaders} />
+          </section>
+        </Reveal>
 
-        <section className="panel p-5 lg:col-span-2">
-          <div className="panel-head">
-            <h3 className="panel-title">Archetype share</h3>
-            <span className="text-[11px] text-muted-foreground">by battles</span>
-          </div>
-          <div className="h-56">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={archetypeData}
-                  dataKey="value"
-                  nameKey="name"
-                  innerRadius={48}
-                  outerRadius={80}
-                  paddingAngle={2}
-                  stroke="#E3EAF3"
-                >
-                  {archetypeData.map((entry) => (
-                    <Cell key={entry.name} fill={entry.fill} />
-                  ))}
-                </Pie>
-                <ReTooltip
-                  contentStyle={{
-                    background: '#ffffff',
-                    border: '1px solid #E3EAF3',
-                    borderRadius: 8,
-                    fontSize: 12,
-                    color: '#172033',
-                  }}
-                  formatter={(value, name) => [`${value}%`, String(name)]}
-                />
-                <Legend wrapperStyle={{ fontSize: 11 }} />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
-        </section>
+        <Reveal className="lg:col-span-2" delay={0.06}>
+          <section className="panel h-full p-5">
+            <div className="panel-head">
+              <h3 className="panel-title">Archetype share</h3>
+              <span className="text-[11px] text-muted-foreground">by battles</span>
+            </div>
+            <div className="h-56">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={archetypeData}
+                    dataKey="value"
+                    nameKey="name"
+                    innerRadius={48}
+                    outerRadius={80}
+                    paddingAngle={2}
+                    stroke="#E3EAF3"
+                    {...CHART_MOTION}
+                  >
+                    {archetypeData.map((entry) => (
+                      <Cell key={entry.name} fill={entry.fill} />
+                    ))}
+                  </Pie>
+                  <ReTooltip
+                    contentStyle={{
+                      background: '#ffffff',
+                      border: '1px solid #E3EAF3',
+                      borderRadius: 8,
+                      fontSize: 12,
+                      color: '#172033',
+                    }}
+                    formatter={(value, name) => [`${value}%`, String(name)]}
+                  />
+                  <Legend wrapperStyle={{ fontSize: 11 }} />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+          </section>
+        </Reveal>
       </div>
 
-      <section className="panel p-5">
-        <div className="panel-head">
-          <h3 className="panel-title">Card analytics</h3>
-          <div className="flex flex-1 flex-wrap items-center justify-end gap-2">
-            <div className="relative grow sm:grow-0">
-            <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-              placeholder="Filter cards…"
-              className="h-9 w-full pl-9 sm:w-44"
-            />
+      <Reveal>
+        <section className="panel p-5">
+          <div className="panel-head">
+            <h3 className="panel-title">Card analytics</h3>
+            <div className="flex flex-1 flex-wrap items-center justify-end gap-2">
+              <div className="relative grow sm:grow-0">
+                <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  value={query}
+                  onChange={(event) => setQuery(event.target.value)}
+                  placeholder="Filter cards…"
+                  className="h-9 w-full pl-9 sm:w-44"
+                />
+              </div>
+              <Select value={rarity} onValueChange={setRarity}>
+                <SelectTrigger className="h-9 min-w-0 flex-1 sm:w-36 sm:flex-none">
+                  <SelectValue placeholder="Rarity" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All rarities</SelectItem>
+                  <SelectItem value="Common">Common</SelectItem>
+                  <SelectItem value="Rare">Rare</SelectItem>
+                  <SelectItem value="Epic">Epic</SelectItem>
+                  <SelectItem value="Legendary">Legendary</SelectItem>
+                  <SelectItem value="Champion">Champion</SelectItem>
+                </SelectContent>
+              </Select>
+              <Select value={sort} onValueChange={(value) => setSort(value as SortKey)}>
+                <SelectTrigger className="h-9 min-w-0 flex-1 sm:w-36 sm:flex-none">
+                  <SelectValue placeholder="Sort by" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="usage">Usage</SelectItem>
+                  <SelectItem value="winRate">Win rate</SelectItem>
+                  <SelectItem value="elixir">Elixir</SelectItem>
+                  <SelectItem value="name">Name</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
-          <Select value={rarity} onValueChange={setRarity}>
-            <SelectTrigger className="h-9 min-w-0 flex-1 sm:w-36 sm:flex-none">
-              <SelectValue placeholder="Rarity" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All rarities</SelectItem>
-              <SelectItem value="Common">Common</SelectItem>
-              <SelectItem value="Rare">Rare</SelectItem>
-              <SelectItem value="Epic">Epic</SelectItem>
-              <SelectItem value="Legendary">Legendary</SelectItem>
-              <SelectItem value="Champion">Champion</SelectItem>
-            </SelectContent>
-          </Select>
-          <Select value={sort} onValueChange={(value) => setSort(value as SortKey)}>
-            <SelectTrigger className="h-9 min-w-0 flex-1 sm:w-36 sm:flex-none">
-              <SelectValue placeholder="Sort by" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="usage">Usage</SelectItem>
-              <SelectItem value="winRate">Win rate</SelectItem>
-              <SelectItem value="elixir">Elixir</SelectItem>
-              <SelectItem value="name">Name</SelectItem>
-            </SelectContent>
-          </Select>
-          </div>
-        </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-border/80 text-left text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
-                <th className="py-2.5 pr-3 font-semibold">Card</th>
-                <th className="hidden py-2.5 pr-3 text-right font-semibold sm:table-cell">Elixir</th>
-                <th className="hidden py-2.5 pr-3 text-right font-semibold sm:table-cell">Battles</th>
-                <th className="py-2.5 pr-3 text-right font-semibold">Usage</th>
-                <th className="py-2.5 text-right font-semibold">Win rate</th>
-              </tr>
-            </thead>
-            <tbody>
-              {cards.map((card) => (
-                <tr
-                  key={card.key}
-                  className="border-b border-border/50 transition hover:bg-slate-50"
-                >
-                  <td className="py-2 pr-3">
-                    <Link
-                      href={`/cards/${card.key}`}
-                      className="flex items-center gap-2 transition hover:text-primary"
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-border/80 text-left text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
+                  <th className="py-2.5 pr-3 font-semibold">Card</th>
+                  <th className="hidden py-2.5 pr-3 text-right font-semibold sm:table-cell">Elixir</th>
+                  <th className="hidden py-2.5 pr-3 text-right font-semibold sm:table-cell">Battles</th>
+                  <th className="py-2.5 pr-3 text-right font-semibold">Usage</th>
+                  <th className="py-2.5 text-right font-semibold">Win rate</th>
+                </tr>
+              </thead>
+              <motion.tbody initial="hidden" animate="show" variants={staggerParent}>
+                <AnimatePresence>
+                  {cards.map((card) => (
+                    <motion.tr
+                      key={card.key}
+                      variants={rowReveal}
+                      layout
+                      exit={{ opacity: 0 }}
+                      className="group/row border-b border-border/50 transition hover:bg-slate-50"
                     >
-                      <CardTile cardKey={card.key} size="xs" showElixir={false} />
-                      <span className="font-medium">{card.name}</span>
-                    </Link>
-                  </td>
-                  <td className="hidden py-2 pr-3 text-right tabular-nums text-muted-foreground sm:table-cell">
-                    {card.elixir}
-                  </td>
-                  <td className="hidden py-2 pr-3 text-right tabular-nums sm:table-cell">
-                    {card.battles}
-                  </td>
-                  <td className="py-2 pr-3 text-right tabular-nums">{card.usage}%</td>
-                  <td
-                    className={`py-2 text-right font-semibold tabular-nums ${
-                      card.winRate >= 52
-                        ? 'text-emerald-600'
-                        : card.winRate <= 48
-                          ? 'text-rose-600'
-                          : ''
-                    }`}
-                  >
-                    {card.winRate}%
-                  </td>
-                </tr>
-              ))}
-              {!cards.length && (
-                <tr>
-                  <td colSpan={5} className="py-8 text-center text-muted-foreground">
-                    No cards match that filter.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      </section>
+                      <td className="py-2 pr-3">
+                        <Link
+                          href={`/cards/${card.key}`}
+                          className="flex items-center gap-2 transition hover:text-primary"
+                        >
+                          <CardTile cardKey={card.key} size="xs" showElixir={false} />
+                          <span className="font-medium">{card.name}</span>
+                        </Link>
+                      </td>
+                      <td className="hidden py-2 pr-3 text-right tabular-nums text-muted-foreground sm:table-cell">
+                        {card.elixir}
+                      </td>
+                      <td className="hidden py-2 pr-3 text-right tabular-nums sm:table-cell">
+                        {card.battles}
+                      </td>
+                      <td className="py-2 pr-3 text-right tabular-nums">{card.usage}%</td>
+                      <td
+                        className={`py-2 text-right font-semibold tabular-nums ${
+                          card.winRate >= 52
+                            ? 'text-emerald-600'
+                            : card.winRate <= 48
+                              ? 'text-rose-600'
+                              : ''
+                        }`}
+                      >
+                        {card.winRate}%
+                      </td>
+                    </motion.tr>
+                  ))}
+                </AnimatePresence>
+                {!cards.length && (
+                  <tr>
+                    <td colSpan={5} className="py-8 text-center text-muted-foreground">
+                      No cards match that filter.
+                    </td>
+                  </tr>
+                )}
+              </motion.tbody>
+            </table>
+          </div>
+        </section>
+      </Reveal>
 
       {/* `grid-cols-1` clamps the implicit column to `minmax(0,1fr)` - without
           it the single-column track sizes to max-content and these two panels
           push the page wider than a 320px viewport. */}
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-        <section className="panel p-5">
-          <div className="panel-head">
-            <div>
-              <h3 className="panel-title flex items-center gap-2">
-                <RefreshCw className="size-4 text-primary" />
-                Trending cards
-              </h3>
-              <p className="mt-1 text-xs text-muted-foreground">
-                Usage in the second half of the sample versus the first half.
-              </p>
-            </div>
-          </div>
-          <div className="space-y-3">
-            {(snapshot.trending ?? []).map((entry) => (
-              <div key={entry.key} className="flex items-center gap-3">
-                <CardTile cardKey={entry.key} size="xs" showElixir={false} />
-                <Link
-                  href={`/cards/${entry.key}`}
-                  className="flex-1 truncate text-sm transition hover:text-primary"
-                >
-                  {entry.label}
-                </Link>
-                <span className="text-xs text-muted-foreground">
-                  {entry.firstHalf}% → {entry.secondHalf}%
-                </span>
-                <Badge
-                  variant="outline"
-                  className={
-                    entry.delta >= 0
-                      ? 'gap-1 text-emerald-600'
-                      : 'gap-1 text-rose-600'
-                  }
-                >
-                  {entry.delta >= 0 ? (
-                    <TrendingUp className="size-3" />
-                  ) : (
-                    <TrendingDown className="size-3" />
-                  )}
-                  {entry.delta > 0 ? '+' : ''}
-                  {entry.delta}%
-                </Badge>
+        <Reveal>
+          <section className="panel h-full p-5">
+            <div className="panel-head">
+              <div>
+                <h3 className="panel-title flex items-center gap-2">
+                  <RefreshCw className="size-4 text-primary" />
+                  Trending cards
+                </h3>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Usage in the second half of the sample versus the first half.
+                </p>
               </div>
-            ))}
-            {!snapshot.trending?.length && (
-              <p className="text-sm text-muted-foreground">
-                Not enough history in the sample to show trends yet.
-              </p>
-            )}
-          </div>
-        </section>
-
-        <section className="panel p-5">
-          <div className="panel-head">
-            <div>
-              <h3 className="panel-title">Highest win rate cards</h3>
-              <p className="mt-1 text-xs text-muted-foreground">
-                Cards that show up in a meaningful share of games first.
-              </p>
             </div>
-          </div>
-          <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart
-                data={snapshot.topWinRate.map((card) => ({
-                  name: card.name,
-                  winRate: card.winRate,
-                }))}
-                layout="vertical"
-                margin={{ top: 4, right: 16, left: 8, bottom: 4 }}
-              >
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(15,23,42,0.08)" horizontal={false} />
-                <XAxis
-                  type="number"
-                  domain={winRateDomain}
-                  tick={{ fill: '#6B7280', fontSize: 11 }}
-                  axisLine={false}
-                  tickLine={false}
-                />
-                <YAxis
-                  type="category"
-                  dataKey="name"
-                  width={96}
-                  tick={{ fill: '#172033', fontSize: 11 }}
-                  axisLine={false}
-                  tickLine={false}
-                />
-                <ReTooltip
-                  cursor={{ fill: 'rgba(15,23,42,0.05)' }}
-                  contentStyle={{
-                    background: '#ffffff',
-                    border: '1px solid #E3EAF3',
-                    borderRadius: 8,
-                    fontSize: 12,
-                    color: '#172033',
-                  }}
-                  formatter={(value) => [`${value}%`, 'Win rate']}
-                />
-                <Bar dataKey="winRate" fill="#22A06B" radius={[0, 6, 6, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </section>
+            <motion.div
+              className="space-y-3"
+              initial="hidden"
+              animate="show"
+              variants={staggerParent}
+            >
+              {(snapshot.trending ?? []).map((entry) => (
+                <motion.div
+                  key={entry.key}
+                  variants={fadeUp}
+                  className="group/row flex items-center gap-3"
+                >
+                  <CardTile cardKey={entry.key} size="xs" showElixir={false} />
+                  <Link
+                    href={`/cards/${entry.key}`}
+                    className="flex-1 truncate text-sm transition hover:text-primary"
+                  >
+                    {entry.label}
+                  </Link>
+                  <span className="text-xs text-muted-foreground">
+                    {entry.firstHalf}% → {entry.secondHalf}%
+                  </span>
+                  <Badge
+                    variant="outline"
+                    className={
+                      entry.delta >= 0
+                        ? 'gap-1 text-emerald-600'
+                        : 'gap-1 text-rose-600'
+                    }
+                  >
+                    {entry.delta >= 0 ? (
+                      <TrendingUp className="size-3" />
+                    ) : (
+                      <TrendingDown className="size-3" />
+                    )}
+                    {entry.delta > 0 ? '+' : ''}
+                    {entry.delta}%
+                  </Badge>
+                </motion.div>
+              ))}
+              {!snapshot.trending?.length && (
+                <p className="text-sm text-muted-foreground">
+                  Not enough history in the sample to show trends yet.
+                </p>
+              )}
+            </motion.div>
+          </section>
+        </Reveal>
+
+        <Reveal delay={0.06}>
+          <section className="panel h-full p-5">
+            <div className="panel-head">
+              <div>
+                <h3 className="panel-title">Highest win rate cards</h3>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Cards that show up in a meaningful share of games first.
+                </p>
+              </div>
+            </div>
+            <div className="h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart
+                  data={snapshot.topWinRate.map((card) => ({
+                    name: card.name,
+                    winRate: card.winRate,
+                  }))}
+                  layout="vertical"
+                  margin={{ top: 4, right: 16, left: 8, bottom: 4 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(15,23,42,0.08)" horizontal={false} />
+                  <XAxis
+                    type="number"
+                    domain={winRateDomain}
+                    tick={{ fill: '#6B7280', fontSize: 11 }}
+                    axisLine={false}
+                    tickLine={false}
+                  />
+                  <YAxis
+                    type="category"
+                    dataKey="name"
+                    width={96}
+                    tick={{ fill: '#172033', fontSize: 11 }}
+                    axisLine={false}
+                    tickLine={false}
+                  />
+                  <ReTooltip
+                    cursor={{ fill: 'rgba(15,23,42,0.05)' }}
+                    contentStyle={{
+                      background: '#ffffff',
+                      border: '1px solid #E3EAF3',
+                      borderRadius: 8,
+                      fontSize: 12,
+                      color: '#172033',
+                    }}
+                    formatter={(value) => [`${value}%`, 'Win rate']}
+                  />
+                  <Bar dataKey="winRate" fill="#22A06B" radius={[0, 6, 6, 0]} {...CHART_MOTION} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </section>
+        </Reveal>
       </div>
 
       <DeckFamilies snapshot={snapshot} />
 
       <CardSynergy snapshot={snapshot} />
 
-      <section className="panel p-5">
-        <div className="panel-head">
-          <div>
-            <h3 className="panel-title">Top performing decks</h3>
-            <p className="mt-1 max-w-3xl text-xs text-muted-foreground">
-              Decks grouped by exact 8-card signature across the sample. Variant builds are folded
-              into families above; this is the per-signature breakdown underneath.
-            </p>
+      <Reveal>
+        <section className="panel p-5">
+          <div className="panel-head">
+            <div>
+              <h3 className="panel-title">Top performing decks</h3>
+              <p className="mt-1 max-w-3xl text-xs text-muted-foreground">
+                Decks grouped by exact 8-card signature across the sample. Variant builds are folded
+                into families above; this is the per-signature breakdown underneath.
+              </p>
+            </div>
           </div>
-        </div>
-        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-          {snapshot.decks.slice(0, 9).map((deck) => (
-            <article
-              key={deck.id}
-              className="rounded-xl border border-border/70 bg-slate-50 p-4 transition-colors hover:border-primary/35 hover:bg-slate-50"
-            >
-              <div className="mb-3 flex items-start justify-between gap-2">
-                <div>
-                  <p className="text-sm font-semibold">{deck.label}</p>
-                  <p className="text-[11px] text-muted-foreground">
-                    {deck.avgElixir} avg · {deck.battles} battles
-                  </p>
+          <motion.div
+            className="grid gap-3 md:grid-cols-2 xl:grid-cols-3"
+            initial="hidden"
+            animate="show"
+            variants={staggerParent}
+          >
+            {snapshot.decks.slice(0, 9).map((deck) => (
+              <motion.article
+                key={deck.id}
+                variants={fadeUp}
+                className="group/cell rounded-xl border border-border/70 bg-slate-50 p-4 transition-colors hover:border-primary/35 hover:bg-slate-50"
+              >
+                <div className="mb-3 flex items-start justify-between gap-2">
+                  <div>
+                    <p className="text-sm font-semibold">{deck.label}</p>
+                    <p className="text-[11px] text-muted-foreground">
+                      {deck.avgElixir} avg · {deck.battles} battles
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p
+                      className={`text-sm font-bold tabular-nums ${
+                        deck.winRate >= 52
+                          ? 'text-emerald-600'
+                          : deck.winRate <= 48
+                            ? 'text-rose-600'
+                            : ''
+                      }`}
+                    >
+                      {deck.winRate}%
+                    </p>
+                    <p className="text-[11px] text-muted-foreground">
+                      {deck.usage}% usage
+                    </p>
+                  </div>
                 </div>
-                <div className="text-right">
-                  <p
-                    className={`text-sm font-bold tabular-nums ${
-                      deck.winRate >= 52
-                        ? 'text-emerald-600'
-                        : deck.winRate <= 48
-                          ? 'text-rose-600'
-                          : ''
-                    }`}
-                  >
-                    {deck.winRate}%
-                  </p>
-                  <p className="text-[11px] text-muted-foreground">
-                    {deck.usage}% usage
-                  </p>
+                <div className="flex flex-wrap gap-1">
+                  {deck.cards.map((key) => (
+                    <CardTile
+                      key={`${deck.id}-${key}`}
+                      cardKey={key}
+                      size="xs"
+                      showElixir={false}
+                    />
+                  ))}
                 </div>
-              </div>
-              <div className="flex flex-wrap gap-1">
-                {deck.cards.map((key) => (
-                  <CardTile
-                    key={`${deck.id}-${key}`}
-                    cardKey={key}
-                    size="xs"
-                    showElixir={false}
-                  />
-                ))}
-              </div>
-            </article>
-          ))}
-        </div>
-      </section>
+              </motion.article>
+            ))}
+          </motion.div>
+        </section>
+      </Reveal>
 
-      <section className="panel p-5">
-        <div className="panel-head">
-          <div>
-            <h3 className="panel-title">Archetype performance</h3>
-            <p className="mt-1 text-xs text-muted-foreground">
-              Win rate and ladder share for every archetype in the sample.
-            </p>
+      <Reveal>
+        <section className="panel p-5">
+          <div className="panel-head">
+            <div>
+              <h3 className="panel-title">Archetype performance</h3>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Win rate and ladder share for every archetype in the sample.
+              </p>
+            </div>
           </div>
-        </div>
-        <div className="overflow-x-auto">
-          <div className="h-56 min-w-[560px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={archetypeData} margin={{ top: 8, right: 16, left: -20, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(15,23,42,0.08)" />
-                <XAxis
-                  dataKey="name"
-                  tick={{ fill: '#6B7280', fontSize: 10 }}
-                  axisLine={false}
-                  tickLine={false}
-                  interval={0}
-                  angle={-18}
-                  textAnchor="end"
-                  height={54}
-                />
-                <YAxis
-                  tick={{ fill: '#6B7280', fontSize: 11 }}
-                  axisLine={false}
-                  tickLine={false}
-                />
-                <ReTooltip
-                  contentStyle={{
-                    background: '#ffffff',
-                    border: '1px solid #E3EAF3',
-                    borderRadius: 8,
-                    fontSize: 12,
-                    color: '#172033',
-                  }}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="winRate"
-                  name="Win rate"
-                  stroke="#F5B942"
-                  strokeWidth={2}
-                  dot={{ r: 4, fill: '#F5B942' }}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="value"
-                  name="Share %"
-                  stroke="#2F80ED"
-                  strokeWidth={2}
-                  dot={{ r: 4, fill: '#2F80ED' }}
-                />
-              </LineChart>
-            </ResponsiveContainer>
+          <div className="overflow-x-auto">
+            <div className="h-56 min-w-[560px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={archetypeData} margin={{ top: 8, right: 16, left: -20, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(15,23,42,0.08)" />
+                  <XAxis
+                    dataKey="name"
+                    tick={{ fill: '#6B7280', fontSize: 10 }}
+                    axisLine={false}
+                    tickLine={false}
+                    interval={0}
+                    angle={-18}
+                    textAnchor="end"
+                    height={54}
+                  />
+                  <YAxis
+                    tick={{ fill: '#6B7280', fontSize: 11 }}
+                    axisLine={false}
+                    tickLine={false}
+                  />
+                  <ReTooltip
+                    contentStyle={{
+                      background: '#ffffff',
+                      border: '1px solid #E3EAF3',
+                      borderRadius: 8,
+                      fontSize: 12,
+                      color: '#172033',
+                    }}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="winRate"
+                    name="Win rate"
+                    stroke="#F5B942"
+                    strokeWidth={2}
+                    dot={{ r: 4, fill: '#F5B942' }}
+                    {...CHART_MOTION}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="value"
+                    name="Share %"
+                    stroke="#2F80ED"
+                    strokeWidth={2}
+                    dot={{ r: 4, fill: '#2F80ED' }}
+                    {...CHART_MOTION}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
           </div>
-        </div>
-        <div className="mt-4 flex flex-wrap gap-2">
-          {snapshot.archetypes.map((entry, index) => (
-            <span
-              key={entry.key}
-              className="flex items-center gap-2 rounded-full border border-border bg-slate-50 px-3 py-1 text-xs"
-            >
+          <div className="mt-4 flex flex-wrap gap-2">
+            {snapshot.archetypes.map((entry, index) => (
               <span
-                className="size-2 rounded-full"
-                style={{ background: PIE_COLORS[index % PIE_COLORS.length] }}
-              />
-              {entry.label}
-              <span className="text-muted-foreground">{entry.share}%</span>
-            </span>
-          ))}
-        </div>
-      </section>
+                key={entry.key}
+                className="flex items-center gap-2 rounded-full border border-border bg-slate-50 px-3 py-1 text-xs"
+              >
+                <span
+                  className="size-2 rounded-full"
+                  style={{ background: PIE_COLORS[index % PIE_COLORS.length] }}
+                />
+                {entry.label}
+                <span className="text-muted-foreground">{entry.share}%</span>
+              </span>
+            ))}
+          </div>
+        </section>
+      </Reveal>
     </div>
   )
 }

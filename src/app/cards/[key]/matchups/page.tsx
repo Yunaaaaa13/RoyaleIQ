@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation'
 import { ArrowLeft } from 'lucide-react'
 import { CardMatchups } from '@/components/card-matchups'
 import { CardTile } from '@/components/card-tile'
+import { PageTransition } from '@/components/page-transition'
 import { findCard } from '@/lib/cards'
 
 interface CardMatchupsPageProps {
@@ -26,7 +27,7 @@ export default async function CardMatchupsPage({ params }: CardMatchupsPageProps
   if (!card) notFound()
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
+    <PageTransition className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
       <Link
         href={`/cards/${card.key}`}
         className="mb-5 inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground transition hover:text-foreground"
@@ -50,6 +51,6 @@ export default async function CardMatchupsPage({ params }: CardMatchupsPageProps
       </header>
 
       <CardMatchups cardKey={card.key} cardName={card.name} />
-    </div>
+    </PageTransition>
   )
 }

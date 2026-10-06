@@ -48,10 +48,12 @@ export function CardTile({
 
   const tile = (
     <div
-      className={`group relative mx-auto ${frame.box} shrink-0 ${frame.radius} ${
-        selected ? 'ring-2 ring-amber-500 ring-offset-2 ring-offset-background' : ''
+      className={`group relative mx-auto ${frame.box} shrink-0 ${frame.radius} transition-[transform,box-shadow,opacity] duration-200 ease-out ${
+        selected ? 'ring-2 ring-primary ring-offset-2 ring-offset-background' : ''
       } ${disabled ? 'opacity-35' : ''} ${
-        interactive ? 'cursor-pointer transition hover:-translate-y-0.5 hover:scale-105' : ''
+        interactive
+          ? 'cursor-pointer hover:scale-[1.02] hover:shadow-[0_6px_16px_-8px_rgb(23_32_51/35%)]'
+          : ''
       }`}
       onClick={onClick}
       role={interactive ? 'button' : undefined}
@@ -77,7 +79,7 @@ export function CardTile({
         width={frame.image}
         height={frame.image}
         sizes={`${frame.image}px`}
-        className={`relative ${frame.radius} h-full w-full object-contain`}
+        className={`relative ${frame.radius} h-full w-full object-contain transition-transform duration-200 ease-out group-hover/cell:scale-[1.04] group-hover/row:scale-[1.04]`}
       />
       {showElixir && (
         <span className="absolute -bottom-1.5 -left-1.5 grid size-5 place-items-center rounded-full border border-white/60 bg-gradient-to-b from-blue-500 to-blue-700 text-[10px] font-bold text-white shadow">

@@ -2,11 +2,14 @@
 
 import { useMemo } from 'react'
 import { Network } from 'lucide-react'
+import { motion } from 'motion/react'
 import { CardTile } from '@/components/card-tile'
+import { Reveal } from '@/components/reveal'
 import { archetypeLabel } from '@/lib/archetypes'
 import { getCard } from '@/lib/cards'
 import { clusterDecks, type DeckFamily } from '@/lib/clusters'
 import type { MetaSnapshot } from '@/lib/battle'
+import { DURATION, EASE_OUT, fadeUp, staggerParent } from '@/lib/motion'
 
 function cardName(key: string): string {
   return getCard(key)?.name ?? key
@@ -27,6 +30,7 @@ export function DeckFamilies({ snapshot }: { snapshot: MetaSnapshot }) {
   if (!clusters.deckCount) return null
 
   return (
+    <Reveal>
     <section className="panel p-5">
       <h3 className="mb-1 flex items-center gap-2 panel-title">
         <Network className="size-4 text-cyan-700" />
@@ -67,11 +71,17 @@ export function DeckFamilies({ snapshot }: { snapshot: MetaSnapshot }) {
             )}
           </p>
 
-          <div className="grid gap-3 md:grid-cols-2">
+          <motion.div
+            className="grid gap-3 md:grid-cols-2"
+            initial="hidden"
+            animate="show"
+            variants={staggerParent}
+          >
             {families.map((family) => (
-              <article
+              <motion.article
                 key={family.id}
-                className="rounded-xl border border-border bg-slate-50 p-4"
+                variants={fadeUp}
+                className="group/cell rounded-xl border border-border bg-slate-50 p-4"
               >
                 <div className="mb-3 flex items-start justify-between gap-2">
                   <div className="min-w-0">
@@ -126,9 +136,22 @@ export function DeckFamilies({ snapshot }: { snapshot: MetaSnapshot }) {
                       >
                         <span className="min-w-0">
                           <span className="font-medium">{variant.label}</span>{' '}
-                          <span className="text-muted-foreground">
+                          <motion.span
+                            variants={{
+                              hidden: { opacity: 0 },
+                              show: {
+                                opacity: 1,
+                                transition: {
+                                  duration: DURATION.micro,
+                                  ease: EASE_OUT,
+                                  delay: 0.18,
+                                },
+                              },
+                            }}
+                            className="text-muted-foreground"
+                          >
                             — {swapText(family, index + 1)}
-                          </span>
+                          </motion.span>
                         </span>
                         <span className="shrink-0 tabular-nums text-muted-foreground">
                           {variant.usage}% · {variant.winRate}%
@@ -137,11 +160,12 @@ export function DeckFamilies({ snapshot }: { snapshot: MetaSnapshot }) {
                     ))}
                   </ul>
                 )}
-              </article>
+              </motion.article>
             ))}
-          </div>
+          </motion.div>
         </>
       )}
     </section>
+    </Reveal>
   )
 }

@@ -15,9 +15,11 @@ import {
   ZAxis,
   type TooltipContentProps,
 } from 'recharts'
+import { motion } from 'motion/react'
 import { CardTile } from '@/components/card-tile'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import type { MetaSnapshot } from '@/lib/battle'
+import { CHART_MOTION, fadeUp, rowReveal, staggerParent } from '@/lib/motion'
 
 // ---------------------------------------------------------------------------
 // Quadrant model
@@ -339,7 +341,7 @@ export function MetaMatrix({ snapshot }: { snapshot: MetaSnapshot }) {
                 content={<MatrixTooltip />}
                 cursor={{ strokeDasharray: '3 3', stroke: 'rgba(15,23,42,0.2)' }}
               />
-              <Scatter data={points} fillOpacity={0.9} isAnimationActive={false}>
+              <Scatter data={points} fillOpacity={0.9} {...CHART_MOTION}>
                 {points.map((point) => (
                   <Cell
                     key={point.key}
@@ -355,10 +357,16 @@ export function MetaMatrix({ snapshot }: { snapshot: MetaSnapshot }) {
           </ResponsiveContainer>
         </div>
 
-        <div className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+        <motion.div
+          className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-4"
+          initial="hidden"
+          animate="show"
+          variants={staggerParent}
+        >
           {(Object.keys(QUADRANTS) as QuadrantKey[]).map((key) => (
-            <div
+            <motion.div
               key={key}
+              variants={fadeUp}
               className="rounded-lg border border-border bg-slate-50 px-3 py-2"
             >
               <p className="flex items-center gap-2 text-sm font-semibold">
@@ -374,9 +382,9 @@ export function MetaMatrix({ snapshot }: { snapshot: MetaSnapshot }) {
               <p className="mt-0.5 text-[11px] leading-snug text-muted-foreground">
                 {QUADRANTS[key].hint}
               </p>
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </section>
 
       <section className="panel p-5">
@@ -431,7 +439,11 @@ export function MetaMatrix({ snapshot }: { snapshot: MetaSnapshot }) {
                 <th className="hidden py-2 text-right sm:table-cell">Signal</th>
               </tr>
             </thead>
-            <tbody>
+            <motion.tbody
+              initial="hidden"
+              animate="show"
+              variants={staggerParent}
+            >
               {anomalies.map((point) => {
                 const signal = SIGNAL[
                   point.gap > 0
@@ -444,9 +456,10 @@ export function MetaMatrix({ snapshot }: { snapshot: MetaSnapshot }) {
                 ]
                 const strong = Math.abs(point.gap) >= 4
                 return (
-                  <tr
+                  <motion.tr
                     key={point.key}
-                    className="border-b border-border/60 transition hover:bg-slate-50"
+                    variants={rowReveal}
+                    className="group/row border-b border-border/60 transition hover:bg-slate-50"
                   >
                     <td className="py-2 pr-3">
                       <div className="flex items-center gap-2">
@@ -483,7 +496,7 @@ export function MetaMatrix({ snapshot }: { snapshot: MetaSnapshot }) {
                         {signal.label}
                       </span>
                     </td>
-                  </tr>
+                  </motion.tr>
                 )
               })}
               {!anomalies.length && (
@@ -494,7 +507,7 @@ export function MetaMatrix({ snapshot }: { snapshot: MetaSnapshot }) {
                   </td>
                 </tr>
               )}
-            </tbody>
+            </motion.tbody>
           </table>
         </div>
       </section>

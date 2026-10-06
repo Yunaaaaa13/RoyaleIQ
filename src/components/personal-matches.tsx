@@ -1,12 +1,16 @@
 'use client'
 
 import { useMemo } from 'react'
+import type { ReactNode } from 'react'
 import Link from 'next/link'
+import { motion } from 'motion/react'
+import type { Variants } from 'motion/react'
 import { Check, Eye, FlaskConical, Radar, Sparkles } from 'lucide-react'
 import { CardTile } from '@/components/card-tile'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import type { MetaSnapshot } from '@/lib/battle'
+import { fadeUp, rowReveal } from '@/lib/motion'
 import {
   MAX_RECOMMENDATIONS,
   MIN_SELECTED_CARDS,
@@ -14,6 +18,17 @@ import {
   recommendDecks,
   type Recommendation,
 } from '@/lib/recommend'
+import { useCountUp } from '@/lib/use-count-up'
+
+const recStagger: Variants = {
+  hidden: {},
+  show: { transition: { delayChildren: (index: number) => index * 0.055 } },
+}
+
+const tableStagger: Variants = {
+  hidden: {},
+  show: { transition: { delayChildren: (index: number) => Math.min(index * 0.04, 0.45) } },
+}
 
 /** Observed vs built-around-your-selection, stated so nothing reads as sampled. */
 const SOURCE_BADGE: Record<Recommendation['source'], { label: string; className: string }> = {
@@ -44,11 +59,17 @@ function groupByArchetype(items: Recommendation[]): MatchGroup[] {
   return groups.sort((a, b) => b.best.compatibility - a.best.compatibility)
 }
 
+function CountValue({ value, className }: { value: ReactNode; className?: string }) {
+  const display = useCountUp(value)
+  return <span className={className}>{display}</span>
+}
+
 function StatCell({ label, value }: { label: string; value: string }) {
+  const display = useCountUp(value)
   return (
     <div className="rounded-lg bg-slate-50 p-2">
       <p className="text-[10px] uppercase tracking-wide text-muted-foreground">{label}</p>
-      <p className="truncate text-sm font-semibold tabular-nums">{value}</p>
+      <p className="truncate text-sm font-semibold tabular-nums">{display}</p>
     </div>
   )
 }
@@ -106,14 +127,22 @@ export function PersonalMatches({
         </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2">
+      <motion.div
+        className="grid gap-4 md:grid-cols-2"
+        initial="hidden"
+        animate="show"
+        variants={recStagger}
+      >
         {featured.map((group, index) => {
           const best = group.best
           const deckParam = encodeURIComponent(best.cards.join(','))
           return (
-            <article
+            <motion.article
               key={group.key}
-              className="flex flex-col gap-3 rounded-xl border border-border bg-slate-50 p-4"
+              variants={fadeUp}
+              className={`group/cell flex flex-col gap-3 rounded-xl border border-border bg-slate-50 p-4${
+                index === 0 ? ' border-l-2 border-l-primary/60' : ''
+              }`}
             >
               <div className="flex items-start justify-between gap-2">
                 <div className="flex min-w-0 items-center gap-2">
@@ -149,7 +178,7 @@ export function PersonalMatches({
                     Best compatibility
                   </span>
                   <span className="text-lg font-black tabular-nums text-primary">
-                    {best.compatibility}
+                    <CountValue value={best.compatibility} />
                     <span className="text-sm">%</span>
                   </span>
                 </div>
@@ -208,10 +237,10 @@ export function PersonalMatches({
                   </Button>
                 )}
               </div>
-            </article>
+            </motion.article>
           )
         })}
-      </div>
+      </motion.div>
 
       <div className="panel p-4 sm:p-5">
         <div className="mb-3 flex flex-wrap items-center gap-2">
@@ -237,9 +266,9 @@ export function PersonalMatches({
                 <th aria-label="Actions" />
               </tr>
             </thead>
-            <tbody>
+            <motion.tbody initial="hidden" animate="show" variants={tableStagger}>
               {recommendations.map((item) => (
-                <tr key={item.id}>
+                <motion.tr key={item.id} variants={rowReveal} className="group/row">
                   <td className="tabular-nums text-muted-foreground">{item.rank}</td>
                   <td className="min-w-[200px]">
                     <div className="flex flex-wrap items-center gap-1.5">
@@ -253,11 +282,21 @@ export function PersonalMatches({
                   </td>
                   <td className="text-muted-foreground">{item.archetypeLabel}</td>
                   <td className="font-semibold tabular-nums text-primary">
-                    {item.compatibility}%
+                    <CountValue value={`${item.compatibility}%`} />
                   </td>
-                  <td className="tabular-nums">{item.usage !== null ? `${item.usage}%` : '—'}</td>
                   <td className="tabular-nums">
-                    {item.winRate !== null ? `${item.winRate}%` : '—'}
+                    {item.usage !== null ? (
+                      <CountValue value={`${item.usage}%`} />
+                    ) : (
+                      '—'
+                    )}
+                  </td>
+                  <td className="tabular-nums">
+                    {item.winRate !== null ? (
+                      <CountValue value={`${item.winRate}%`} />
+                    ) : (
+                      '—'
+                    )}
                   </td>
                   <td className="tabular-nums">
                     {item.source === 'meta' ? item.battles : '—'}
@@ -292,9 +331,9 @@ export function PersonalMatches({
                       )}
                     </div>
                   </td>
-                </tr>
+                </motion.tr>
               ))}
-            </tbody>
+            </motion.tbody>
           </table>
         </div>
 
