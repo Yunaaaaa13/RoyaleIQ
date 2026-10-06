@@ -1,100 +1,114 @@
-<!-- ========================================================= -->
-<!--                      ROYALEIQ README                      -->
-<!-- ========================================================= -->
-
 <div align="center">
 
-  <!-- ===================== HERO BANNER ===================== -->
+<img
+  src="https://capsule-render.vercel.app/api?type=waving&color=0:0D47A1,50:1976D2,100:42A5F5&height=230&section=header&text=RoyaleIQ&fontSize=62&fontColor=FFFFFF&fontAlignY=38&desc=Clash%20Royale%20Analytics%20Platform&descAlignY=60&descSize=20&animation=fadeIn"
+  width="100%"
+  alt="RoyaleIQ Header"
+/>
 
+<img
+  src="https://readme-typing-svg.demolab.com?font=Inter&weight=700&size=21&duration=2800&pause=900&color=1976D2&center=true&vCenter=true&width=900&lines=Understand+the+Meta.;Analyze+Cards+%26+Decks.;Discover+Popular+Deck+Archetypes.;Explore+Matchups.;Track+Player+Performance.;Turn+Clash+Royale+Data+into+Insights."
+  alt="RoyaleIQ Typing Animation"
+/>
+
+<br /><br />
+
+<p align="center">
+  <strong>RoyaleIQ</strong> is a Clash Royale analytics platform built to
+  transform gameplay data into meaningful statistics, recommendations,
+  trends, and competitive insights.
+</p>
+
+<p align="center">
+  <em>Analyze the Meta. Understand Your Game.</em>
+</p>
+
+<br />
+
+<a href="https://royaleiq-sigma.vercel.app/">
   <img
-    src="https://capsule-render.vercel.app/api?type=waving&color=0:0F3D91,50:1D4ED8,100:60A5FA&height=260&section=header&text=RoyaleIQ&fontSize=64&fontColor=FFFFFF&fontAlignY=38&desc=Clash%20Royale%20Analytics%20%26%20Intelligence&descAlignY=58&descSize=20&animation=fadeIn"
-    width="100%"
-    alt="RoyaleIQ banner"
+    src="https://img.shields.io/badge/🌐%20Live%20Demo-1976D2?style=for-the-badge&logo=vercel&logoColor=white"
+    alt="Live Demo"
   />
+</a>
 
-  <br />
-
-  <!-- ==================== TYPING EFFECT ==================== -->
-
+<a href="https://github.com/Yunaaa13/RoyaleIQ">
   <img
-    src="https://readme-typing-svg.demolab.com?font=Inter&weight=600&size=22&duration=2800&pause=900&color=2563EB&center=true&vCenter=true&width=850&lines=Understand+the+Meta.;Analyze+Cards+%26+Decks.;Discover+Popular+Deck+Archetypes.;Explore+Matchups.;Track+Player+Performance.;Turn+Gameplay+Data+into+Insights."
-    alt="RoyaleIQ typing animation"
+    src="https://img.shields.io/badge/GitHub-111827?style=for-the-badge&logo=github&logoColor=white"
+    alt="GitHub Repository"
   />
+</a>
 
-  <br /><br />
+<br /><br />
 
-  <!-- ====================== DESCRIPTION ==================== -->
+<img src="https://img.shields.io/badge/Next.js-000000?style=flat-square&logo=next.js&logoColor=white" />
+<img src="https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white" />
+<img src="https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white" />
+<img src="https://img.shields.io/badge/FastAPI-009688?style=flat-square&logo=fastapi&logoColor=white" />
+<img src="https://img.shields.io/badge/PostgreSQL-336791?style=flat-square&logo=postgresql&logoColor=white" />
+<img src="https://img.shields.io/badge/Supabase-3ECF8E?style=flat-square&logo=supabase&logoColor=white" />
+<img src="https://img.shields.io/badge/Vercel-000000?style=flat-square&logo=vercel&logoColor=white" />
 
-  <p align="center">
-    <strong>RoyaleIQ</strong> is a data-driven Clash Royale analytics platform
-    designed to transform gameplay data into actionable insights.
-  </p>
+<br /><br />
 
-  <p align="center">
-    Explore cards, decks, meta trends, archetypes, matchups, player performance,
-    and AI-assisted analysis in one platform.
-  </p>
-
-  <br />
-
-  <!-- ======================== BADGES ======================= -->
-
-  <a href="https://royaleiq-sigma.vercel.app/">
-    <img src="https://img.shields.io/badge/Live%20Demo-2563EB?style=for-the-badge&logo=vercel&logoColor=white" alt="Live Demo" />
-  </a>
-
-  <img src="https://img.shields.io/badge/Status-Active-success?style=for-the-badge" alt="Status" />
-
-  <img src="https://img.shields.io/badge/Next.js-black?style=for-the-badge&logo=next.js&logoColor=white" alt="Next.js" />
-
-  <img src="https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" />
-
-  <img src="https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white" alt="Tailwind CSS" />
-
-  <img src="https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white" alt="FastAPI" />
-
-  <img src="https://img.shields.io/badge/PostgreSQL-336791?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL" />
-
-  <img src="https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white" alt="Supabase" />
-
-  <br /><br />
-
-  <img
-    src="https://komarev.com/ghpvc/?username=YOUR_GITHUB_USERNAME&label=Repository%20Views&color=2563EB&style=flat-square"
-    alt="Repository views"
-  />
+<img
+  src="https://komarev.com/ghpvc/?username=Yunaaa13&label=Repository%20Views&color=1976D2&style=flat-square"
+  alt="Repository Views"
+/>
 
 </div>
 
 ---
 
-# ⚔️ About RoyaleIQ
+# ⚔️ RoyaleIQ
 
-**RoyaleIQ** is a Clash Royale analytics platform focused on helping players
-understand the game through data rather than intuition alone.
+**RoyaleIQ** is a data-driven Clash Royale analytics platform focused on
+helping players understand cards, decks, meta archetypes, matchups, and
+personal performance.
 
-The platform combines:
+The goal is not simply to answer:
 
-- Card analytics
-- Deck analytics
-- Meta exploration
-- Archetype discovery
-- Deck recommendations
-- Matchup analysis
-- Player performance analysis
-- AI-assisted explanations
+> "Which deck should I use?"
 
-The central idea is simple:
+but to answer:
+
+> "Why is this deck popular, how does it perform, what does it counter,
+> and how does it compare with other decks?"
+
+---
+
+# 🎯 Project Vision
+
+RoyaleIQ transforms raw Clash Royale gameplay information into a structured
+analytics experience.
 
 ```text
-"What is popular?"
-        ↓
-"Why is it popular?"
-        ↓
-"How well does it perform?"
-        ↓
-"Where does it perform?"
-        ↓
-"How does it compare?"
-        ↓
-"What should I use?"
+                CLASH ROYALE DATA
+                        │
+                        ▼
+                DATA COLLECTION
+                        │
+                        ▼
+                DATA PROCESSING
+                        │
+                        ▼
+                 STATISTICAL DATA
+                        │
+        ┌───────────────┼───────────────┐
+        ▼               ▼               ▼
+     CARDS            DECKS          BATTLES
+        │               │               │
+        └───────────────┼───────────────┘
+                        ▼
+                   ANALYTICS
+                        │
+            ┌───────────┼───────────┐
+            ▼           ▼           ▼
+         Trends      Matchups    Synergy
+            │           │           │
+            └───────────┼───────────┘
+                        ▼
+                INTELLIGENCE
+                        │
+                        ▼
+                USER INSIGHTS
